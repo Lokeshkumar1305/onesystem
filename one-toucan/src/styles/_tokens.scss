@@ -1,0 +1,123 @@
+// ---------------------------------------------------------------------------
+// OneToucan design tokens — brand colors, neutrals, semantic colors,
+// spacing, radii and elevation. Theme variants (which swap --oh-primary-*)
+// live in _themes.scss. Typography tokens live in _typography.scss.
+// ---------------------------------------------------------------------------
+
+:root {
+  // ---- Brand · Primary (Deep Teal) — default theme ------------------------
+  // Institutional anchor: nav, primary buttons, links, focus rings.
+  --oh-primary-50: #F8FDFA;
+  --oh-primary-100: #CCFBF1;
+  --oh-primary-200: #99F6E4;
+  --oh-primary-500: #0F766E;
+  --oh-primary-600: #115E59;
+  --oh-primary-700: #134E4A;
+  --oh-primary-900: #042F2E;
+  --oh-primary: var(--oh-primary-500);
+
+  // ---- Brand · Accent (Amber) ---------------------------------------------
+  // The "earn-it" color: premium upsells, alerts needing attention, rare
+  // CTAs. Never for default actions — that dilutes its power.
+  --oh-accent-50: #FFFBEB;
+  --oh-accent-100: #FEF3C7;
+  --oh-accent-200: #FDE68A;
+  --oh-accent-500: #F59E0B;
+  --oh-accent-600: #D97706;
+  --oh-accent-700: #B45309;
+  --oh-accent-900: #78350F;
+  --oh-accent: var(--oh-accent-500);
+
+  // ---- Neutrals — cool gray ramp -------------------------------------------
+  // 25/50 surfaces, 100/200 borders, 400/500 muted text, 700/800 body,
+  // 900 headings. Almost never pure black.
+  --oh-gray-white: #FFFFFF;
+  --oh-gray-25: #FCFCFD;
+  --oh-gray-50: #F9FAFB;
+  --oh-gray-100: #F3F4F6;
+  --oh-gray-200: #E5E7EB;
+  --oh-gray-300: #D1D5DB;
+  --oh-gray-400: #9CA3AF;
+  --oh-gray-500: #6B7280;
+  --oh-gray-600: #4B5563;
+  --oh-gray-700: #374151;
+  --oh-gray-800: #1F2937;
+  --oh-gray-900: #111827;
+  --oh-gray-950: #08080F;
+
+  // ---- Status & semantic colors — use only for the meaning their names imply
+  --oh-success: #10B981;
+  --oh-success-bg: #ECFDF5;
+  --oh-error: #EF4444;
+  --oh-error-bg: #FEF2F2;
+  --oh-warning: #F59E0B;
+  --oh-warning-bg: #FFFBEB;
+  --oh-info: #3B82F6;
+  --oh-info-bg: #EFF6FF;
+
+  // ---- Spacing scale — 4px base, token --oh-{n} ----------------------------
+  --oh-1: 4px;
+  --oh-2: 8px;
+  --oh-3: 12px;
+  --oh-4: 16px;
+  --oh-5: 20px;
+  --oh-6: 24px;
+  --oh-8: 32px;
+  --oh-10: 40px;
+  --oh-12: 48px;
+  --oh-16: 64px;
+
+  // ---- Radii ----------------------------------------------------------------
+  --oh-radius-sm: 4px;
+  --oh-radius-md: 6px;
+  --oh-radius-lg: 8px; // default
+  --oh-radius-xl: 12px;
+  --oh-radius-2xl: 16px;
+  --oh-radius-full: 9999px;
+
+  // ---- Elevation (shadows) ---------------------------------------------------
+  --oh-shadow-xs: 0 1px 2px 0 rgba(17, 24, 39, 0.05);
+  --oh-shadow-sm: 0 1px 3px 0 rgba(17, 24, 39, 0.08), 0 1px 2px -1px rgba(17, 24, 39, 0.06);
+  --oh-shadow-md: 0 4px 8px -2px rgba(17, 24, 39, 0.08), 0 2px 4px -2px rgba(17, 24, 39, 0.06);
+  --oh-shadow-lg: 0 12px 16px -4px rgba(17, 24, 39, 0.10), 0 4px 6px -2px rgba(17, 24, 39, 0.05);
+  --oh-shadow-xl: 0 20px 24px -4px rgba(17, 24, 39, 0.12), 0 8px 8px -4px rgba(17, 24, 39, 0.04);
+
+  // ---- Focus ring — accessibility over aesthetics; never override this ------
+  --oh-focus-ring: 0 0 0 3px color-mix(in srgb, var(--oh-primary) 40%, transparent);
+
+  // ---- Interactive state helpers — derived from tokens, never new hex -------
+  --oh-primary-hover: color-mix(in srgb, var(--oh-primary) 88%, black);
+  --oh-primary-active: color-mix(in srgb, var(--oh-primary) 78%, black);
+  --oh-primary-soft: color-mix(in srgb, var(--oh-primary) 8%, white);
+
+  // ---- Surfaces & borders — semantic aliases over the gray ramp -------------
+  --oh-surface: var(--oh-gray-white);
+  --oh-surface-subtle: var(--oh-gray-25);
+  --oh-surface-sunken: var(--oh-gray-50);
+  --oh-border: var(--oh-gray-200);
+  --oh-border-strong: var(--oh-gray-300);
+
+  // ---- Categorical extras — sanctioned exception to "don't introduce new
+  // hues": badge/category tints only (never primary/accent replacements).
+  --oh-violet: #8B5CF6;
+  --oh-violet-bg: #F3F0FF;
+  --oh-pink: #EC4899;
+  --oh-pink-bg: #FDF2F8;
+
+  // ---- Data-viz palette — validated for categorical CVD-safe use -----------
+  // --oh-chart-teal is deliberately a punchier step than --oh-primary-500:
+  // the brand teal fails the chroma floor for categorical chart marks
+  // (reads as gray at that lightness), so charts use this validated value.
+  --oh-chart-teal: #0D9488;
+  --oh-chart-info: var(--oh-info);
+  --oh-chart-amber: var(--oh-accent-600);
+  --oh-chart-violet: var(--oh-violet);
+
+  // ---- Layout ----------------------------------------------------------------
+  --oh-header-height: 64px;
+  --oh-sidenav-width: 264px;
+  --oh-rail-width: 320px;
+
+  // ---- Brand gradient — hero panels, sidenav, onboarding rail ----------------
+  --oh-gradient-primary: linear-gradient(160deg, var(--oh-primary-900) 0%, var(--oh-primary-700) 55%, var(--oh-primary-600) 100%);
+}

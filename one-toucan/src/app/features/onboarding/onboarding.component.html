@@ -1,0 +1,403 @@
+<div class="oh-onboarding">
+  <aside class="oh-onboarding__rail">
+    <oh-logo theme="onDark" />
+
+    <div class="oh-onboarding__rail-head">
+      <p class="oh-overline oh-onboarding__eyebrow">New Hire Setup</p>
+      <h2 class="oh-display-h2 oh-onboarding__title">Onboard {{ personalForm.value.fullName }}</h2>
+      <p class="oh-caption oh-onboarding__progress-label">
+        {{ progress().toFixed(0) }}% complete · ~{{ activeStepMeta().minutesLeft }} min left
+      </p>
+      <mat-progress-bar mode="determinate" [value]="progress()" color="accent" class="oh-onboarding__progress" />
+    </div>
+
+    <ol class="oh-onboarding__steps">
+      <li
+        class="oh-onboarding__step"
+        *ngFor="let step of steps"
+        [class.oh-onboarding__step--active]="step.id === currentStep()"
+        [class.oh-onboarding__step--done]="step.id < currentStep()"
+        (click)="step.id < currentStep() ? goToStep(step.id) : null"
+      >
+        <span class="oh-onboarding__step-marker">
+          <mat-icon *ngIf="step.id < currentStep()">check</mat-icon>
+          <ng-container *ngIf="step.id >= currentStep()">{{ step.id }}</ng-container>
+        </span>
+        <span class="oh-onboarding__step-text">
+          <span class="oh-onboarding__step-title">{{ step.title }}</span>
+          <span class="oh-onboarding__step-subtitle">{{ step.subtitle }}</span>
+        </span>
+      </li>
+    </ol>
+
+    <p class="oh-caption oh-onboarding__rail-footer">
+      Progress saves automatically. You can invite {{ firstName }} before finishing the remaining steps.
+    </p>
+  </aside>
+
+  <section class="oh-onboarding__content">
+    <div class="oh-onboarding__scroll container-fluid">
+      <!-- Step 1: Personal Details -->
+      <ng-container *ngIf="currentStep() === 1">
+        <h2 class="oh-display-h2">Personal Details</h2>
+        <p class="oh-body oh-onboarding__step-desc">
+          {{ firstName }}'s identity and contact information. Used for payroll, statutory records and emergencies.
+        </p>
+
+        <form [formGroup]="personalForm" class="d-flex flex-column gap-2">
+          <div class="d-flex align-items-center gap-4 mb-2">
+            <span class="oh-avatar oh-avatar--lg">{{ initials }}</span>
+            <div>
+              <p class="oh-label mb-1">Profile photo</p>
+              <p class="oh-hint mb-2">JPG or PNG · max 2MB</p>
+              <button mat-stroked-button type="button">Upload photo</button>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="fullName">Full name<span class="oh-label__required">*</span></label>
+                <input id="fullName" class="oh-input" formControlName="fullName" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="dob">Date of birth<span class="oh-label__required">*</span></label>
+                <input id="dob" type="date" class="oh-input" formControlName="dob" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="personalEmail">Personal email<span class="oh-label__required">*</span></label>
+                <input id="personalEmail" type="email" class="oh-input" formControlName="personalEmail" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="phone">Phone<span class="oh-label__required">*</span></label>
+                <input id="phone" class="oh-input" formControlName="phone" />
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="oh-field">
+                <label class="oh-label" for="address">Residential address</label>
+                <input id="address" class="oh-input" formControlName="address" />
+              </div>
+            </div>
+          </div>
+
+          <div class="oh-field">
+            <label class="oh-label">Emergency contacts</label>
+            <div class="oh-contact-row" *ngFor="let contact of emergencyContacts()">
+              <span class="oh-badge oh-badge--neutral">{{ contact.relation }}</span>
+              <span class="oh-contact-row__name">{{ contact.name }}</span>
+              <span class="oh-mono-data">{{ contact.phone }}</span>
+            </div>
+            <button mat-button color="primary" type="button" (click)="addContact()">+ Add contact</button>
+          </div>
+        </form>
+      </ng-container>
+
+      <!-- Step 2: Role & Department -->
+      <ng-container *ngIf="currentStep() === 2">
+        <h2 class="oh-display-h2">Role &amp; Department</h2>
+        <p class="oh-body oh-onboarding__step-desc">
+          Where {{ firstName }} fits in the org. This drives default access and approval chains.
+        </p>
+
+        <form [formGroup]="roleForm" class="d-flex flex-column gap-2">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="jobTitle">Job title<span class="oh-label__required">*</span></label>
+                <input id="jobTitle" class="oh-input" formControlName="jobTitle" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="employeeId">Employee ID<span class="oh-label__required">*</span></label>
+                <input id="employeeId" class="oh-input" formControlName="employeeId" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="department">Department<span class="oh-label__required">*</span></label>
+                <select id="department" class="oh-select" formControlName="department">
+                  <option value="Analytics">Analytics</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Design">Design</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Human Resources">Human Resources</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="employmentType">Employment type</label>
+                <select id="employmentType" class="oh-select" formControlName="employmentType">
+                  <option value="Full-time">Full-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Intern">Intern</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="oh-field">
+                <label class="oh-label" for="reportingManager">Reporting manager<span class="oh-label__required">*</span></label>
+                <select id="reportingManager" class="oh-select" formControlName="reportingManager">
+                  <option value="Divya Rao">Divya Rao</option>
+                  <option value="Arjun Verma">Arjun Verma</option>
+                  <option value="Neha Kapoor">Neha Kapoor</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="workLocation">Work location</label>
+                <select id="workLocation" class="oh-select" formControlName="workLocation">
+                  <option value="Hyderabad">Hyderabad</option>
+                  <option value="Bengaluru">Bengaluru</option>
+                  <option value="Remote">Remote</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label" for="startDate">Start date<span class="oh-label__required">*</span></label>
+                <input id="startDate" type="date" class="oh-input" formControlName="startDate" />
+              </div>
+            </div>
+          </div>
+
+          <div class="oh-field">
+            <label class="oh-label">Access bundle <span class="oh-hint">· presets the apps in step 4</span></label>
+            <div class="row g-3">
+              <div class="col-md-4" *ngFor="let bundle of accessBundleOptions">
+                <button
+                  type="button"
+                  class="oh-bundle-card w-100"
+                  [class.oh-bundle-card--active]="accessBundle() === bundle.id"
+                  (click)="selectBundle(bundle.id)"
+                >
+                  <span class="oh-bundle-card__head">
+                    {{ bundle.label }}
+                    <mat-icon *ngIf="accessBundle() === bundle.id" class="oh-bundle-card__check">check_circle</mat-icon>
+                  </span>
+                  <span class="oh-caption">{{ bundle.desc }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+
+      <!-- Step 3: Documents & Compliance -->
+      <ng-container *ngIf="currentStep() === 3">
+        <h2 class="oh-display-h2">Documents &amp; Compliance</h2>
+        <p class="oh-body oh-onboarding__step-desc">
+          Collect statutory documents and run the background check. {{ firstName }} can upload pending items from her invite link.
+        </p>
+
+        <div class="oh-callout oh-callout--info">
+          <strong>{{ documentsReceived() }} of {{ documents().length }} documents received</strong>
+          <span *ngIf="missingRequiredDocs().length > 0">
+            · {{ missingRequiredDocs().length }} required item{{ missingRequiredDocs().length > 1 ? 's' : '' }} still missing
+            ({{ missingRequiredDocs()[0].shortLabel }})
+          </span>
+        </div>
+
+        <div class="oh-doc-row" *ngFor="let doc of documents()">
+          <span class="oh-icon-tile">
+            <mat-icon>description</mat-icon>
+          </span>
+          <div class="oh-doc-row__info">
+            <p class="oh-doc-row__name">
+              {{ doc.name }}
+              <span class="oh-badge" [class.oh-badge--error]="doc.required" [class.oh-badge--neutral]="!doc.required">
+                {{ doc.required ? 'Required' : 'Optional' }}
+              </span>
+            </p>
+            <p class="oh-caption">{{ doc.meta }}</p>
+          </div>
+          <span class="oh-badge" [class]="docBadgeClass(doc)">{{ doc.status }}</span>
+          <button
+            mat-stroked-button
+            type="button"
+            [color]="doc.status === 'Missing' ? 'primary' : undefined"
+            (click)="markUploaded(doc)"
+          >
+            {{ doc.status === 'Missing' ? 'Upload' : 'Replace' }}
+          </button>
+        </div>
+
+        <h3 class="oh-heading-h3 oh-onboarding__section-title">Background Verification</h3>
+        <p class="oh-caption">Initiated via AuthBridge · ref BGV-TR-4821</p>
+
+        <div class="oh-check-row" *ngFor="let check of backgroundChecks()">
+          <span class="oh-check-row__icon" [class]="checkStateClass(check.status)">
+            <mat-icon *ngIf="check.status === 'Clear'">check</mat-icon>
+            <span *ngIf="check.status !== 'Clear'" class="oh-check-row__dot"></span>
+          </span>
+          <div class="oh-check-row__info">
+            <p class="oh-check-row__name">{{ check.name }}</p>
+            <p class="oh-caption">{{ check.meta }}</p>
+          </div>
+          <span class="oh-caption oh-check-row__status">{{ check.status }}</span>
+        </div>
+      </ng-container>
+
+      <!-- Step 4: System Access -->
+      <ng-container *ngIf="currentStep() === 4">
+        <h2 class="oh-display-h2">System Access</h2>
+        <p class="oh-body oh-onboarding__step-desc">
+          Provision apps, roles and hardware. Accounts are created on the start date and the welcome email is queued automatically.
+        </p>
+
+        <div class="oh-onboarding__section-head">
+          <h3 class="oh-heading-h3">Applications <span class="oh-caption">· {{ accessBundle() }} bundle</span></h3>
+          <button mat-button color="primary" type="button" (click)="resetToBundle()">Reset to bundle</button>
+        </div>
+
+        <div class="oh-app-row" *ngFor="let app of apps()">
+          <div class="oh-app-row__info">
+            <p class="oh-app-row__name">{{ app.name }}</p>
+            <p class="oh-caption">{{ app.meta }}</p>
+          </div>
+          <mat-slide-toggle [checked]="app.enabled" (change)="toggleApp(app)" />
+        </div>
+
+        <div class="oh-field oh-onboarding__section-title">
+          <label class="oh-label">Primary role</label>
+          <div class="row g-3">
+            <div class="col-md-4" *ngFor="let role of primaryRoleOptions">
+              <button
+                type="button"
+                class="oh-bundle-card w-100"
+                [class.oh-bundle-card--active]="primaryRole() === role.id"
+                (click)="primaryRole.set(role.id)"
+              >
+                <span class="oh-bundle-card__head">{{ role.label }}</span>
+                <span class="oh-caption">{{ role.desc }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="oh-heading-h3 oh-onboarding__section-title">Hardware &amp; assets</h3>
+        <div class="oh-hw-row" *ngFor="let hw of hardware()">
+          <span class="oh-icon-tile">
+            <mat-icon>devices</mat-icon>
+          </span>
+          <div class="oh-hw-row__info">
+            <p class="oh-hw-row__name">{{ hw.name }}</p>
+            <p class="oh-caption">{{ hw.meta }}</p>
+          </div>
+          <span class="oh-badge" [class.oh-badge--success]="hw.status === 'Allocated'" [class.oh-badge--warning]="hw.status === 'Pending'">
+            {{ hw.status }}
+          </span>
+        </div>
+      </ng-container>
+
+      <!-- Step 5: Review & Invite -->
+      <ng-container *ngIf="currentStep() === 5">
+        <h2 class="oh-display-h2">Review &amp; Invite</h2>
+        <p class="oh-body oh-onboarding__step-desc">
+          Confirm everything below, then send {{ firstName }} her welcome invite to complete the remaining items herself.
+        </p>
+
+        <div class="oh-review-summary">
+          <span class="oh-avatar oh-avatar--md">{{ initials }}</span>
+          <div class="oh-review-summary__info">
+            <p class="oh-review-summary__name">{{ personalForm.value.fullName }}</p>
+            <p class="oh-caption">{{ roleForm.value.jobTitle }} · {{ roleForm.value.department }} · starts {{ roleForm.value.startDate }}</p>
+          </div>
+          <span class="oh-badge oh-badge--neutral">{{ roleForm.value.employeeId }}</span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <mat-card appearance="outlined" class="oh-review-card h-100">
+              <mat-card-content>
+                <div class="oh-review-card__head">
+                  <h3 class="oh-heading-h3 mb-0">Personal</h3>
+                  <button mat-button color="primary" type="button" (click)="goToStep(1)">Edit</button>
+                </div>
+                <dl class="oh-review-card__rows">
+                  <div class="oh-review-card__row"><dt>Full name</dt><dd>{{ personalForm.value.fullName }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Personal email</dt><dd>{{ personalForm.value.personalEmail }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Phone</dt><dd>{{ personalForm.value.phone }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Date of birth</dt><dd>{{ personalForm.value.dob }}</dd></div>
+                </dl>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="col-md-6">
+            <mat-card appearance="outlined" class="oh-review-card h-100">
+              <mat-card-content>
+                <div class="oh-review-card__head">
+                  <h3 class="oh-heading-h3 mb-0">Role &amp; Department</h3>
+                  <button mat-button color="primary" type="button" (click)="goToStep(2)">Edit</button>
+                </div>
+                <dl class="oh-review-card__rows">
+                  <div class="oh-review-card__row"><dt>Job title</dt><dd>{{ roleForm.value.jobTitle }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Department</dt><dd>{{ roleForm.value.department }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Reporting manager</dt><dd>{{ roleForm.value.reportingManager }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Start date</dt><dd>{{ roleForm.value.startDate }}</dd></div>
+                </dl>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="col-md-6">
+            <mat-card appearance="outlined" class="oh-review-card h-100">
+              <mat-card-content>
+                <div class="oh-review-card__head">
+                  <h3 class="oh-heading-h3 mb-0">Documents</h3>
+                  <button mat-button color="primary" type="button" (click)="goToStep(3)">Edit</button>
+                </div>
+                <dl class="oh-review-card__rows">
+                  <div class="oh-review-card__row"><dt>Required docs</dt><dd>{{ documentsReceived() }} of {{ documents().length }} received</dd></div>
+                  <div class="oh-review-card__row"><dt>Background check</dt><dd>In progress</dd></div>
+                  <div class="oh-review-card__row"><dt>Compliance</dt><dd>PF &amp; bank pending</dd></div>
+                </dl>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <div class="col-md-6">
+            <mat-card appearance="outlined" class="oh-review-card h-100">
+              <mat-card-content>
+                <div class="oh-review-card__head">
+                  <h3 class="oh-heading-h3 mb-0">System Access</h3>
+                  <button mat-button color="primary" type="button" (click)="goToStep(4)">Edit</button>
+                </div>
+                <dl class="oh-review-card__rows">
+                  <div class="oh-review-card__row"><dt>Access bundle</dt><dd>{{ accessBundle() }} · {{ enabledAppsCount() }} apps</dd></div>
+                  <div class="oh-review-card__row"><dt>Primary role</dt><dd>{{ primaryRole() }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Devices</dt><dd>MacBook Pro, Monitor</dd></div>
+                </dl>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+
+        <div class="oh-callout oh-callout--warning mt-3" *ngIf="missingRequiredDocs().length > 0">
+          <strong>{{ missingRequiredDocs().length }} item{{ missingRequiredDocs().length > 1 ? 's' : '' }} will be completed by {{ firstName }}:</strong>
+          Bank &amp; PF details and signed contract review. She'll receive a secure link to upload these before day one.
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="oh-onboarding__footer">
+      <button mat-stroked-button (click)="back()" [disabled]="currentStep() === 1">← Back</button>
+      <span class="oh-caption">{{ activeStepMeta().title }}</span>
+      <div class="d-flex align-items-center gap-3">
+        <button mat-button>Save &amp; exit</button>
+        <button mat-flat-button color="primary" *ngIf="currentStep() < steps.length" (click)="next()">Continue →</button>
+        <button mat-flat-button color="primary" *ngIf="currentStep() === steps.length" (click)="finish()">Send invite &amp; finish</button>
+      </div>
+    </div>
+  </section>
+</div>

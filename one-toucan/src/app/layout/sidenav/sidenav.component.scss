@@ -1,0 +1,154 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.oh-sidenav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--oh-surface);
+  border-right: 1px solid var(--oh-border);
+}
+
+.oh-sidenav__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+  padding: 0 var(--oh-6);
+  height: var(--oh-header-height);
+  border-bottom: 1px solid var(--oh-border);
+  flex-shrink: 0;
+}
+
+.oh-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--oh-2) var(--oh-2) var(--oh-2) var(--oh-4);
+  background: transparent !important;
+
+  // Scrolling stays active (wheel/touch/drag) — only the visible track/thumb is hidden.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+.oh-nav__group-title {
+  font-family: var(--oh-font-ui) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--oh-gray-400) !important;
+  height: auto !important;
+  padding: var(--oh-4) var(--oh-3) var(--oh-1) !important;
+}
+
+.oh-nav__item {
+  // mat-nav-list only ships a button reset for <a> items; ours are <button>
+  // elements, so without this the browser's native 2px outset border shows.
+  border: none;
+  background: none;
+  outline: none;
+  font: inherit;
+  text-align: left;
+  border-radius: var(--oh-radius-md);
+  margin-bottom: 2px;
+  --mdc-list-list-item-container-color: transparent;
+
+  // Material's theme defaults these to 16px/32px. Keep start-space at 16px so
+  // the icon's left edge lines up with the group-title text above it — only
+  // end-space (the icon-to-label gap) needs shrinking.
+  --mat-list-list-item-leading-icon-start-space: 16px;
+  --mat-list-list-item-leading-icon-end-space: 10px;
+}
+
+.oh-nav__item-label {
+  color: var(--oh-gray-700) !important;
+  font-family: var(--oh-font-ui);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.oh-nav__item-icon {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--oh-gray-400) !important;
+  font-size: 17px;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.oh-nav__item--active {
+  // The MDC list activated state paints its background from
+  // --mat-list-active-indicator-color, not --mdc-list-list-item-container-color —
+  // without this override it falls back to Material's default gray tint.
+  --mat-list-active-indicator-color: var(--oh-success-bg) !important;
+
+  // MDC also draws a small decorative dash for activated items; not part of this design.
+  &::after {
+    content: none !important;
+  }
+
+  .oh-nav__item-label {
+    color: var(--oh-primary) !important;
+    font-weight: 600;
+  }
+
+  .oh-nav__item-icon {
+    color: var(--oh-primary) !important;
+  }
+}
+
+// Material's list-item state layer (hover/focus overlay) is painted by an
+// internal child element; retint it for the light sidenav surface.
+::ng-deep .oh-nav .mat-mdc-list-item .mdc-list-item__ripple {
+  background: color-mix(in srgb, var(--oh-primary) 8%, transparent);
+}
+
+.oh-nav__profile {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-3);
+  padding: var(--oh-4);
+  border-top: 1px solid var(--oh-border);
+}
+
+.oh-nav__profile .oh-avatar {
+  background: var(--oh-primary-soft);
+  color: var(--oh-primary);
+  font-weight: 600;
+}
+
+.oh-nav__profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.oh-nav__profile-name {
+  font-family: var(--oh-font-ui);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--oh-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oh-nav__profile-role {
+  font-family: var(--oh-font-ui);
+  font-size: 12px;
+  color: var(--oh-gray-500);
+}
+
+.oh-nav__profile-settings {
+  color: var(--oh-gray-400);
+  flex-shrink: 0;
+  font-size: 18px;
+}

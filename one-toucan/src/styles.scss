@@ -1,0 +1,67 @@
+@use '@angular/material' as mat;
+@use 'styles/material-theme' as oh-mat;
+
+// OneToucan design system — global styles entry point.
+@use 'styles/tokens';
+@use 'styles/themes';
+@use 'styles/typography';
+@use 'styles/components';
+
+// Self-hosted (no external font CDN) thin/outline icon set — avoids relying
+// on Google's gstatic.com font files, which some corporate networks block.
+// (Sass requires all @use rules before any other statement, so this @import
+// has to come after them.)
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+@include mat.core();
+@include mat.all-component-themes(oh-mat.$oh-mat-theme);
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--oh-gray-25);
+  color: var(--oh-gray-700);
+  font-family: var(--oh-font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // Bootstrap ships its own CSS custom properties for layout/utility classes;
+  // remap the ones that carry color/shape so Bootstrap grid & utilities stay
+  // visually consistent with the OneToucan tokens instead of Bootstrap's blue.
+  --bs-body-font-family: var(--oh-font-ui);
+  --bs-body-color: var(--oh-gray-700);
+  --bs-body-bg: var(--oh-gray-25);
+  --bs-primary: var(--oh-primary);
+  --bs-primary-rgb: 15, 118, 110;
+  --bs-link-color: var(--oh-primary);
+  --bs-link-hover-color: var(--oh-primary-hover);
+  --bs-border-color: var(--oh-border);
+  --bs-border-radius: var(--oh-radius-lg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--oh-gray-900);
+  margin: 0;
+}
+
+a {
+  color: var(--oh-primary);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--oh-focus-ring);
+}

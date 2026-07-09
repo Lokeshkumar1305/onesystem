@@ -1,0 +1,27 @@
+.oh-shell {
+  height: 100vh;
+}
+
+.oh-shell__sidenav {
+  width: var(--oh-sidenav-width);
+  border-right: none !important;
+
+  // mat-sidenav wraps its content in its own scrollable container; without
+  // this, both it and our inner .oh-nav list scroll, and this outer one shows
+  // the native unstyled scrollbar since oh-sidenav.component.scss can't reach it.
+  ::ng-deep .mat-drawer-inner-container {
+    overflow: hidden;
+  }
+}
+
+.oh-shell__content-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.oh-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--oh-surface-subtle);
+  padding: var(--oh-6);
+}

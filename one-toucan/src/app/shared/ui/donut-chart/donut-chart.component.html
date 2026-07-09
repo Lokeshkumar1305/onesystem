@@ -1,0 +1,35 @@
+<div class="oh-donut">
+  <div class="oh-donut__chart">
+    <svg viewBox="0 0 200 200" class="oh-donut__svg">
+      <circle cx="100" cy="100" [attr.r]="radius" class="oh-donut__track" stroke-width="28" fill="none" />
+      <g transform="rotate(-90 100 100)">
+        <circle
+          *ngFor="let seg of computed"
+          cx="100"
+          cy="100"
+          [attr.r]="radius"
+          fill="none"
+          stroke-width="28"
+          stroke-linecap="round"
+          [style.stroke]="'var(' + seg.colorVar + ')'"
+          [attr.stroke-dasharray]="seg.dash + ' ' + (circumference - seg.dash)"
+          [attr.stroke-dashoffset]="-seg.offset"
+        >
+          <title>{{ seg.label }} · {{ seg.percent.toFixed(0) }}%</title>
+        </circle>
+      </g>
+    </svg>
+    <div class="oh-donut__center">
+      <span class="oh-donut__center-value">{{ centerValue }}</span>
+      <span class="oh-donut__center-label">{{ centerLabel }}</span>
+    </div>
+  </div>
+
+  <ul class="oh-donut__legend">
+    <li *ngFor="let seg of computed" class="oh-donut__legend-item">
+      <span class="oh-donut__legend-dot" [style.background]="'var(' + seg.colorVar + ')'"></span>
+      <span class="oh-donut__legend-label">{{ seg.label }}</span>
+      <span class="oh-donut__legend-value">{{ seg.percent.toFixed(0) }}%</span>
+    </li>
+  </ul>
+</div>

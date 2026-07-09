@@ -1,0 +1,36 @@
+.oh-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--oh-2);
+}
+
+.oh-logo__mark {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--oh-radius-full);
+  background: var(--oh-gradient-primary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.oh-logo__beak {
+  position: absolute;
+  right: 4px;
+  bottom: 6px;
+  width: 12px;
+  height: 8px;
+  background: var(--oh-accent);
+  border-radius: 0 60% 60% 60%;
+}
+
+.oh-logo__wordmark {
+  font-family: var(--oh-font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--oh-gray-900);
+}
+
+.oh-logo--on-dark .oh-logo__wordmark {
+  color: var(--oh-gray-white);
+}

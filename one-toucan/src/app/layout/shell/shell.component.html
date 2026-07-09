@@ -1,0 +1,12 @@
+<mat-sidenav-container class="oh-shell">
+  <mat-sidenav mode="side" [opened]="true" disableClose class="oh-shell__sidenav">
+    <oh-sidenav />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="oh-shell__content-wrap">
+    <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" />
+    <div class="oh-shell__content">
+      <router-outlet />
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

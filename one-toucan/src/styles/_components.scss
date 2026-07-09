@@ -1,0 +1,373 @@
+// ---------------------------------------------------------------------------
+// OneToucan shared component classes — every color here comes from tokens in
+// _tokens.scss. Feature components apply these classes instead of declaring
+// their own color values, so palette/theme changes only ever happen here.
+// ---------------------------------------------------------------------------
+
+// ---- Buttons ----------------------------------------------------------------
+.oh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--oh-2);
+  height: 44px;
+  padding-inline: var(--oh-5);
+  border-radius: var(--oh-radius-lg);
+  border: 1px solid transparent;
+  font-family: var(--oh-font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &--sm {
+    height: 36px;
+    padding-inline: var(--oh-4);
+    font-size: 13px;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--primary {
+    background: var(--oh-primary);
+    border-color: var(--oh-primary);
+    color: var(--oh-gray-white);
+
+    &:hover:not(:disabled) {
+      background: var(--oh-primary-hover);
+      border-color: var(--oh-primary-hover);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--oh-primary-active);
+    }
+  }
+
+  &--secondary {
+    background: var(--oh-surface);
+    border-color: var(--oh-border);
+    color: var(--oh-gray-800);
+
+    &:hover:not(:disabled) {
+      background: var(--oh-surface-sunken);
+      border-color: var(--oh-border-strong);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--oh-gray-600);
+
+    &:hover:not(:disabled) {
+      background: var(--oh-surface-sunken);
+      color: var(--oh-gray-900);
+    }
+  }
+
+  &--link {
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--oh-primary);
+
+    &:hover:not(:disabled) {
+      color: var(--oh-primary-hover);
+      text-decoration: underline;
+    }
+  }
+}
+
+// ---- Form fields --------------------------------------------------------------
+.oh-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--oh-2);
+}
+
+.oh-label {
+  font-family: var(--oh-font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--oh-gray-800);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oh-label__required {
+  color: var(--oh-error);
+  margin-inline-start: 2px;
+}
+
+.oh-input,
+.oh-select,
+.oh-textarea {
+  width: 100%;
+  height: 50px;
+  padding-inline: var(--oh-3);
+  border-radius: var(--oh-radius-md);
+  border: 1px solid var(--oh-border);
+  background: var(--oh-surface);
+  color: var(--oh-gray-900);
+  font-family: var(--oh-font-ui);
+  font-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: var(--oh-gray-400);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--oh-primary);
+    box-shadow: var(--oh-focus-ring);
+  }
+
+  &:disabled {
+    background: var(--oh-surface-sunken);
+    color: var(--oh-gray-400);
+    cursor: not-allowed;
+  }
+}
+
+.oh-textarea {
+  height: auto;
+  min-height: 84px;
+  padding-block: var(--oh-3);
+  resize: vertical;
+}
+
+.oh-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--oh-3) center;
+  padding-inline-end: var(--oh-8);
+}
+
+.oh-hint {
+  font-size: 12px;
+  color: var(--oh-gray-500);
+}
+
+// ---- Checkbox -----------------------------------------------------------------
+.oh-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--oh-2);
+  font-family: var(--oh-font-ui);
+  font-size: 14px;
+  color: var(--oh-gray-700);
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--oh-radius-sm);
+    border: 1.5px solid var(--oh-border-strong);
+    background: var(--oh-surface);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+
+    &::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      clip-path: polygon(14% 44%, 0 65%, 36% 100%, 100% 20%, 80% 0%, 34% 62%);
+      background: var(--oh-gray-white);
+      transform: scale(0);
+      transition: transform 0.1s ease;
+    }
+
+    &:checked {
+      background: var(--oh-primary);
+      border-color: var(--oh-primary);
+
+      &::after {
+        transform: scale(1);
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--oh-focus-ring);
+    }
+  }
+}
+
+// ---- Switch (toggle) ------------------------------------------------------------
+.oh-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  flex-shrink: 0;
+
+  input {
+    appearance: none;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    border-radius: var(--oh-radius-full);
+    background: var(--oh-gray-300);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--oh-surface);
+      box-shadow: var(--oh-shadow-xs);
+      transition: transform 0.15s ease;
+    }
+
+    &:checked {
+      background: var(--oh-primary);
+
+      &::after {
+        transform: translateX(16px);
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--oh-focus-ring);
+    }
+  }
+}
+
+// ---- Badge ----------------------------------------------------------------------
+.oh-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--oh-1);
+  height: 24px;
+  padding-inline: var(--oh-2);
+  border-radius: var(--oh-radius-full);
+  font-family: var(--oh-font-ui);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+
+  &--success {
+    background: var(--oh-success-bg);
+    color: var(--oh-success);
+  }
+
+  &--error {
+    background: var(--oh-error-bg);
+    color: var(--oh-error);
+  }
+
+  &--warning {
+    background: var(--oh-warning-bg);
+    color: var(--oh-accent-700);
+  }
+
+  &--info {
+    background: var(--oh-info-bg);
+    color: var(--oh-info);
+  }
+
+  &--neutral {
+    background: var(--oh-surface-sunken);
+    color: var(--oh-gray-600);
+  }
+
+  &--violet {
+    background: var(--oh-violet-bg);
+    color: var(--oh-violet);
+  }
+}
+
+// ---- Card -------------------------------------------------------------------------
+.oh-card {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-xl);
+  box-shadow: var(--oh-shadow-sm);
+}
+
+// ---- Avatar -------------------------------------------------------------------------
+.oh-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--oh-radius-full);
+  background: var(--oh-violet-bg);
+  color: var(--oh-violet);
+  font-family: var(--oh-font-ui);
+  font-weight: 700;
+  flex-shrink: 0;
+
+  &--sm {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  &--md {
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  &--lg {
+    width: 56px;
+    height: 56px;
+    font-size: 18px;
+  }
+}
+
+// ---- Divider with label ("OR") -------------------------------------------------------
+.oh-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-3);
+  color: var(--oh-gray-400);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--oh-border);
+  }
+}
+
+// ---- Icon tile (used for icons that need a soft colored backdrop) --------------------
+.oh-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--oh-radius-md);
+  background: var(--oh-surface-sunken);
+  color: var(--oh-gray-500);
+  flex-shrink: 0;
+}

@@ -1,0 +1,77 @@
+<div class="oh-login">
+  <section class="oh-login__hero">
+    <oh-logo theme="onDark" />
+
+    <div class="oh-login__hero-body">
+      <p class="oh-overline oh-login__eyebrow">The Company Brain</p>
+      <h1 class="oh-display-h1 oh-login__title">One platform for people, projects &amp; everything you know.</h1>
+      <p class="oh-body oh-login__copy">
+        22 modules connecting your org, delivery, workforce, and knowledge — with an AI brain that answers across all of it.
+      </p>
+    </div>
+
+    <div class="oh-login__stats-row">
+      <div class="oh-login__stat" *ngFor="let stat of stats">
+        <span class="oh-login__stat-value">{{ stat.value }}</span>
+        <span class="oh-login__stat-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="oh-login__panel">
+    <div class="oh-login__form-wrap">
+      <h2 class="oh-display-h2">Welcome back</h2>
+      <p class="oh-body oh-login__subtitle">Sign in to your workspace to continue.</p>
+
+      <button mat-stroked-button type="button" class="oh-login__sso">
+        <mat-icon>lock</mat-icon>
+        Continue with SSO
+      </button>
+
+      <div class="oh-divider">OR</div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="oh-login__form">
+        <div class="oh-field">
+          <label class="oh-label" for="email">Work email</label>
+          <input id="email" type="email" class="oh-input" formControlName="email" autocomplete="username" />
+        </div>
+
+        <div class="oh-field">
+          <label class="oh-label" for="password">
+            <span>Password</span>
+            <button mat-button type="button" color="primary" class="oh-login__forgot">Forgot?</button>
+          </label>
+          <div class="oh-login__password">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              class="oh-input"
+              formControlName="password"
+              autocomplete="current-password"
+            />
+            <button
+              mat-icon-button
+              type="button"
+              class="oh-login__password-toggle"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <mat-checkbox formControlName="remember">Remember this device</mat-checkbox>
+
+        <button mat-flat-button color="primary" type="submit" class="oh-login__submit">Sign in</button>
+      </form>
+
+      <div class="oh-login__mfa">
+        <mat-icon class="oh-login__mfa-icon">verified_user</mat-icon>
+        <p class="oh-caption oh-login__mfa-text mb-0">
+          Admin accounts require <strong>MFA</strong> — you'll be prompted for a 6-digit code after sign in.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

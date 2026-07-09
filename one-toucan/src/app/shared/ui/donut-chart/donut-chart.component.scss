@@ -1,0 +1,83 @@
+.oh-donut {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-6);
+  flex-wrap: wrap;
+}
+
+.oh-donut__chart {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+.oh-donut__svg {
+  width: 100%;
+  height: 100%;
+}
+
+.oh-donut__track {
+  stroke: var(--oh-surface-sunken);
+}
+
+.oh-donut__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.oh-donut__center-value {
+  font-family: var(--oh-font-display);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--oh-gray-900);
+}
+
+.oh-donut__center-label {
+  font-family: var(--oh-font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--oh-gray-500);
+}
+
+.oh-donut__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--oh-3);
+  flex: 1;
+  min-width: 140px;
+}
+
+.oh-donut__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+  font-family: var(--oh-font-ui);
+  font-size: 13px;
+  color: var(--oh-gray-700);
+}
+
+.oh-donut__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--oh-radius-full);
+  flex-shrink: 0;
+}
+
+.oh-donut__legend-label {
+  flex: 1;
+}
+
+.oh-donut__legend-value {
+  font-weight: 700;
+  color: var(--oh-gray-900);
+}

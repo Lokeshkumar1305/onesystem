@@ -1,0 +1,48 @@
+// ---------------------------------------------------------------------------
+// OneToucan theme variants — 5 swappable presets. All five share the same
+// neutrals, spacing and typography from _tokens.scss / _typography.scss —
+// only the --oh-primary-* ramp changes. This keeps the UI calibrated.
+//
+// Default is Teal (set directly on :root in _tokens.scss). The others exist
+// for white-label deployments and tweaks/experimentation, and are applied by
+// setting data-theme on <html> (see ThemeService).
+//
+// Non-default ramps are derived from a single anchor color with color-mix()
+// so every theme only needs to declare its 500 value.
+// ---------------------------------------------------------------------------
+
+@mixin oh-theme($primary) {
+  --oh-primary-50: color-mix(in srgb, #{$primary} 6%, white);
+  --oh-primary-100: color-mix(in srgb, #{$primary} 16%, white);
+  --oh-primary-200: color-mix(in srgb, #{$primary} 34%, white);
+  --oh-primary-500: #{$primary};
+  --oh-primary-600: color-mix(in srgb, #{$primary} 88%, black);
+  --oh-primary-700: color-mix(in srgb, #{$primary} 72%, black);
+  --oh-primary-900: color-mix(in srgb, #{$primary} 38%, black);
+  --oh-primary: var(--oh-primary-500);
+}
+
+// Default · Institutional — #0F766E · oklch(58% 0.07 175) · Best for: production, longest-lived
+[data-theme='teal'] {
+  @include oh-theme(#0F766E);
+}
+
+// Confident · Tech-forward — #4F46E5 · oklch(54% 0.21 277) · Best for: high-density data UI
+[data-theme='indigo'] {
+  @include oh-theme(#4F46E5);
+}
+
+// Editorial · Quiet — #0F172A · oklch(21% 0.04 256) · Best for: ultra-serious enterprise
+[data-theme='slate'] {
+  @include oh-theme(#0F172A);
+}
+
+// Premium · Hospitality — #9D174D · oklch(40% 0.16 0) · Best for: luxury / boutique
+[data-theme='plum'] {
+  @include oh-theme(#9D174D);
+}
+
+// Grounded · Sustainable — #15803D · oklch(58% 0.15 145) · Best for: eco / co-living brands
+[data-theme='forest'] {
+  @include oh-theme(#15803D);
+}
