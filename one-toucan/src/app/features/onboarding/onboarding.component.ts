@@ -124,7 +124,11 @@ export class OnboardingComponent {
   }
 
   finish(): void {
-    this.router.navigateByUrl('/dashboard');
+    this.router.navigateByUrl('/onboarding');
+  }
+
+  exit(): void {
+    this.router.navigateByUrl('/onboarding');
   }
 
   addContact(): void {

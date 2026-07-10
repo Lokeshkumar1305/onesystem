@@ -300,6 +300,11 @@
     color: var(--oh-violet);
   }
 
+  &--pink {
+    background: var(--oh-pink-bg);
+    color: var(--oh-pink);
+  }
+
   // Outlined variant — transparent fill, colored border, used for rank/status pills.
   &--outline {
     background: transparent;

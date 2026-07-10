@@ -394,7 +394,7 @@
       <button mat-stroked-button (click)="back()" [disabled]="currentStep() === 1">← Back</button>
       <span class="oh-caption">{{ activeStepMeta().title }}</span>
       <div class="d-flex align-items-center gap-3">
-        <button mat-button>Save &amp; exit</button>
+        <button mat-button (click)="exit()">Save &amp; exit</button>
         <button mat-flat-button color="primary" *ngIf="currentStep() < steps.length" (click)="next()">Continue →</button>
         <button mat-flat-button color="primary" *ngIf="currentStep() === steps.length" (click)="finish()">Send invite &amp; finish</button>
       </div>

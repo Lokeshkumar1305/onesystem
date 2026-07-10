@@ -1,0 +1,192 @@
+<div class="container-fluid oh-onboarding-list">
+  <mat-card appearance="outlined" class="oh-panel oh-onboarding-list__head mb-4">
+    <mat-card-content class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-onboarding-list__head-icon">
+          <i class="bi bi-person-check" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 class="oh-heading-h3 mb-1">Onboarding</h2>
+          <p class="oh-caption mb-0">{{ totalHires() }} new hires across {{ departmentCount() }} departments</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button mat-stroked-button>
+          <i class="bi bi-download" aria-hidden="true"></i>
+          Export
+        </button>
+        <button mat-flat-button color="primary" (click)="addHire()">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+          Add hire
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined" class="oh-panel">
+    <mat-card-content class="p-0">
+      <div class="oh-onboarding-list__search-row">
+        <div class="oh-onboarding-list__search">
+          <i class="bi bi-search oh-onboarding-list__search-icon" aria-hidden="true"></i>
+          <input
+            class="oh-input"
+            placeholder="Search by name, role, department..."
+            [ngModel]="searchQuery"
+            (ngModelChange)="onSearchChange($event)"
+            aria-label="Search onboarding candidates"
+          />
+          <button
+            *ngIf="searchQuery"
+            type="button"
+            class="oh-onboarding-list__search-clear"
+            (click)="onSearchChange('')"
+            aria-label="Clear search"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button
+          *ngIf="searchQuery"
+          mat-flat-button
+          color="primary"
+          class="oh-onboarding-list__filter-btn"
+          (click)="onSearchChange(searchQuery)"
+        >
+          <i class="bi bi-search" aria-hidden="true"></i>
+          Search
+        </button>
+        <button mat-stroked-button class="oh-onboarding-list__filter-btn">
+          <i class="bi bi-filter" aria-hidden="true"></i>
+          Filter
+        </button>
+      </div>
+
+      <table mat-table [dataSource]="pageRows()" class="oh-onboarding-table w-100">
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <input type="checkbox" [checked]="allSelectedOnPage()" (change)="toggleSelectAll()" aria-label="Select all" />
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)" [attr.aria-label]="'Select ' + row.name" />
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="d-flex align-items-center gap-3">
+              <span
+                class="oh-avatar oh-avatar--sm"
+                [style.background]="'var(' + row.avatarBgVar + ')'"
+                [style.color]="'var(' + row.avatarColorVar + ')'"
+              >
+                {{ initials(row.name) }}
+              </span>
+              <div>
+                <p class="oh-onboarding-table__name mb-0">{{ row.name }}</p>
+                <p class="oh-caption mb-0">{{ row.email }}</p>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="oh-badge" [class]="roleBadgeClass(row.department)">{{ row.role }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let row">{{ row.department }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
+          <td mat-cell *matCellDef="let row" class="oh-mono-data">{{ row.phone }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef>Start Date</th>
+          <td mat-cell *matCellDef="let row">{{ row.startDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stage">
+          <th mat-header-cell *matHeaderCellDef>Stage</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="oh-badge" [class]="stageBadgeClass(row.stage)">{{ row.stage }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="oh-onboarding-table__actions">
+              <button
+                class="oh-onboarding-table__action oh-onboarding-table__action--edit"
+                (click)="editHire()"
+                [attr.aria-label]="'Edit ' + row.name"
+              >
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+              </button>
+              <button
+                class="oh-onboarding-table__action oh-onboarding-table__action--delete"
+                (click)="deleteHire(row)"
+                [attr.aria-label]="'Delete ' + row.name"
+              >
+                <i class="bi bi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+
+      <div class="oh-onboarding-list__footer">
+        <span class="oh-caption">
+          Showing <strong>{{ rangeStart() }}–{{ rangeEnd() }}</strong> of <strong>{{ totalCount() }}</strong>
+        </span>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="oh-onboarding-list__page-size">
+            <span class="oh-caption">Rows:</span>
+            <select class="oh-select" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+
+          <div class="oh-onboarding-list__pager">
+            <button
+              class="oh-onboarding-list__page-btn"
+              [disabled]="pageIndex() === 0"
+              (click)="prevPage()"
+              aria-label="Previous page"
+            >
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button
+              *ngFor="let page of pageNumbers()"
+              class="oh-onboarding-list__page-btn"
+              [class.oh-onboarding-list__page-btn--active]="page === pageIndex() + 1"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+            <span *ngIf="hasMorePages()" class="oh-onboarding-list__page-ellipsis">…</span>
+            <button
+              class="oh-onboarding-list__page-btn"
+              [disabled]="pageIndex() >= pageCount() - 1"
+              (click)="nextPage()"
+              aria-label="Next page"
+            >
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -7,7 +7,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
   {
-    path: 'onboarding',
+    path: 'onboarding/new',
     loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent)
   },
   {
@@ -18,6 +18,12 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
+      },
+      {
+        path: 'onboarding',
+        loadComponent: () =>
+          import('./features/onboarding/onboarding-list/onboarding-list.component').then(m => m.OnboardingListComponent),
+        data: { title: 'Onboarding', subtitle: 'New hire pipeline' }
       }
     ]
   },
