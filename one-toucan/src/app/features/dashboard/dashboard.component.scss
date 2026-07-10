@@ -9,6 +9,13 @@
   color: var(--oh-gray-white) !important;
 }
 
+// The checkmark is a separate mat-pseudo-checkbox that redeclares this color
+// variable on itself with a hardcoded dark default — setting it on an ancestor
+// isn't enough (that default wins over inheritance), so it must be set here directly.
+::ng-deep .oh-segmented .mat-button-toggle-checked .mat-pseudo-checkbox-minimal {
+  --mat-minimal-pseudo-checkbox-selected-checkmark-color: var(--oh-gray-white) !important;
+}
+
 ::ng-deep .oh-segmented .mat-button-toggle-label-content {
   font-family: var(--oh-font-ui);
   font-size: 13px;
