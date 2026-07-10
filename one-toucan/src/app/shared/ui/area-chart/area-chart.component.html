@@ -1,0 +1,47 @@
+<div class="oh-areachart">
+  <ul *ngIf="showLegend" class="oh-areachart__legend">
+    <li *ngFor="let s of plotted" class="oh-areachart__legend-item">
+      <span
+        class="oh-areachart__legend-swatch"
+        [class.oh-areachart__legend-swatch--dashed]="s.dashed"
+        [style.background]="s.dashed ? 'none' : 'var(' + s.colorVar + ')'"
+        [style.border-color]="'var(' + s.colorVar + ')'"
+      ></span>
+      {{ s.name }}
+    </li>
+  </ul>
+
+  <svg [attr.viewBox]="'0 0 ' + vbWidth + ' ' + vbHeight" preserveAspectRatio="none" class="oh-areachart__svg">
+    <defs>
+      <linearGradient
+        *ngFor="let s of plotted; let i = index"
+        [attr.id]="'oh-areachart-fill-' + instanceId + '-' + i"
+        x1="0"
+        y1="0"
+        x2="0"
+        y2="1"
+      >
+        <stop offset="0%" [attr.stop-color]="'var(' + s.colorVar + ')'" stop-opacity="0.22" />
+        <stop offset="100%" [attr.stop-color]="'var(' + s.colorVar + ')'" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+
+    <path
+      *ngFor="let s of plotted; let i = index"
+      [attr.d]="s.areaPath"
+      [attr.fill]="s.areaPath ? 'url(#oh-areachart-fill-' + instanceId + '-' + i + ')' : 'none'"
+    />
+
+    <path
+      *ngFor="let s of plotted"
+      [attr.d]="s.linePath"
+      class="oh-areachart__line"
+      [class.oh-areachart__line--dashed]="s.dashed"
+      [style.stroke]="'var(' + s.colorVar + ')'"
+    />
+
+    <text *ngFor="let label of labels; let i = index" class="oh-areachart__label" [attr.x]="labelX[i]" [attr.y]="labelY" text-anchor="middle">{{
+      label
+    }}</text>
+  </svg>
+</div>

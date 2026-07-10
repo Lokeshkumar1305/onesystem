@@ -1,0 +1,40 @@
+<div class="oh-barchart">
+  <svg [attr.viewBox]="'0 0 ' + vbWidth + ' ' + vbHeight" preserveAspectRatio="none" class="oh-barchart__svg">
+    <defs>
+      <clipPath id="oh-barchart-clip">
+        <rect [attr.x]="plotLeft" [attr.y]="plotTop" [attr.width]="plotRight - plotLeft" [attr.height]="plotBottom - plotTop" />
+      </clipPath>
+    </defs>
+
+    <line class="oh-barchart__target-line" [attr.x1]="plotLeft" [attr.x2]="plotRight" [attr.y1]="plotTop" [attr.y2]="plotTop" />
+
+    <g clip-path="url(#oh-barchart-clip)">
+      <rect
+        *ngFor="let bar of bars; let i = index"
+        class="oh-barchart__bar"
+        [class.oh-barchart__bar--highlight]="highlightLast && i === bars.length - 1"
+        [attr.x]="bar.x"
+        [attr.y]="bar.y"
+        [attr.width]="bar.width"
+        [attr.height]="bar.height + barRadius"
+        [attr.rx]="barRadius"
+        (pointerenter)="onEnter(i)"
+        (pointerleave)="onLeave()"
+      />
+    </g>
+
+    <text *ngFor="let bar of bars" class="oh-barchart__label" [attr.x]="bar.x + bar.width / 2" [attr.y]="labelY" text-anchor="middle">{{
+      bar.label
+    }}</text>
+  </svg>
+
+  <div
+    *ngIf="hoverIndex !== null"
+    class="oh-barchart__tooltip"
+    [style.left.%]="leftPercent(bars[hoverIndex].x + bars[hoverIndex].width / 2)"
+    [style.top.%]="topPercent(bars[hoverIndex].y)"
+  >
+    <span class="oh-barchart__tooltip-label">{{ bars[hoverIndex].label }}</span>
+    <strong class="oh-barchart__tooltip-value">{{ bars[hoverIndex].value }}{{ unit }}</strong>
+  </div>
+</div>

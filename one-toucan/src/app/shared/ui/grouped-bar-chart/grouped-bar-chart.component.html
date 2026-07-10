@@ -1,0 +1,34 @@
+<div class="oh-groupedbar">
+  <ul class="oh-groupedbar__legend">
+    <li class="oh-groupedbar__legend-item">
+      <span class="oh-groupedbar__legend-swatch oh-groupedbar__legend-swatch--actual"></span>
+      {{ actualLabel }}
+    </li>
+    <li class="oh-groupedbar__legend-item">
+      <span class="oh-groupedbar__legend-swatch oh-groupedbar__legend-swatch--target"></span>
+      {{ targetLabel }}
+    </li>
+  </ul>
+
+  <svg [attr.viewBox]="'0 0 ' + vbWidth + ' ' + vbHeight" preserveAspectRatio="none" class="oh-groupedbar__svg">
+    <ng-container *ngFor="let g of groups">
+      <rect
+        class="oh-groupedbar__bar oh-groupedbar__bar--actual"
+        [attr.x]="g.actualX"
+        [attr.y]="g.actualY"
+        [attr.width]="barWidth"
+        [attr.height]="g.actualHeight"
+        [attr.rx]="barRadius"
+      />
+      <rect
+        class="oh-groupedbar__bar oh-groupedbar__bar--target"
+        [attr.x]="g.targetX"
+        [attr.y]="g.targetY"
+        [attr.width]="barWidth"
+        [attr.height]="g.targetHeight"
+        [attr.rx]="barRadius"
+      />
+      <text class="oh-groupedbar__label" [attr.x]="g.labelX" [attr.y]="labelY" text-anchor="middle">{{ g.label }}</text>
+    </ng-container>
+  </svg>
+</div>

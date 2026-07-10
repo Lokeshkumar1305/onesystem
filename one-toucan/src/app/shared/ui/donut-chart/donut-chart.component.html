@@ -29,6 +29,7 @@
     <li *ngFor="let seg of computed" class="oh-donut__legend-item">
       <span class="oh-donut__legend-dot" [style.background]="'var(' + seg.colorVar + ')'"></span>
       <span class="oh-donut__legend-label">{{ seg.label }}</span>
+      <span *ngIf="seg.absoluteValue !== null" class="oh-donut__legend-absolute">{{ seg.absoluteValue }}{{ absoluteSuffix }}</span>
       <span class="oh-donut__legend-value">{{ seg.percent.toFixed(0) }}%</span>
     </li>
   </ul>

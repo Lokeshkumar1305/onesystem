@@ -1,12 +1,9 @@
-import { SparklineColor } from '../../shared/ui/sparkline/sparkline.component';
-
 export interface KpiCard {
   label: string;
   value: string;
-  delta: string;
-  deltaTone: 'positive' | 'negative';
-  sparkline: number[];
-  sparklineColor: SparklineColor;
+  icon: string;
+  cardBgVar: string;
+  iconBgVar: string;
 }
 
 export interface RiskProject {
@@ -15,45 +12,51 @@ export interface RiskProject {
   lead: string;
   health: 'At Risk' | 'Blocked';
   budget: number;
+  trend: number;
 }
 
-export interface AiInsight {
-  text: string;
-  tags: string;
+export interface TrendPoint {
+  label: string;
+  actual: number;
+  target: number;
+}
+
+export interface ApprovalRecord {
+  project: string;
+  description: string;
+  method: string;
+  status: 'Success' | 'Pending';
+  amount: string;
 }
 
 export const KPI_CARDS: KpiCard[] = [
   {
     label: 'Active Projects',
     value: '34',
-    delta: '+12%',
-    deltaTone: 'positive',
-    sparkline: [22, 24, 23, 27, 29, 31, 34],
-    sparklineColor: 'success'
+    icon: 'kanban',
+    cardBgVar: '--oh-success-bg',
+    iconBgVar: '--oh-success'
   },
   {
     label: 'Billable Utilization',
     value: '79%',
-    delta: '+4.1%',
-    deltaTone: 'positive',
-    sparkline: [68, 70, 71, 73, 75, 77, 79],
-    sparklineColor: 'info'
+    icon: 'bar-chart',
+    cardBgVar: '--oh-info-bg',
+    iconBgVar: '--oh-info'
   },
   {
     label: 'Open Risks',
     value: '7',
-    delta: '+2',
-    deltaTone: 'negative',
-    sparkline: [3, 4, 4, 5, 6, 6, 7],
-    sparklineColor: 'error'
+    icon: 'exclamation-triangle',
+    cardBgVar: '--oh-warning-bg',
+    iconBgVar: '--oh-chart-amber'
   },
   {
     label: 'Headcount',
     value: '428',
-    delta: '+9',
-    deltaTone: 'positive',
-    sparkline: [402, 407, 411, 415, 419, 423, 428],
-    sparklineColor: 'violet'
+    icon: 'people',
+    cardBgVar: '--oh-violet-bg',
+    iconBgVar: '--oh-violet'
   }
 ];
 
@@ -77,23 +80,66 @@ export const RESOURCE_ALLOCATION = [
 ];
 
 export const RISK_PROJECTS: RiskProject[] = [
-  { name: 'Atlas Migration', client: 'HDFC Bank', lead: 'R. Menon', health: 'At Risk', budget: 78 },
-  { name: 'Falcon Payments', client: 'Razorpay', lead: 'S. Iyer', health: 'Blocked', budget: 94 },
-  { name: 'Nimbus Portal', client: 'ICICI Lombard', lead: 'A. Khan', health: 'At Risk', budget: 69 },
-  { name: 'Orion Analytics', client: 'PhonePe', lead: 'D. Rao', health: 'Blocked', budget: 88 }
+  { name: 'Atlas Migration', client: 'HDFC Bank', lead: 'R. Menon', health: 'At Risk', budget: 78, trend: 3.2 },
+  { name: 'Falcon Payments', client: 'Razorpay', lead: 'S. Iyer', health: 'Blocked', budget: 94, trend: -1.8 },
+  { name: 'Nimbus Portal', client: 'ICICI Lombard', lead: 'A. Khan', health: 'At Risk', budget: 69, trend: 1.5 },
+  { name: 'Orion Analytics', client: 'PhonePe', lead: 'D. Rao', health: 'Blocked', budget: 88, trend: -4.0 }
 ];
 
-export const AI_INSIGHTS: AiInsight[] = [
+// "Delivery vs Target" — utilization actual vs the quarter's planned goal, per month.
+export const DELIVERY_VS_TARGET: TrendPoint[] = [
+  { label: 'Jan', actual: 58, target: 60 },
+  { label: 'Feb', actual: 62, target: 63 },
+  { label: 'Mar', actual: 60, target: 65 },
+  { label: 'Apr', actual: 65, target: 68 },
+  { label: 'May', actual: 70, target: 70 },
+  { label: 'Jun', actual: 74, target: 73 },
+  { label: 'Jul', actual: 79, target: 76 }
+];
+
+// Full-year view of the same actual-vs-target utilization trend.
+export const YTD_DELIVERY_VS_TARGET: TrendPoint[] = [
+  { label: 'Jan', actual: 52, target: 55 },
+  { label: 'Feb', actual: 56, target: 57 },
+  { label: 'Mar', actual: 54, target: 59 },
+  { label: 'Apr', actual: 60, target: 61 },
+  { label: 'May', actual: 65, target: 63 },
+  { label: 'Jun', actual: 63, target: 66 },
+  { label: 'Jul', actual: 68, target: 68 },
+  { label: 'Aug', actual: 72, target: 70 },
+  { label: 'Sep', actual: 70, target: 73 },
+  { label: 'Oct', actual: 75, target: 75 },
+  { label: 'Nov', actual: 73, target: 78 },
+  { label: 'Dec', actual: 79, target: 80 }
+];
+
+export const RECENT_APPROVALS: ApprovalRecord[] = [
   {
-    text: 'Falcon Payments is trending 6 days over its sprint forecast — 3 blockers unresolved for 48h+.',
-    tags: 'PROJECT MGMT · RISK ENGINE'
+    project: 'Atlas Migration',
+    description: 'Q3 budget consolidated',
+    method: 'Finance Review',
+    status: 'Success',
+    amount: '₹38,50,000'
   },
   {
-    text: 'Bench is up 4% this month; 11 backend engineers free to allocate to Atlas Migration.',
-    tags: 'RESOURCE ALLOCATION'
+    project: 'Falcon Payments',
+    description: 'Sprint overrun approved',
+    method: 'PMO Approval',
+    status: 'Success',
+    amount: '₹35,75,000'
   },
   {
-    text: 'Q3 timesheet compliance hit 96% — best quarter on record across all branches.',
-    tags: 'TIMESHEET MGMT'
+    project: 'Nimbus Portal',
+    description: 'Resource reallocation',
+    method: 'Manager Approval',
+    status: 'Success',
+    amount: '₹32,20,000'
+  },
+  {
+    project: 'Orion Analytics',
+    description: 'Contingency spend request',
+    method: 'Finance Review',
+    status: 'Pending',
+    amount: '₹4,50,000'
   }
 ];

@@ -11,6 +11,7 @@ interface ComputedSegment extends DonutSegment {
   percent: number;
   dash: number;
   offset: number;
+  absoluteValue: number | null;
 }
 
 @Component({
@@ -24,6 +25,9 @@ export class DonutChartComponent implements OnChanges {
   @Input({ required: true }) segments: DonutSegment[] = [];
   @Input() centerValue = '';
   @Input() centerLabel = '';
+  // When set, the legend shows an absolute figure (percent × this total) alongside the percentage.
+  @Input() absoluteTotal: number | null = null;
+  @Input() absoluteSuffix = '';
 
   readonly radius = 70;
   readonly circumference = 2 * Math.PI * this.radius;
@@ -39,7 +43,8 @@ export class DonutChartComponent implements OnChanges {
       const percent = (s.value / total) * 100;
       const rawDash = (percent / 100) * this.circumference;
       const dash = Math.max(rawDash - gap, 0);
-      const segment: ComputedSegment = { ...s, percent, dash, offset: cursor };
+      const absoluteValue = this.absoluteTotal !== null ? Math.round((percent / 100) * this.absoluteTotal) : null;
+      const segment: ComputedSegment = { ...s, percent, dash, offset: cursor, absoluteValue };
       cursor += rawDash;
       return segment;
     });

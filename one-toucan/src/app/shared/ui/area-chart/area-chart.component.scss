@@ -1,0 +1,56 @@
+.oh-areachart {
+  width: 100%;
+}
+
+.oh-areachart__legend {
+  list-style: none;
+  display: flex;
+  gap: var(--oh-4);
+  margin: 0 0 var(--oh-3);
+  padding: 0;
+}
+
+.oh-areachart__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+  font-family: var(--oh-font-ui);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--oh-gray-600);
+}
+
+.oh-areachart__legend-swatch {
+  width: 12px;
+  height: 3px;
+  border-radius: var(--oh-radius-full);
+  flex-shrink: 0;
+
+  &--dashed {
+    height: 0;
+    border-top: 2px dashed;
+  }
+}
+
+.oh-areachart__svg {
+  width: 100%;
+  aspect-ratio: 700 / 260;
+  overflow: visible;
+}
+
+.oh-areachart__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  &--dashed {
+    stroke-dasharray: 7 5;
+  }
+}
+
+.oh-areachart__label {
+  font-family: var(--oh-font-ui);
+  font-size: 11px;
+  fill: var(--oh-gray-500);
+}

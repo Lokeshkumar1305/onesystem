@@ -1,6 +1,7 @@
 .oh-segmented {
   border-radius: var(--oh-radius-lg);
   border-color: var(--oh-border) !important;
+  flex-shrink: 0;
 }
 
 ::ng-deep .oh-segmented .mat-button-toggle-checked {
@@ -16,8 +17,13 @@
   padding: 0 var(--oh-4);
 }
 
-.oh-kpi__label {
-  color: var(--oh-gray-500);
+// A more compact variant for tighter panels — smaller font/padding/line-height,
+// not a transform:scale (which only shrinks the visual render, not the layout
+// box, so the group would still overflow its container and get clipped).
+::ng-deep .oh-segmented--sm .mat-button-toggle-label-content {
+  font-size: 11px;
+  line-height: 28px;
+  padding: 0 var(--oh-2);
 }
 
 .oh-kpi__value {
@@ -27,37 +33,86 @@
   color: var(--oh-gray-900);
 }
 
-.oh-panel__legend {
+// ---- Greeting hero card -----------------------------------------------------------
+.oh-hero__meta {
   display: flex;
-  align-items: center;
-  gap: var(--oh-2);
-  font-family: var(--oh-font-ui);
-  font-size: 12px;
-  color: var(--oh-gray-500);
-  white-space: nowrap;
+  gap: var(--oh-4);
 }
 
-.oh-panel__legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--oh-radius-full);
+.oh-hero__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-1);
+  font-family: var(--oh-font-ui);
+  font-size: 12.5px;
+  color: var(--oh-gray-500);
 
-  &--teal {
-    background: var(--oh-chart-teal);
+  i {
+    font-size: 13px;
   }
 }
 
-.oh-panel__live {
-  gap: 6px;
+.oh-hero__desc {
+  max-width: 420px;
+  color: var(--oh-gray-600);
 }
 
-.oh-panel__live-dot {
-  width: 6px;
-  height: 6px;
+.oh-hero__illustration {
+  width: 96px;
+  height: 96px;
   border-radius: var(--oh-radius-full);
-  background: var(--oh-success);
+  background: var(--oh-primary-soft);
+  color: var(--oh-primary);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: var(--oh-4);
+
+  i {
+    font-size: 40px;
+  }
 }
 
+// ---- KPI icon-grid ------------------------------------------------------------------
+.oh-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--oh-3);
+}
+
+.oh-kpi-grid__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--oh-2);
+  padding: var(--oh-4);
+  border-radius: var(--oh-radius-lg);
+}
+
+.oh-kpi-grid__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--oh-radius-full);
+  color: var(--oh-gray-white);
+  font-size: 16px;
+}
+
+.oh-kpi-grid__label {
+  font-family: var(--oh-font-ui);
+  font-size: 12px;
+  color: var(--oh-gray-600);
+}
+
+.oh-kpi-grid__value {
+  font-family: var(--oh-font-display);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--oh-gray-900);
+}
+
+// ---- Projects / approvals tables ----------------------------------------------------
 .oh-risk-table {
   background: transparent;
 }
@@ -67,36 +122,37 @@
   color: var(--oh-gray-900);
 }
 
-.oh-risk-table__budget {
-  display: flex;
+.oh-risk-table__trend {
+  display: inline-flex;
   align-items: center;
-  gap: var(--oh-3);
-  min-width: 140px;
-
-  mat-progress-bar {
-    flex: 1;
-    border-radius: var(--oh-radius-full);
-    overflow: hidden;
-  }
-}
-
-.oh-insight {
-  padding: var(--oh-4);
-  border-radius: var(--oh-radius-lg);
-  background: var(--oh-surface-sunken);
-
-  & + & {
-    margin-top: var(--oh-3);
-  }
-}
-
-.oh-insight__text {
-  margin: 0 0 var(--oh-2);
-  color: var(--oh-gray-800);
-}
-
-.oh-insight__tags {
-  color: var(--oh-primary-700);
+  gap: 2px;
   font-weight: 600;
-  letter-spacing: 0.03em;
+
+  &--up {
+    color: var(--oh-success);
+  }
+
+  &--down {
+    color: var(--oh-error);
+  }
+}
+
+// ---- Chart panel footer stat row ----------------------------------------------------
+.oh-panel__stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--oh-4);
+  padding-top: var(--oh-3);
+  border-top: 1px solid var(--oh-border);
+}
+
+.oh-panel__stat-value {
+  font-family: var(--oh-font-ui);
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--oh-gray-900);
+
+  &--positive {
+    color: var(--oh-success);
+  }
 }

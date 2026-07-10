@@ -7,58 +7,54 @@
     </div>
     <div class="col d-flex justify-content-end gap-2">
       <button mat-stroked-button>
-        <mat-icon>file_download</mat-icon>
+        <i class="bi bi-download" aria-hidden="true"></i>
         Export
       </button>
       <button mat-stroked-button>
-        <mat-icon>tune</mat-icon>
+        <i class="bi bi-sliders" aria-hidden="true"></i>
         Customize
       </button>
     </div>
   </div>
 
+  <!-- Row 1: greeting hero, headline metric, allocation breakdown -->
   <div class="row g-4 mb-4">
-    <div class="col-6 col-lg-3" *ngFor="let card of kpiCards">
-      <mat-card appearance="outlined" class="oh-kpi h-100">
-        <mat-card-content>
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="oh-caption oh-kpi__label">{{ card.label }}</span>
-            <span
-              class="oh-badge"
-              [class.oh-badge--success]="card.deltaTone === 'positive'"
-              [class.oh-badge--error]="card.deltaTone === 'negative'"
-            >{{ card.delta }}</span>
-          </div>
-          <span class="oh-kpi__value d-block mb-2">{{ card.value }}</span>
-          <oh-sparkline [data]="card.sparkline" [color]="card.sparklineColor" />
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
-
-  <div class="row g-4 mb-4">
-    <div class="col-lg-7">
-      <mat-card appearance="outlined" class="oh-panel h-100">
-        <mat-card-content>
-          <div class="d-flex align-items-start justify-content-between mb-4">
-            <div>
-              <h2 class="oh-heading-h3 mb-1">Delivery Health</h2>
-              <p class="oh-caption mb-0">Billable utilization · last 7 months</p>
-            </div>
-            <div class="oh-panel__legend">
-              <span class="oh-panel__legend-dot oh-panel__legend-dot--teal"></span>
-              Utilization
-            </div>
-          </div>
-          <oh-line-chart [points]="deliveryHealth" color="teal" unit="%" />
-        </mat-card-content>
-      </mat-card>
-    </div>
-
     <div class="col-lg-5">
+      <mat-card appearance="outlined" class="oh-panel oh-hero h-100">
+        <mat-card-content class="d-flex align-items-center justify-content-between h-100">
+          <div class="oh-hero__body">
+            <h2 class="oh-heading-h3 mb-2">{{ greeting }}, {{ userFirstName }}</h2>
+            <div class="oh-hero__meta mb-3">
+              <span class="oh-hero__meta-item"><i class="bi bi-calendar3" aria-hidden="true"></i>{{ greetingDate }}</span>
+              <span class="oh-hero__meta-item"><i class="bi bi-clock" aria-hidden="true"></i>{{ greetingTime }}</span>
+            </div>
+            <p class="oh-body oh-hero__desc mb-3">
+              Your workspace summary is ready. Review delivery health, track utilization, and monitor every project at a
+              glance.
+            </p>
+            <button mat-stroked-button>Executive Report</button>
+          </div>
+          <div class="oh-hero__illustration d-none d-xl-flex">
+            <i class="bi bi-rocket-takeoff" aria-hidden="true"></i>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-3">
       <mat-card appearance="outlined" class="oh-panel h-100">
         <mat-card-content>
-          <div class="mb-4">
+          <p class="oh-caption mb-1">Billable Utilization (MTD)</p>
+          <span class="oh-kpi__value d-block mb-3">79%</span>
+          <oh-area-chart [labels]="headlineAreaLabels" [series]="headlineAreaSeries" />
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-4">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <div class="mb-3">
             <h2 class="oh-heading-h3 mb-1">Resource Allocation</h2>
             <p class="oh-caption mb-0">{{ totalHeadcount }} people</p>
           </div>
@@ -66,14 +62,33 @@
             [segments]="resourceAllocation"
             [centerValue]="resourceAllocation[0].value + '%'"
             [centerLabel]="resourceAllocation[0].label"
+            [absoluteTotal]="totalHeadcount"
           />
         </mat-card-content>
       </mat-card>
     </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-lg-7">
+  <!-- Row 2: KPI icon-grid, projects table, delivery vs target -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-3">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <h2 class="oh-heading-h3 mb-3">Key Performance Indicators</h2>
+          <div class="oh-kpi-grid">
+            <div class="oh-kpi-grid__item" *ngFor="let card of kpiCards" [style.background]="'var(' + card.cardBgVar + ')'">
+              <span class="oh-kpi-grid__icon" [style.background]="'var(' + card.iconBgVar + ')'">
+                <i class="bi bi-{{ card.icon }}" aria-hidden="true"></i>
+              </span>
+              <span class="oh-kpi-grid__label">{{ card.label }}</span>
+              <span class="oh-kpi-grid__value">{{ card.value }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-5">
       <mat-card appearance="outlined" class="oh-panel h-100">
         <mat-card-content>
           <div class="d-flex align-items-center justify-content-between mb-3">
@@ -95,20 +110,34 @@
               <td mat-cell *matCellDef="let project">{{ project.lead }}</td>
             </ng-container>
 
-            <ng-container matColumnDef="health">
-              <th mat-header-cell *matHeaderCellDef>Health</th>
+            <ng-container matColumnDef="budget">
+              <th mat-header-cell *matHeaderCellDef>Budget</th>
+              <td mat-cell *matCellDef="let project" class="oh-mono-data">{{ project.budget }}%</td>
+            </ng-container>
+
+            <ng-container matColumnDef="trend">
+              <th mat-header-cell *matHeaderCellDef>Trend</th>
               <td mat-cell *matCellDef="let project">
-                <span class="oh-badge" [class]="badgeClass(project.health)">{{ project.health }}</span>
+                <span
+                  class="oh-risk-table__trend"
+                  [class.oh-risk-table__trend--up]="project.trend >= 0"
+                  [class.oh-risk-table__trend--down]="project.trend < 0"
+                >
+                  <i
+                    class="bi"
+                    [class.bi-arrow-up-short]="project.trend >= 0"
+                    [class.bi-arrow-down-short]="project.trend < 0"
+                    aria-hidden="true"
+                  ></i>
+                  {{ project.trend >= 0 ? '+' : '' }}{{ project.trend }}%
+                </span>
               </td>
             </ng-container>
 
-            <ng-container matColumnDef="budget">
-              <th mat-header-cell *matHeaderCellDef>Budget</th>
+            <ng-container matColumnDef="health">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let project">
-                <div class="oh-risk-table__budget">
-                  <mat-progress-bar mode="determinate" [value]="project.budget" [color]="budgetColor(project.health)" />
-                  <span class="oh-mono-data">{{ project.budget }}%</span>
-                </div>
+                <span class="oh-badge" [class]="healthBadgeClass(project.health)">{{ project.health }}</span>
               </td>
             </ng-container>
 
@@ -119,21 +148,88 @@
       </mat-card>
     </div>
 
+    <div class="col-lg-4">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <div class="d-flex align-items-start justify-content-between mb-1">
+            <div>
+              <h2 class="oh-heading-h3 mb-1">Delivery vs Target</h2>
+              <p class="oh-caption mb-3">Last 7 months · utilization %</p>
+            </div>
+            <mat-button-toggle-group [(value)]="activeChartRange" class="oh-segmented oh-segmented--sm">
+              <mat-button-toggle *ngFor="let tab of chartRangeTabs" [value]="tab">{{ tab }}</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
+          <oh-grouped-bar-chart [points]="deliveryVsTarget" actualLabel="Actual" targetLabel="Target" />
+
+          <div class="oh-panel__stat-row">
+            <div class="oh-panel__stat">
+              <p class="oh-caption mb-1">Total Hours</p>
+              <p class="oh-panel__stat-value mb-0">{{ totalUtilizationHours }}</p>
+            </div>
+            <div class="oh-panel__stat">
+              <p class="oh-caption mb-1">Best Month</p>
+              <p class="oh-panel__stat-value mb-0">{{ bestMonth }}</p>
+            </div>
+            <div class="oh-panel__stat">
+              <p class="oh-caption mb-1">vs Target</p>
+              <p class="oh-panel__stat-value oh-panel__stat-value--positive mb-0">{{ vsTargetSummary }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Row 3: YTD trend, recent approvals -->
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <div class="mb-3">
+            <h2 class="oh-heading-h3 mb-1">YTD Delivery vs Target</h2>
+            <p class="oh-caption mb-0">Full year · utilization %</p>
+          </div>
+          <oh-area-chart [labels]="ytdAreaLabels" [series]="ytdAreaSeries" [showLegend]="true" />
+        </mat-card-content>
+      </mat-card>
+    </div>
+
     <div class="col-lg-5">
       <mat-card appearance="outlined" class="oh-panel h-100">
         <mat-card-content>
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h2 class="oh-heading-h3 mb-0">AI Insights</h2>
-            <span class="oh-badge oh-badge--success oh-panel__live">
-              <span class="oh-panel__live-dot"></span>
-              LIVE
-            </span>
-          </div>
+          <h2 class="oh-heading-h3 mb-3">Recent Approvals</h2>
 
-          <div class="oh-insight" *ngFor="let insight of aiInsights">
-            <p class="oh-body oh-insight__text">{{ insight.text }}</p>
-            <p class="oh-caption oh-insight__tags mb-0">{{ insight.tags }}</p>
-          </div>
+          <table mat-table [dataSource]="recentApprovals" class="oh-risk-table w-100">
+            <ng-container matColumnDef="project">
+              <th mat-header-cell *matHeaderCellDef>Project</th>
+              <td mat-cell *matCellDef="let row">
+                <p class="oh-risk-table__name mb-0">{{ row.project }}</p>
+                <p class="oh-caption mb-0">{{ row.description }}</p>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="method">
+              <th mat-header-cell *matHeaderCellDef>Method</th>
+              <td mat-cell *matCellDef="let row">{{ row.method }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="oh-badge" [class]="approvalBadgeClass(row.status)">{{ row.status }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="amount">
+              <th mat-header-cell *matHeaderCellDef>Amount</th>
+              <td mat-cell *matCellDef="let row" class="oh-mono-data">{{ row.amount }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="approvalColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: approvalColumns"></tr>
+          </table>
         </mat-card-content>
       </mat-card>
     </div>

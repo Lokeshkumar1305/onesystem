@@ -299,6 +299,12 @@
     background: var(--oh-violet-bg);
     color: var(--oh-violet);
   }
+
+  // Outlined variant — transparent fill, colored border, used for rank/status pills.
+  &--outline {
+    background: transparent;
+    border: 1px solid currentColor;
+  }
 }
 
 // ---- Card -------------------------------------------------------------------------
