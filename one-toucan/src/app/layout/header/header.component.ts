@@ -10,6 +10,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { CurrentUserService } from '../../core/auth/current-user.service';
+
 @Component({
   selector: 'oh-header',
   standalone: true,
@@ -34,8 +36,16 @@ export class HeaderComponent {
 
   searchQuery = '';
 
-  readonly userName = 'Priya Nair';
   readonly userRole = 'CTO · Admin';
-  readonly userInitials = 'PN';
   readonly notificationCount = 4;
+
+  constructor(private readonly currentUser: CurrentUserService) {}
+
+  get userName(): string {
+    return this.currentUser.fullName();
+  }
+
+  get userInitials(): string {
+    return this.currentUser.initials();
+  }
 }

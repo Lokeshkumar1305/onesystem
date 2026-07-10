@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 
+import { CurrentUserService } from '../../core/auth/current-user.service';
 import { AreaChartComponent } from '../../shared/ui/area-chart/area-chart.component';
 import { BarChartComponent } from '../../shared/ui/bar-chart/bar-chart.component';
 import { DonutChartComponent } from '../../shared/ui/donut-chart/donut-chart.component';
@@ -50,7 +51,12 @@ export class DashboardComponent {
   activeChartRange: ChartRangeTab = '6M';
 
   private readonly now = new Date();
-  readonly userFirstName = 'Priya';
+
+  constructor(private readonly currentUser: CurrentUserService) {}
+
+  get userFirstName(): string {
+    return this.currentUser.fullName().split(' ')[0];
+  }
 
   readonly kpiCards = KPI_CARDS;
   readonly deliveryHealth = DELIVERY_HEALTH;

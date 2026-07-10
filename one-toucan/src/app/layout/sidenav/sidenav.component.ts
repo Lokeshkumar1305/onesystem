@@ -4,6 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { Router } from '@angular/router';
 
+import { CurrentUserService } from '../../core/auth/current-user.service';
+
 interface NavItem {
   label: string;
   icon: string;
@@ -83,7 +85,18 @@ export class SidenavComponent {
     }
   ];
 
-  constructor(private readonly router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly currentUser: CurrentUserService
+  ) {}
+
+  get userName(): string {
+    return this.currentUser.fullName();
+  }
+
+  get userInitials(): string {
+    return this.currentUser.initials();
+  }
 
   select(item: NavItem): void {
     this.activeLabel = item.label;

@@ -6,6 +6,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 
+import { CurrentUserService } from '../../../core/auth/current-user.service';
 import { LogoComponent } from '../../../shared/ui/logo/logo.component';
 
 @Component({
@@ -32,13 +33,18 @@ export class LoginComponent {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly currentUser: CurrentUserService
   ) {}
 
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
+    }
+    const email = this.form.value.email;
+    if (email) {
+      this.currentUser.setEmail(email);
     }
     this.router.navigateByUrl('/dashboard');
   }

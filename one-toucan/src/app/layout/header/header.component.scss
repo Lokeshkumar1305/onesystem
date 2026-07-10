@@ -180,4 +180,12 @@
     align-items: center;
     padding-right: var(--oh-3);
   }
+
+  // The global :focus-visible ring (styles.scss) paints a square box-shadow
+  // directly on the <input>, on top of the field's own rounded outline —
+  // redundant and visually clashing, so it's suppressed here.
+  input:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
 }
