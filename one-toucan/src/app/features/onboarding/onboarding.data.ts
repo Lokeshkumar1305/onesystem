@@ -67,10 +67,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   { id: 5, title: 'Review & Invite', subtitle: 'Confirm and send invite', minutesLeft: 1 }
 ];
 
-export const EMERGENCY_CONTACTS: EmergencyContact[] = [
-  { relation: 'Spouse', name: 'Karthik Reddy', phone: '+91 98765 43210' },
-  { relation: 'Parent', name: 'Lakshmi Reddy', phone: '+91 98220 11882' }
-];
+export const EMERGENCY_CONTACTS: EmergencyContact[] = [{ relation: 'Parent', name: 'Venkateswararao', phone: '+91 98220 11882' }];
 
 export const ONBOARDING_DOCUMENTS: OnboardingDocument[] = [
   { name: 'Aadhaar / National ID', shortLabel: 'Aadhaar', required: true, meta: 'PDF · 1.2 MB · uploaded 24 Jun', status: 'Verified' },
@@ -95,8 +92,8 @@ export const BACKGROUND_CHECKS: BackgroundCheck[] = [
 ];
 
 export const ACCESS_BUNDLES: AccessBundleOption[] = [
-  { id: 'Engineering', label: 'Engineering', desc: '9 apps · GitLab, AWS, Slack...' },
-  { id: 'Standard', label: 'Standard', desc: '5 apps · core only' },
+  { id: 'Engineering', label: 'Engineering', desc: '5 apps · GitLab, AWS, Slack...' },
+  { id: 'Standard', label: 'Standard', desc: '2 apps · core only' },
   { id: 'Custom', label: 'Custom', desc: 'Pick manually' }
 ];
 
@@ -106,7 +103,7 @@ export const APP_ACCESS: AppAccess[] = [
   { name: 'GitLab', meta: 'orion-analytics group · Developer', enabled: true },
   { name: 'AWS Console', meta: 'Dev account · PowerUser', enabled: true },
   { name: 'Confluence / Wiki', meta: 'Engineering space · Editor', enabled: true },
-  { name: 'Jira', meta: 'ORN board · Member', enabled: false }
+  { name: 'Spira', meta: 'ORN board · Member', enabled: false }
 ];
 
 export const PRIMARY_ROLES: PrimaryRoleOption[] = [
@@ -119,4 +116,44 @@ export const HARDWARE_ASSETS: HardwareAsset[] = [
   { name: 'MacBook Pro 14" M3', meta: 'Asset TPI-LAP-2291 · ready for pickup', status: 'Allocated' },
   { name: 'Dell 27" Monitor', meta: 'Asset TPI-MON-0884', status: 'Allocated' },
   { name: 'Company SIM', meta: 'Pending IT provisioning', status: 'Pending' }
+];
+
+// All 28 states plus the 8 union territories, as commonly listed together in Indian address forms.
+export const INDIAN_STATES: string[] = [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Jammu and Kashmir',
+  'Ladakh',
+  'Lakshadweep',
+  'Puducherry'
 ];

@@ -3,6 +3,70 @@
   height: 100vh;
 }
 
+// .oh-label defaults to justify-content: space-between (used elsewhere, e.g.
+// the login page's "Password / Forgot?" row, to push a second element to the
+// far right). Field labels here only have the required-asterisk as a second
+// child, which should sit right next to the text instead.
+.oh-label--tight {
+  justify-content: flex-start;
+  gap: 2px;
+}
+
+// Angular Material's outlined form field defaults to a taller height than the
+// plain .oh-input fields (e.g. on the login page) — compact it to match.
+::ng-deep .oh-onboarding-field {
+  .mat-mdc-text-field-wrapper {
+    height: 50px;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 100%;
+    align-items: center;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: unset;
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  // The global :focus-visible ring (styles.scss) paints a square box-shadow
+  // directly on the <input>/<mat-select>, on top of the field's own outline —
+  // redundant and shows as a "double border", so it's suppressed here.
+  input:focus-visible,
+  mat-select:focus-visible,
+  .mat-mdc-select-trigger:focus-visible,
+  .oh-onboarding-field__dropdown-btn:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  // Plain <button> in a matSuffix slot — without a reset it shows the native
+  // 2px outset border (same issue as the sidenav/header icon buttons). Sized
+  // to match mat-select's own native dropdown arrow (mat-icon default box).
+  .oh-onboarding-field__dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    padding: 0;
+    margin-right: var(--oh-2);
+    color: var(--oh-gray-500);
+    cursor: pointer;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
 .oh-onboarding__rail {
   width: var(--oh-rail-width);
   flex-shrink: 0;
@@ -145,12 +209,20 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--oh-8);
-  max-width: 760px;
+  max-width: 1100px;
   width: 100%;
   margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: var(--oh-5);
+
+  // Scrolling stays active (wheel/touch/keyboard) — only the visible track/thumb is hidden.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 }
 
 .oh-onboarding__step-desc {
@@ -160,20 +232,46 @@
 
 .oh-contact-row {
   display: flex;
-  align-items: center;
-  gap: var(--oh-3);
-  padding: var(--oh-3);
-  border: 1px solid var(--oh-border);
-  border-radius: var(--oh-radius-md);
+  align-items: flex-start;
+  gap: var(--oh-2);
   margin-bottom: var(--oh-2);
+
+  &--header {
+    margin-bottom: var(--oh-1);
+  }
 }
 
-.oh-contact-row__name {
+.oh-contact-row__relation {
+  flex: 0 0 130px;
+}
+
+.oh-contact-row__field {
   flex: 1;
-  font-family: var(--oh-font-ui);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--oh-gray-800);
+}
+
+.oh-contact-row__delete-spacer {
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.oh-contact-row__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 4px;
+  border: none;
+  background: none;
+  border-radius: var(--oh-radius-md);
+  color: var(--oh-error);
+  font-size: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--oh-error-bg);
+  }
 }
 
 .oh-bundle-card {
@@ -241,16 +339,32 @@
   }
 }
 
+.oh-unified-card {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--oh-6);
+  flex-shrink: 0;
+
+  .oh-doc-row,
+  .oh-check-row,
+  .oh-app-row,
+  .oh-hw-row {
+    padding: var(--oh-4) var(--oh-5);
+    border-bottom: 1px solid var(--oh-border);
+    margin: 0;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+  }
+}
+
 .oh-doc-row {
   display: flex;
   align-items: center;
-  gap: var(--oh-3);
-  padding: var(--oh-3) 0;
-  border-bottom: 1px solid var(--oh-border);
-
-  &:last-of-type {
-    border-bottom: none;
-  }
+  gap: var(--oh-4);
 }
 
 .oh-doc-row__info {
@@ -264,9 +378,72 @@
   gap: var(--oh-2);
   font-family: var(--oh-font-ui);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 14.5px;
   color: var(--oh-gray-900);
   margin: 0 0 2px;
+}
+
+.oh-doc-row__req {
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: var(--oh-2);
+
+  &--error {
+    color: var(--oh-error);
+  }
+
+  &--neutral {
+    color: var(--oh-gray-400);
+  }
+}
+
+.oh-doc-callout {
+  display: flex;
+  align-items: center;
+  padding: var(--oh-3) var(--oh-4);
+  border-radius: var(--oh-radius-lg);
+  font-family: var(--oh-font-ui);
+  font-size: 13.5px;
+  background: var(--oh-success-bg);
+  border: 1px solid rgba(25, 135, 84, 0.15);
+  color: var(--oh-success);
+
+  strong {
+    color: var(--oh-success);
+    font-weight: 700;
+  }
+
+  span {
+    color: var(--oh-gray-600);
+    margin-left: var(--oh-1);
+  }
+}
+
+.oh-icon-tile {
+  &--blue {
+    background: var(--oh-info-bg);
+    color: var(--oh-info);
+  }
+  &--purple {
+    background: var(--oh-violet-bg);
+    color: var(--oh-violet);
+  }
+  &--violet {
+    background: var(--oh-pink-bg);
+    color: var(--oh-pink);
+  }
+  &--orange {
+    background: var(--oh-warning-bg);
+    color: var(--oh-accent-700);
+  }
+  &--indigo {
+    background: var(--oh-primary-soft);
+    color: var(--oh-primary);
+  }
+  &--amber {
+    background: var(--oh-warning-bg);
+    color: var(--oh-accent-700);
+  }
 }
 
 .oh-onboarding__section-title {
@@ -276,46 +453,21 @@
 .oh-check-row {
   display: flex;
   align-items: center;
-  gap: var(--oh-3);
-  padding: var(--oh-3) 0;
+  gap: var(--oh-4);
 }
 
-.oh-check-row__icon {
+.oh-check-row__icon-container {
   width: 24px;
   height: 24px;
-  border-radius: var(--oh-radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
-  mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+  i {
+    font-size: 18px;
+    line-height: 1;
   }
-
-  &--done {
-    background: var(--oh-success-bg);
-    color: var(--oh-success);
-  }
-
-  &--progress {
-    background: var(--oh-warning-bg);
-    color: var(--oh-accent-600);
-  }
-
-  &--pending {
-    background: var(--oh-surface-sunken);
-    color: var(--oh-gray-400);
-  }
-}
-
-.oh-check-row__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--oh-radius-full);
-  background: currentColor;
 }
 
 .oh-check-row__info {
@@ -344,13 +496,7 @@
 .oh-app-row {
   display: flex;
   align-items: center;
-  gap: var(--oh-3);
-  padding: var(--oh-3) 0;
-  border-bottom: 1px solid var(--oh-border);
-
-  &:last-of-type {
-    border-bottom: none;
-  }
+  gap: var(--oh-4);
 }
 
 .oh-app-row__info {
@@ -368,13 +514,7 @@
 .oh-hw-row {
   display: flex;
   align-items: center;
-  gap: var(--oh-3);
-  padding: var(--oh-3) 0;
-  border-bottom: 1px solid var(--oh-border);
-
-  &:last-of-type {
-    border-bottom: none;
-  }
+  gap: var(--oh-4);
 }
 
 .oh-hw-row__info {
@@ -458,4 +598,62 @@
   .oh-onboarding__rail {
     display: none;
   }
+}
+
+::ng-deep {
+  .oh-select-search {
+    display: flex;
+    align-items: center;
+    padding: var(--oh-1) var(--oh-4);
+    border-bottom: 1px solid var(--oh-border);
+    position: sticky;
+    top: 0;
+    background: var(--oh-surface);
+    z-index: 2;
+
+    .oh-select-search__icon {
+      color: var(--oh-gray-400);
+      margin-right: var(--oh-2);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .oh-select-search__input {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      width: 100%;
+      font-size: 14px;
+      font-family: var(--oh-font-ui);
+      color: var(--oh-gray-900);
+      background: transparent;
+      padding: var(--oh-2) 0;
+
+      &:focus,
+      &:focus-visible,
+      &:active {
+        border: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      &::placeholder {
+        color: var(--oh-gray-400);
+      }
+    }
+  }
+
+  .mat-mdc-select-panel {
+    padding-top: 0 !important;
+  }
+}
+
+.oh-add-device-btn {
+  height: 50px !important;
+  line-height: 50px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

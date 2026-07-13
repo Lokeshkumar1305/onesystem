@@ -20,6 +20,11 @@ export const routes: Routes = [
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
       },
       {
+        path: 'employees',
+        loadComponent: () => import('./features/employees/employees.component').then(m => m.EmployeesComponent),
+        data: { title: 'Employees', subtitle: 'Organization directory' }
+      },
+      {
         path: 'onboarding',
         loadComponent: () =>
           import('./features/onboarding/onboarding-list/onboarding-list.component').then(m => m.OnboardingListComponent),

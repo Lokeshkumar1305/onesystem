@@ -4,7 +4,7 @@
 
     <div class="oh-onboarding__rail-head">
       <p class="oh-overline oh-onboarding__eyebrow">New Hire Setup</p>
-      <h2 class="oh-display-h2 oh-onboarding__title">Onboard {{ personalForm.value.fullName }}</h2>
+      <h2 class="oh-display-h2 oh-onboarding__title">Onboard {{ fullName }}</h2>
       <p class="oh-caption oh-onboarding__progress-label">
         {{ progress().toFixed(0) }}% complete · ~{{ activeStepMeta().minutesLeft }} min left
       </p>
@@ -55,44 +55,169 @@
           </div>
 
           <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div class="oh-field">
-                <label class="oh-label" for="fullName">Full name<span class="oh-label__required">*</span></label>
-                <input id="fullName" class="oh-input" formControlName="fullName" />
+                <label class="oh-label oh-label--tight" for="firstName">First name<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="firstName" formControlName="firstName" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="middleName">Middle name</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="middleName" formControlName="middleName" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="lastName">Last name<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="lastName" formControlName="lastName" />
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="dob">Date of birth<span class="oh-label__required">*</span></label>
-                <input id="dob" type="date" class="oh-input" formControlName="dob" />
+                <label class="oh-label oh-label--tight" for="dob">Date of birth<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="dob" [matDatepicker]="dobPicker" formControlName="dob" />
+                  <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+                  <mat-datepicker #dobPicker />
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="personalEmail">Personal email<span class="oh-label__required">*</span></label>
-                <input id="personalEmail" type="email" class="oh-input" formControlName="personalEmail" />
+                <label class="oh-label oh-label--tight" for="gender">Gender<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select id="gender" formControlName="gender">
+                    <mat-option *ngFor="let option of genderOptions" [value]="option">{{ option }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="phone">Phone<span class="oh-label__required">*</span></label>
-                <input id="phone" class="oh-input" formControlName="phone" />
+                <label class="oh-label oh-label--tight" for="personalEmail">Personal email<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput type="email" id="personalEmail" formControlName="personalEmail" />
+                </mat-form-field>
               </div>
             </div>
-            <div class="col-12">
+            <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="address">Residential address</label>
-                <input id="address" class="oh-input" formControlName="address" />
+                <label class="oh-label oh-label--tight" for="phone">Phone<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="phone" formControlName="phone" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="houseNumber">House number</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="houseNumber" formControlName="houseNumber" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="street">Street</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="street" formControlName="street" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="state">State</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select
+                    id="state"
+                    formControlName="state"
+                    placeholder="Select State"
+                    (openedChange)="onStateSelectOpened($event)"
+                  >
+                    <div class="oh-select-search" (keydown)="$event.stopPropagation()">
+                      <i class="bi bi-search oh-select-search__icon" aria-hidden="true"></i>
+                      <input
+                        #stateSearchInput
+                        class="oh-select-search__input"
+                        placeholder="Search state..."
+                        (input)="filterStates($any($event.target).value)"
+                      />
+                    </div>
+                    <mat-option *ngFor="let state of filteredStates()" [value]="state">
+                      {{ state }}
+                    </mat-option>
+                    <mat-option *ngIf="filteredStates().length === 0" disabled>
+                      No states found
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="country">Country</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="country" formControlName="country" />
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="oh-field">
+                <label class="oh-label oh-label--tight" for="pincode">Pincode</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="pincode" formControlName="pincode" />
+                </mat-form-field>
               </div>
             </div>
           </div>
 
           <div class="oh-field">
             <label class="oh-label">Emergency contacts</label>
-            <div class="oh-contact-row" *ngFor="let contact of emergencyContacts()">
-              <span class="oh-badge oh-badge--neutral">{{ contact.relation }}</span>
-              <span class="oh-contact-row__name">{{ contact.name }}</span>
-              <span class="oh-mono-data">{{ contact.phone }}</span>
+
+            <div class="oh-contact-row oh-contact-row--header" *ngIf="emergencyContacts().length">
+              <span class="oh-label oh-label--tight oh-contact-row__relation">Relation</span>
+              <span class="oh-label oh-label--tight oh-contact-row__field">Name</span>
+              <span class="oh-label oh-label--tight oh-contact-row__field">Phone</span>
+              <span class="oh-contact-row__delete-spacer"></span>
+            </div>
+
+            <div class="oh-contact-row" *ngFor="let contact of emergencyContacts(); let i = index">
+              <mat-form-field appearance="outline" class="oh-onboarding-field oh-contact-row__relation">
+                <mat-select [value]="contact.relation" (selectionChange)="updateContact(i, 'relation', $event.value)">
+                  <mat-option *ngFor="let option of relationOptions" [value]="option">{{ option }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="oh-onboarding-field oh-contact-row__field">
+                <input
+                  matInput
+                  placeholder="Name"
+                  [value]="contact.name"
+                  (input)="updateContact(i, 'name', $any($event.target).value)"
+                />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="oh-onboarding-field oh-contact-row__field">
+                <input
+                  matInput
+                  placeholder="Phone"
+                  [value]="contact.phone"
+                  (input)="updateContact(i, 'phone', $any($event.target).value)"
+                />
+              </mat-form-field>
+              <button
+                type="button"
+                class="oh-contact-row__delete"
+                (click)="removeContact(contact)"
+                aria-label="Remove contact"
+              >
+                <i class="bi bi-trash" aria-hidden="true"></i>
+              </button>
             </div>
             <button mat-button color="primary" type="button" (click)="addContact()">+ Add contact</button>
           </div>
@@ -110,62 +235,78 @@
           <div class="row g-3">
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="jobTitle">Job title<span class="oh-label__required">*</span></label>
-                <input id="jobTitle" class="oh-input" formControlName="jobTitle" />
+                <label class="oh-label oh-label--tight" for="jobTitle">Job title<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="jobTitle" formControlName="jobTitle" />
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="employeeId">Employee ID<span class="oh-label__required">*</span></label>
-                <input id="employeeId" class="oh-input" formControlName="employeeId" />
+                <label class="oh-label oh-label--tight" for="employeeId">Employee ID<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="employeeId" formControlName="employeeId" />
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="department">Department<span class="oh-label__required">*</span></label>
-                <select id="department" class="oh-select" formControlName="department">
-                  <option value="Analytics">Analytics</option>
-                  <option value="Engineering">Engineering</option>
-                  <option value="Design">Design</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Human Resources">Human Resources</option>
-                </select>
+                <label class="oh-label oh-label--tight" for="department">Department<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select id="department" formControlName="department">
+                    <mat-option value="Analytics">Analytics</mat-option>
+                    <mat-option value="Engineering">Engineering</mat-option>
+                    <mat-option value="Design">Design</mat-option>
+                    <mat-option value="Sales">Sales</mat-option>
+                    <mat-option value="Human Resources">Human Resources</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="employmentType">Employment type</label>
-                <select id="employmentType" class="oh-select" formControlName="employmentType">
-                  <option value="Full-time">Full-time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Intern">Intern</option>
-                </select>
+                <label class="oh-label oh-label--tight" for="employmentType">Employment type</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select id="employmentType" formControlName="employmentType">
+                    <mat-option value="Full-time">Full-time</mat-option>
+                    <mat-option value="Contract">Contract</mat-option>
+                    <mat-option value="Intern">Intern</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
             <div class="col-12">
               <div class="oh-field">
-                <label class="oh-label" for="reportingManager">Reporting manager<span class="oh-label__required">*</span></label>
-                <select id="reportingManager" class="oh-select" formControlName="reportingManager">
-                  <option value="Divya Rao">Divya Rao</option>
-                  <option value="Arjun Verma">Arjun Verma</option>
-                  <option value="Neha Kapoor">Neha Kapoor</option>
-                </select>
+                <label class="oh-label oh-label--tight" for="reportingManager">Reporting manager<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select id="reportingManager" formControlName="reportingManager">
+                    <mat-option value="Divya Rao">Divya Rao</mat-option>
+                    <mat-option value="Arjun Verma">Arjun Verma</mat-option>
+                    <mat-option value="Neha Kapoor">Neha Kapoor</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="workLocation">Work location</label>
-                <select id="workLocation" class="oh-select" formControlName="workLocation">
-                  <option value="Hyderabad">Hyderabad</option>
-                  <option value="Bengaluru">Bengaluru</option>
-                  <option value="Remote">Remote</option>
-                </select>
+                <label class="oh-label oh-label--tight" for="workLocation">Work location</label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <mat-select id="workLocation" formControlName="workLocation">
+                    <mat-option value="Hyderabad">Hyderabad</mat-option>
+                    <mat-option value="Bengaluru">Bengaluru</mat-option>
+                    <mat-option value="Remote">Remote</mat-option>
+                  </mat-select>
+                </mat-form-field>
               </div>
             </div>
             <div class="col-md-6">
               <div class="oh-field">
-                <label class="oh-label" for="startDate">Start date<span class="oh-label__required">*</span></label>
-                <input id="startDate" type="date" class="oh-input" formControlName="startDate" />
+                <label class="oh-label oh-label--tight" for="startDate">Start date<span class="oh-label__required">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-onboarding-field">
+                  <input matInput id="startDate" [matDatepicker]="startDatePicker" formControlName="startDate" />
+                  <mat-datepicker-toggle matIconSuffix [for]="startDatePicker" />
+                  <mat-datepicker #startDatePicker />
+                </mat-form-field>
               </div>
             </div>
           </div>
@@ -184,7 +325,7 @@
                     {{ bundle.label }}
                     <mat-icon *ngIf="accessBundle() === bundle.id" class="oh-bundle-card__check">check_circle</mat-icon>
                   </span>
-                  <span class="oh-caption">{{ bundle.desc }}</span>
+                  <span class="oh-caption">{{ bundle.id === 'Custom' ? enabledAppsCount() + ' apps selected' : bundle.desc }}</span>
                 </button>
               </div>
             </div>
@@ -199,7 +340,7 @@
           Collect statutory documents and run the background check. {{ firstName }} can upload pending items from her invite link.
         </p>
 
-        <div class="oh-callout oh-callout--info">
+        <div class="oh-doc-callout mb-4">
           <strong>{{ documentsReceived() }} of {{ documents().length }} documents received</strong>
           <span *ngIf="missingRequiredDocs().length > 0">
             · {{ missingRequiredDocs().length }} required item{{ missingRequiredDocs().length > 1 ? 's' : '' }} still missing
@@ -207,43 +348,55 @@
           </span>
         </div>
 
-        <div class="oh-doc-row" *ngFor="let doc of documents()">
-          <span class="oh-icon-tile">
-            <mat-icon>description</mat-icon>
-          </span>
-          <div class="oh-doc-row__info">
-            <p class="oh-doc-row__name">
-              {{ doc.name }}
-              <span class="oh-badge" [class.oh-badge--error]="doc.required" [class.oh-badge--neutral]="!doc.required">
-                {{ doc.required ? 'Required' : 'Optional' }}
-              </span>
-            </p>
-            <p class="oh-caption">{{ doc.meta }}</p>
+        <!-- Unified Card for Documents -->
+        <div class="oh-unified-card">
+          <div class="oh-doc-row" *ngFor="let doc of documents()">
+            <span class="oh-icon-tile" [class]="docIconClass(doc.name)">
+              <i class="bi bi-{{ docIcon(doc.name) }} fs-5"></i>
+            </span>
+            <div class="oh-doc-row__info">
+              <p class="oh-doc-row__name">
+                {{ doc.name }}
+                <span class="oh-doc-row__req" [class.oh-doc-row__req--error]="doc.required" [class.oh-doc-row__req--neutral]="!doc.required">
+                  {{ doc.required ? 'Required' : 'Optional' }}
+                </span>
+              </p>
+              <p class="oh-caption">{{ doc.meta }}</p>
+            </div>
+            <span class="oh-badge" [class]="docBadgeClass(doc)">{{ doc.status }}</span>
+            <button
+              *ngIf="doc.status === 'Missing'"
+              mat-flat-button
+              color="primary"
+              (click)="markUploaded(doc)"
+            >
+              Upload
+            </button>
+            <button
+              *ngIf="doc.status !== 'Missing'"
+              mat-stroked-button
+              (click)="markUploaded(doc)"
+            >
+              Replace
+            </button>
           </div>
-          <span class="oh-badge" [class]="docBadgeClass(doc)">{{ doc.status }}</span>
-          <button
-            mat-stroked-button
-            type="button"
-            [color]="doc.status === 'Missing' ? 'primary' : undefined"
-            (click)="markUploaded(doc)"
-          >
-            {{ doc.status === 'Missing' ? 'Upload' : 'Replace' }}
-          </button>
         </div>
 
         <h3 class="oh-heading-h3 oh-onboarding__section-title">Background Verification</h3>
-        <p class="oh-caption">Initiated via AuthBridge · ref BGV-TR-4821</p>
+        <p class="oh-caption mb-3">Initiated via AuthBridge · ref BGV-TR-4821</p>
 
-        <div class="oh-check-row" *ngFor="let check of backgroundChecks()">
-          <span class="oh-check-row__icon" [class]="checkStateClass(check.status)">
-            <mat-icon *ngIf="check.status === 'Clear'">check</mat-icon>
-            <span *ngIf="check.status !== 'Clear'" class="oh-check-row__dot"></span>
-          </span>
-          <div class="oh-check-row__info">
-            <p class="oh-check-row__name">{{ check.name }}</p>
-            <p class="oh-caption">{{ check.meta }}</p>
+        <!-- Unified Card for BGV Checks -->
+        <div class="oh-unified-card">
+          <div class="oh-check-row" *ngFor="let check of backgroundChecks()">
+            <span class="oh-check-row__icon-container d-flex align-items-center justify-content-center">
+              <i class="bi" [class]="checkStatusIcon(check.status)"></i>
+            </span>
+            <div class="oh-check-row__info">
+              <p class="oh-check-row__name">{{ check.name }}</p>
+              <p class="oh-caption">{{ check.meta }}</p>
+            </div>
+            <span class="oh-badge" [class]="checkStatusBadgeClass(check.status)">{{ check.status }}</span>
           </div>
-          <span class="oh-caption oh-check-row__status">{{ check.status }}</span>
         </div>
       </ng-container>
 
@@ -259,12 +412,18 @@
           <button mat-button color="primary" type="button" (click)="resetToBundle()">Reset to bundle</button>
         </div>
 
-        <div class="oh-app-row" *ngFor="let app of apps()">
-          <div class="oh-app-row__info">
-            <p class="oh-app-row__name">{{ app.name }}</p>
-            <p class="oh-caption">{{ app.meta }}</p>
+        <!-- Unified Card for Applications -->
+        <div class="oh-unified-card">
+          <div class="oh-app-row" *ngFor="let app of apps()">
+            <span class="oh-icon-tile" [class]="appIconClass(app.name)">
+              <i class="bi bi-{{ appIcon(app.name) }} fs-5"></i>
+            </span>
+            <div class="oh-app-row__info">
+              <p class="oh-app-row__name mb-0">{{ app.name }}</p>
+              <p class="oh-caption mb-0">{{ app.meta }}</p>
+            </div>
+            <mat-slide-toggle [checked]="app.enabled" (change)="toggleApp(app)" />
           </div>
-          <mat-slide-toggle [checked]="app.enabled" (change)="toggleApp(app)" />
         </div>
 
         <div class="oh-field oh-onboarding__section-title">
@@ -285,17 +444,71 @@
         </div>
 
         <h3 class="oh-heading-h3 oh-onboarding__section-title">Hardware &amp; assets</h3>
-        <div class="oh-hw-row" *ngFor="let hw of hardware()">
-          <span class="oh-icon-tile">
-            <mat-icon>devices</mat-icon>
-          </span>
-          <div class="oh-hw-row__info">
-            <p class="oh-hw-row__name">{{ hw.name }}</p>
-            <p class="oh-caption">{{ hw.meta }}</p>
+        <p class="oh-caption mb-3">Add devices from the company inventory and allocate them to the employee.</p>
+        
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1 oh-onboarding-field">
+            <input
+              matInput
+              #hwInput
+              placeholder="Enter hardware / asset name..."
+              (input)="true"
+              (keyup.enter)="addHardwareFromInput(hwInput)"
+            />
+          </mat-form-field>
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="oh-add-device-btn"
+            [disabled]="!hwInput.value.trim()"
+            (click)="addHardwareFromInput(hwInput)"
+          >
+            + Add Hardware / Asset
+          </button>
+        </div>
+
+        <!-- Unified Card for Hardware -->
+        <div class="oh-unified-card" *ngIf="hardware().length > 0">
+          <div class="oh-hw-row" *ngFor="let hw of hardware()">
+            <span class="oh-icon-tile" [class]="hardwareIconClass(hw.name)">
+              <i *ngIf="hardwareIcon(hw.name) !== 'bottle'" class="bi bi-{{ hardwareIcon(hw.name) }} fs-5"></i>
+              <!-- Custom Water Bottle SVG -->
+              <svg *ngIf="hardwareIcon(hw.name) === 'bottle'" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+                <path d="M10 2h4M9 5h6M9 5v3a2 2 0 0 1-2 2H5v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10h-2a2 2 0 0 1-2-2V5" />
+              </svg>
+            </span>
+            <div class="oh-hw-row__info">
+              <p class="oh-hw-row__name mb-0">{{ hw.name }}</p>
+              <p class="oh-caption mb-0">{{ hw.meta }}</p>
+            </div>
+            <span class="oh-badge" [class.oh-badge--success]="hw.status === 'Allocated'" [class.oh-badge--warning]="hw.status === 'Pending'">
+              {{ hw.status }}
+            </span>
+            <div class="d-flex align-items-center gap-2">
+              <button
+                mat-stroked-button
+                type="button"
+                [color]="hw.status === 'Pending' ? 'primary' : undefined"
+                (click)="toggleHardwareStatus(hw)"
+              >
+                {{ hw.status === 'Allocated' ? 'Release' : 'Allocate' }}
+              </button>
+              <button
+                type="button"
+                class="oh-contact-row__delete"
+                (click)="removeHardware(hw)"
+                aria-label="Remove hardware"
+                style="margin-top: 0;"
+              >
+                <i class="bi bi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
           </div>
-          <span class="oh-badge" [class.oh-badge--success]="hw.status === 'Allocated'" [class.oh-badge--warning]="hw.status === 'Pending'">
-            {{ hw.status }}
-          </span>
+        </div>
+
+        <div class="oh-hw-row justify-content-center py-4" *ngIf="hardware().length === 0">
+          <p class="oh-caption mb-0 text-center text-muted">No hardware added yet. Enter a device name in the field above to add and allocate.</p>
         </div>
       </ng-container>
 
@@ -309,8 +522,10 @@
         <div class="oh-review-summary">
           <span class="oh-avatar oh-avatar--md">{{ initials }}</span>
           <div class="oh-review-summary__info">
-            <p class="oh-review-summary__name">{{ personalForm.value.fullName }}</p>
-            <p class="oh-caption">{{ roleForm.value.jobTitle }} · {{ roleForm.value.department }} · starts {{ roleForm.value.startDate }}</p>
+            <p class="oh-review-summary__name">{{ fullName }}</p>
+            <p class="oh-caption">
+              {{ roleForm.value.jobTitle }} · {{ roleForm.value.department }} · starts {{ roleForm.value.startDate | date: 'dd MMM yyyy' }}
+            </p>
           </div>
           <span class="oh-badge oh-badge--neutral">{{ roleForm.value.employeeId }}</span>
         </div>
@@ -324,10 +539,11 @@
                   <button mat-button color="primary" type="button" (click)="goToStep(1)">Edit</button>
                 </div>
                 <dl class="oh-review-card__rows">
-                  <div class="oh-review-card__row"><dt>Full name</dt><dd>{{ personalForm.value.fullName }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Full name</dt><dd>{{ fullName }}</dd></div>
                   <div class="oh-review-card__row"><dt>Personal email</dt><dd>{{ personalForm.value.personalEmail }}</dd></div>
                   <div class="oh-review-card__row"><dt>Phone</dt><dd>{{ personalForm.value.phone }}</dd></div>
-                  <div class="oh-review-card__row"><dt>Date of birth</dt><dd>{{ personalForm.value.dob }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Date of birth</dt><dd>{{ personalForm.value.dob | date: 'dd MMM yyyy' }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Gender</dt><dd>{{ personalForm.value.gender }}</dd></div>
                 </dl>
               </mat-card-content>
             </mat-card>
@@ -344,7 +560,7 @@
                   <div class="oh-review-card__row"><dt>Job title</dt><dd>{{ roleForm.value.jobTitle }}</dd></div>
                   <div class="oh-review-card__row"><dt>Department</dt><dd>{{ roleForm.value.department }}</dd></div>
                   <div class="oh-review-card__row"><dt>Reporting manager</dt><dd>{{ roleForm.value.reportingManager }}</dd></div>
-                  <div class="oh-review-card__row"><dt>Start date</dt><dd>{{ roleForm.value.startDate }}</dd></div>
+                  <div class="oh-review-card__row"><dt>Start date</dt><dd>{{ roleForm.value.startDate | date: 'dd MMM yyyy' }}</dd></div>
                 </dl>
               </mat-card-content>
             </mat-card>
@@ -376,7 +592,7 @@
                 <dl class="oh-review-card__rows">
                   <div class="oh-review-card__row"><dt>Access bundle</dt><dd>{{ accessBundle() }} · {{ enabledAppsCount() }} apps</dd></div>
                   <div class="oh-review-card__row"><dt>Primary role</dt><dd>{{ primaryRole() }}</dd></div>
-                  <div class="oh-review-card__row"><dt>Devices</dt><dd>MacBook Pro, Monitor</dd></div>
+                  <div class="oh-review-card__row"><dt>Devices</dt><dd>{{ allocatedDevicesSummary() }}</dd></div>
                 </dl>
               </mat-card-content>
             </mat-card>
@@ -391,7 +607,8 @@
     </div>
 
     <div class="oh-onboarding__footer">
-      <button mat-stroked-button (click)="back()" [disabled]="currentStep() === 1">← Back</button>
+      <button *ngIf="currentStep() === 1" mat-stroked-button (click)="exit()">Cancel</button>
+      <button *ngIf="currentStep() > 1" mat-stroked-button (click)="back()">← Back</button>
       <span class="oh-caption">{{ activeStepMeta().title }}</span>
       <div class="d-flex align-items-center gap-3">
         <button mat-button (click)="exit()">Save &amp; exit</button>
