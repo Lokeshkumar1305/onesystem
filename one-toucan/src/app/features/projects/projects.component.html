@@ -1,0 +1,555 @@
+<!-- View 1: Projects Kanban Board -->
+<div class="oh-projects-board-view" *ngIf="activeView() === 'board'">
+  <!-- Header row -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <h2 class="oh-board-title mb-0">Atlas Migration</h2>
+      <span class="oh-board-badge">
+        <span class="oh-board-badge-dot"></span>
+        Active
+      </span>
+      <span class="oh-board-subtitle">Sprint 14 &middot; 5 days left</span>
+    </div>
+
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <!-- Avatars stack -->
+      <div class="oh-avatars-stack">
+        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--blue">RM</span>
+        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--purple">SK</span>
+        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--pink">AK</span>
+        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--more">+6</span>
+      </div>
+
+      <button mat-stroked-button class="oh-board-header-btn">
+        <i class="bi bi-funnel me-1"></i>
+        Filter
+      </button>
+
+      <button mat-flat-button color="primary" class="oh-board-header-btn oh-btn-story" (click)="toggleStoryInput()">
+        <i class="bi bi-plus-lg me-1"></i>
+        Story
+      </button>
+
+      <button mat-flat-button color="primary" class="oh-board-header-btn oh-btn-story" (click)="showCreateScreen()">
+        <i class="bi bi-plus-circle me-1"></i>
+        New Project
+      </button>
+    </div>
+  </div>
+
+  <!-- Inline Story Addition Input -->
+  <div class="oh-quick-story-card mb-4 p-3 border rounded-3 bg-white" *ngIf="showAddStoryInput">
+    <h4 class="font-weight-bold mb-2 text-sm text-gray-700">Quick Add Story to Backlog</h4>
+    <div class="d-flex gap-2 align-items-center">
+      <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="storyTitleInput" placeholder="Enter story summary..." (keyup.enter)="addStory()" />
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="oh-compact-field" style="width: 130px;" subscriptSizing="dynamic">
+        <mat-select [(ngModel)]="storyTypeInput">
+          <mat-option value="FEATURE">Feature</mat-option>
+          <mat-option value="BUG">Bug</mat-option>
+          <mat-option value="SECURITY">Security</mat-option>
+          <mat-option value="CHORE">Chore</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" (click)="addStory()" [disabled]="!storyTitleInput.trim()">Add</button>
+      <button mat-stroked-button (click)="toggleStoryInput()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Kanban Board Columns container -->
+  <div class="oh-board-columns" cdkDropListGroup>
+    <div class="oh-board-column" *ngFor="let col of board()">
+      <div class="oh-column-header d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="oh-column-bullet" [style.background-color]="col.bulletColor"></span>
+          <span class="oh-column-title font-weight-bold">{{ col.name }}</span>
+        </div>
+        <span class="oh-column-count">{{ col.cards.length }}</span>
+      </div>
+
+      <!-- Draggable items zone -->
+      <div
+        class="oh-column-cards-zone"
+        cdkDropList
+        [cdkDropListData]="col.cards"
+        (cdkDropListDropped)="onCardDrop($event)"
+      >
+        <div class="oh-task-card" *ngFor="let card of col.cards" cdkDrag>
+          <div class="oh-task-card-placeholder" *cdkDragPlaceholder></div>
+          
+          <!-- Card Header (Type label & Priority Dot) -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="oh-badge oh-badge--xs" [ngClass]="getBadgeClass(card.type)">{{ card.type }}</span>
+            <span class="oh-priority-dot" [ngClass]="getDotClass(card.priorityDotColor)"></span>
+          </div>
+
+          <!-- Card Title -->
+          <h4 class="oh-task-title mb-3">{{ card.title }}</h4>
+
+          <!-- Card Footer (Task ID, Points, Assignee) -->
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+            <span class="oh-task-id">{{ card.id }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="oh-task-points">{{ card.points }}pt</span>
+              <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="card.assigneeColorClass">
+                {{ card.assigneeInitials }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- View 2: Project Creation Screen (Multi-section Card form) -->
+<div class="oh-project-create-view" *ngIf="activeView() === 'create'">
+  <div class="container-fluid oh-project-create-layout pb-5">
+
+    <!-- Heading Card -->
+    <div class="oh-project-create-header d-flex align-items-center justify-content-between p-4">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-project-create-header-icon">
+          <i class="bi bi-kanban" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 class="oh-project-create-header-title mb-0">New Project</h2>
+          <p class="oh-project-create-header-subtitle mb-0">Step {{ activeStep() }} of 5 &middot; {{ currentStepLabel }}</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button mat-button type="button" (click)="cancelCreation()">Cancel</button>
+        <button mat-stroked-button type="button" (click)="saveDraft()">Save draft</button>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <!-- Left Column: Stepper matching the image exactly -->
+      <div class="col-lg-3 col-md-4">
+        <div class="oh-stepper-container d-flex flex-column gap-3">
+          
+          <!-- Step 1: Project Basics -->
+          <div 
+            class="oh-stepper-step" 
+            [class.oh-stepper-step--completed]="activeStep() > 1"
+            [class.oh-stepper-step--active]="activeStep() === 1"
+            (click)="goToStep(1)"
+          >
+            <span class="oh-step-badge">
+              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 1"></i>
+              <span *ngIf="activeStep() <= 1">1</span>
+            </span>
+            <div>
+              <h4 class="oh-step-title mb-0">Project basics</h4>
+              <p class="oh-step-subtitle mb-0">Name, key, client</p>
+            </div>
+          </div>
+
+          <!-- Step 2: Methodology -->
+          <div 
+            class="oh-stepper-step" 
+            [class.oh-stepper-step--completed]="activeStep() > 2"
+            [class.oh-stepper-step--active]="activeStep() === 2"
+            (click)="goToStep(2)"
+          >
+            <span class="oh-step-badge">
+              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 2"></i>
+              <span *ngIf="activeStep() <= 2">2</span>
+            </span>
+            <div>
+              <h4 class="oh-step-title mb-0">Methodology</h4>
+              <p class="oh-step-subtitle mb-0">Scrum, Kanban, Waterfall</p>
+            </div>
+          </div>
+
+          <!-- Step 3: Timeline & budget -->
+          <div 
+            class="oh-stepper-step" 
+            [class.oh-stepper-step--completed]="activeStep() > 3"
+            [class.oh-stepper-step--active]="activeStep() === 3"
+            (click)="goToStep(3)"
+          >
+            <span class="oh-step-badge">
+              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 3"></i>
+              <span *ngIf="activeStep() <= 3">3</span>
+            </span>
+            <div>
+              <h4 class="oh-step-title mb-0">Timeline & budget</h4>
+              <p class="oh-step-subtitle mb-0">Start date, budget</p>
+            </div>
+          </div>
+
+          <!-- Step 4: Team -->
+          <div 
+            class="oh-stepper-step" 
+            [class.oh-stepper-step--completed]="activeStep() > 4"
+            [class.oh-stepper-step--active]="activeStep() === 4"
+            (click)="goToStep(4)"
+          >
+            <span class="oh-step-badge">
+              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 4"></i>
+              <span *ngIf="activeStep() <= 4">4</span>
+            </span>
+            <div>
+              <h4 class="oh-step-title mb-0">Team</h4>
+              <p class="oh-step-subtitle mb-0">Project lead & members</p>
+            </div>
+          </div>
+
+          <!-- Step 5: Review & launch -->
+          <div 
+            class="oh-stepper-step" 
+            [class.oh-stepper-step--completed]="activeStep() > 5"
+            [class.oh-stepper-step--active]="activeStep() === 5"
+            (click)="goToStep(5)"
+          >
+            <span class="oh-step-badge">
+              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 5"></i>
+              <span *ngIf="activeStep() <= 5">5</span>
+            </span>
+            <div>
+              <h4 class="oh-step-title mb-0">Review & launch</h4>
+              <p class="oh-step-subtitle mb-0">Go live</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Current Active Form Card -->
+      <div class="col-lg-9 col-md-8">
+        
+        <!-- Step 1 Card: Project Basics -->
+        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 1">
+          <mat-card-content class="p-4">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <span class="oh-section-num">1</span>
+              <h3 class="oh-section-title mb-0">Project basics</h3>
+            </div>
+
+            <div class="oh-field mb-4">
+              <label class="oh-label oh-label--tight font-weight-bold" for="projNameInput"><span>Project name <span class="text-danger">*</span></span></label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput id="projNameInput" [(ngModel)]="newProjName" placeholder="Polaris Settlement Engine" />
+              </mat-form-field>
+            </div>
+
+            <div class="oh-field mb-4">
+              <label class="oh-label oh-label--tight font-weight-bold" for="projDescInput">Description</label>
+              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                <textarea matInput id="projDescInput" [(ngModel)]="newProjDesc" rows="5" placeholder="Real-time settlement & reconciliation rails for merchant payouts. Replaces the legacy batch job with an event-driven pipeline."></textarea>
+              </mat-form-field>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight font-weight-bold" for="projKeyInput"><span>Project key <span class="text-danger">*</span></span></label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="projKeyInput" [(ngModel)]="newProjKey" placeholder="PSE" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight font-weight-bold" for="projClientInput">Client</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="projClientInput" [(ngModel)]="newProjClient" placeholder="e.g. Razorpay" />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Step 2 Card: Methodology -->
+        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 2">
+          <mat-card-content class="p-4">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <span class="oh-section-num">2</span>
+              <h3 class="oh-section-title mb-0">Methodology</h3>
+            </div>
+
+            <div class="row g-3">
+              <!-- Scrum Option -->
+              <div class="col-md-4">
+                <div
+                  class="oh-method-card"
+                  [class.oh-method-card--selected]="newProjMethodology === 'scrum'"
+                  (click)="newProjMethodology = 'scrum'"
+                >
+                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'scrum'">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                  <div class="oh-method-card-icon oh-method-card-icon--orange">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                  </div>
+                  <h4 class="oh-method-title mb-1">Scrum / Agile</h4>
+                  <p class="oh-method-desc mb-0">Sprints, story points, velocity</p>
+                </div>
+              </div>
+
+              <!-- Kanban Option -->
+              <div class="col-md-4">
+                <div
+                  class="oh-method-card"
+                  [class.oh-method-card--selected]="newProjMethodology === 'kanban'"
+                  (click)="newProjMethodology = 'kanban'"
+                >
+                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'kanban'">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                  <div class="oh-method-card-icon oh-method-card-icon--purple">
+                    <i class="bi bi-clipboard-data"></i>
+                  </div>
+                  <h4 class="oh-method-title mb-1">Kanban</h4>
+                  <p class="oh-method-desc mb-0">Continuous flow, WIP limits</p>
+                </div>
+              </div>
+
+              <!-- Waterfall Option -->
+              <div class="col-md-4">
+                <div
+                  class="oh-method-card"
+                  [class.oh-method-card--selected]="newProjMethodology === 'waterfall'"
+                  (click)="newProjMethodology = 'waterfall'"
+                >
+                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'waterfall'">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </div>
+                  <div class="oh-method-card-icon oh-method-card-icon--blue">
+                    <i class="bi bi-water"></i>
+                  </div>
+                  <h4 class="oh-method-title mb-1">Waterfall</h4>
+                  <p class="oh-method-desc mb-0">Phases, gates, milestones</p>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Step 3 Card: Timeline & Budget -->
+        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 3">
+          <mat-card-content class="p-4">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <span class="oh-section-num">3</span>
+              <h3 class="oh-section-title mb-0">Timeline & budget</h3>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight font-weight-bold" for="projStartDateInput">Start date</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="projStartDateInput" [matDatepicker]="startDatePicker" [(ngModel)]="newProjStartDate" />
+                    <mat-datepicker-toggle matIconSuffix [for]="startDatePicker" />
+                    <mat-datepicker #startDatePicker />
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight font-weight-bold" for="projEndDateInput">Target end</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="projEndDateInput" [matDatepicker]="endDatePicker" [(ngModel)]="newProjEndDate" />
+                    <mat-datepicker-toggle matIconSuffix [for]="endDatePicker" />
+                    <mat-datepicker #endDatePicker />
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight font-weight-bold" for="projBudgetInput">Budget (₹)</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="projBudgetInput" [(ngModel)]="newProjBudget" placeholder="84,000" />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Step 4 Card: Team -->
+        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 4">
+          <mat-card-content class="p-4">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <span class="oh-section-num">4</span>
+              <h3 class="oh-section-title mb-0">Team</h3>
+            </div>
+
+            <div class="oh-field mb-4">
+              <label class="oh-label oh-label--tight font-weight-bold">Project lead & members</label>
+              <div class="oh-team-chips-container d-flex align-items-center flex-wrap gap-2 p-2 border rounded-3 bg-white">
+                <!-- Render Chips -->
+                <div class="oh-member-chip d-flex align-items-center gap-2" *ngFor="let member of teamMembers()">
+                  <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(member.avatarColor)">
+                    {{ member.initials }}
+                  </span>
+                  <span class="oh-member-chip-name">{{ member.name }}</span>
+                  <button type="button" class="oh-member-chip-close" (click)="removeTeamMember(member)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+
+                <!-- Inline add input -->
+                <input
+                  type="text"
+                  class="oh-member-inline-input"
+                  placeholder="+ Add member..."
+                  [(ngModel)]="newMemberInput"
+                  (keyup.enter)="addTeamMember()"
+                />
+              </div>
+            </div>
+
+            <div class="oh-notify-card d-flex align-items-center justify-content-between mt-4 p-3">
+              <div class="d-flex align-items-center gap-3">
+                <span class="oh-notify-icon">
+                  <i class="bi bi-slack" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <p class="oh-notify-title mb-0">Notify members & create a Slack channel</p>
+                  <p class="oh-notify-subtitle mb-0">Teammates are pinged and a #project channel is created on save</p>
+                </div>
+              </div>
+              <mat-slide-toggle [(ngModel)]="newProjSlack"></mat-slide-toggle>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Step 5 Card: Review Summary -->
+        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 5">
+          <mat-card-content class="p-4">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <span class="oh-section-num">5</span>
+              <h3 class="oh-section-title mb-0">Review details & launch</h3>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--teal">
+                    <i class="bi bi-folder2" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Project Name</span>
+                    <p class="oh-review-value">{{ newProjName || '(Empty)' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--blue">
+                    <i class="bi bi-key" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Project Key</span>
+                    <p class="oh-review-value">{{ newProjKey.toUpperCase() || '(Empty)' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--purple">
+                    <i class="bi bi-building" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Client</span>
+                    <p class="oh-review-value">{{ newProjClient || '(Empty)' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--orange">
+                    <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Methodology</span>
+                    <p class="oh-review-value capitalize">{{ newProjMethodology }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--green">
+                    <i class="bi bi-calendar-range" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Timeline</span>
+                    <p class="oh-review-value">{{ newProjStartDate | date:'dd MMM yyyy' }} &mdash; {{ newProjEndDate | date:'dd MMM yyyy' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--teal">
+                    <i class="bi bi-wallet2" aria-hidden="true"></i>
+                  </span>
+                  <div>
+                    <span class="oh-review-label">Budget</span>
+                    <p class="oh-review-value">₹{{ newProjBudget || '0' }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="oh-review-tile">
+                  <span class="oh-review-tile-icon oh-review-tile-icon--pink">
+                    <i class="bi bi-people" aria-hidden="true"></i>
+                  </span>
+                  <div class="flex-grow-1">
+                    <span class="oh-review-label">Allocated Team Members</span>
+                    <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
+                      <span class="oh-member-chip d-flex align-items-center gap-2" *ngFor="let member of teamMembers()">
+                        <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(member.avatarColor)">
+                          {{ member.initials }}
+                        </span>
+                        <span class="oh-member-chip-name">{{ member.name }}</span>
+                      </span>
+                      <span *ngIf="!teamMembers().length" class="oh-review-value oh-review-value--muted">No members added</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Fixed Bar -->
+  <div class="oh-project-create-footer-bar d-flex align-items-center px-4 py-3 bg-white border-top">
+    <div class="oh-project-create-footer-side d-flex">
+      <button mat-stroked-button type="button" *ngIf="activeStep() > 1" (click)="prevStep()">
+        <i class="bi bi-chevron-left me-1" aria-hidden="true"></i>Back
+      </button>
+    </div>
+    <span class="oh-project-create-footer-status flex-grow-1 text-center">Auto-saved {{ lastSavedLabel() }}</span>
+    <div class="oh-project-create-footer-side d-flex justify-content-end">
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        [disabled]="activeStep() === 1 && (!newProjName.trim() || !newProjKey.trim())"
+        (click)="activeStep() === 5 ? saveProject() : nextStep()"
+      >
+        {{ activeStep() === 5 ? 'Create project' : 'Continue' }}
+        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+</div>

@@ -40,6 +40,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/onboarding/onboarding-list/onboarding-list.component').then(m => m.OnboardingListComponent),
         data: { title: 'Onboarding', subtitle: 'New hire pipeline' }
+      },
+      {
+        path: 'projects',
+        loadComponent: () =>
+          import('./features/projects/projects.component').then(m => m.ProjectsComponent),
+        data: { title: 'Projects', subtitle: 'Project list & execution details' }
       }
     ]
   },

@@ -52,8 +52,7 @@ export class SidenavComponent {
     {
       title: 'Execution',
       items: [
-        { label: 'Projects', icon: 'folder' },
-        { label: 'New Project', icon: 'folder-plus' },
+        { label: 'Projects', icon: 'folder', route: '/projects' },
         { label: 'Requirements', icon: 'list-check' },
         { label: 'My Tasks', icon: 'check2-square' },
         { label: 'Resource Allocation', icon: 'diagram-3' }
