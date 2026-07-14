@@ -29,6 +29,12 @@ export const routes: Routes = [
         loadComponent: () => import('./features/employees/employees.component').then(m => m.EmployeesComponent),
         data: { title: 'Employees', subtitle: 'Organization directory' }
       },
+      // recruitment tracking pipeline
+      {
+        path: 'recruitment',
+        loadComponent: () => import('./features/recruitment/recruitment.component').then(m => m.RecruitmentComponent),
+        data: { title: 'Recruitment', subtitle: 'Pipeline & candidate tracking' }
+      },
       {
         path: 'onboarding',
         loadComponent: () =>

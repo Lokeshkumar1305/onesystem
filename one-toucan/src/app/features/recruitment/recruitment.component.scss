@@ -1,0 +1,468 @@
+.oh-recruitment-container {
+  padding: var(--oh-6);
+  background: var(--oh-gray-25);
+  min-height: calc(100vh - 64px);
+}
+
+.oh-recruitment-title {
+  font-family: var(--oh-font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--oh-gray-900);
+}
+
+// KPI widget cards
+.oh-kpi-card {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  padding: var(--oh-5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+
+  &__title {
+    color: var(--oh-gray-500);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: var(--oh-1);
+  }
+
+  &__value {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+
+    &--green {
+      color: #0f766e;
+    }
+    &--blue {
+      color: #2563eb;
+    }
+    &--purple {
+      color: #7c3aed;
+    }
+    &--orange {
+      color: #d97706;
+    }
+  }
+}
+
+// Kanban board
+.oh-kanban-board {
+  margin-top: var(--oh-6);
+}
+
+.oh-kanban-col-wrapper {
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.oh-kanban-column {
+  background: #f9fafb;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-xl);
+  padding: var(--oh-4);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 270px);
+  min-height: 480px;
+
+  &__header {
+    flex-shrink: 0;
+  }
+}
+
+.oh-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--gray {
+    background-color: #9ca3af;
+  }
+  &--blue {
+    background-color: #2563eb;
+  }
+  &--purple {
+    background-color: #7c3aed;
+  }
+  &--green {
+    background-color: #10b981;
+  }
+}
+
+.oh-column-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--oh-gray-900);
+}
+
+.oh-column-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oh-gray-500);
+  background: var(--oh-gray-100);
+  padding: 2px 8px;
+  border-radius: var(--oh-radius-full);
+}
+
+// Draggable lists
+.oh-kanban-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 200px;
+  padding-bottom: 20px;
+
+  // Scrollbar styling
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+// Candidate cards
+.oh-candidate-card {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  padding: var(--oh-4);
+  margin-bottom: var(--oh-3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: grab;
+  user-select: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Avatars
+.oh-avatar {
+  &--md {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  &--blue {
+    background: rgba(37, 99, 235, 0.08);
+    color: #2563eb;
+  }
+
+  &--purple {
+    background: rgba(124, 58, 237, 0.08);
+    color: #7c3aed;
+  }
+
+  &--pink {
+    background: rgba(236, 72, 153, 0.08);
+    color: #ec4899;
+  }
+
+  &--teal {
+    background: rgba(13, 148, 136, 0.08);
+    color: #0d9488;
+  }
+}
+
+.oh-candidate-name {
+  font-size: 14px;
+  color: var(--oh-gray-900);
+}
+
+.oh-candidate-role {
+  font-size: 12px;
+  color: var(--oh-gray-500);
+}
+
+.oh-candidate-source {
+  font-size: 11px;
+  color: var(--oh-gray-400);
+}
+
+.oh-candidate-match {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+// CDK Drag & Drop placeholders and animations
+.oh-candidate-card-placeholder {
+  border: 2px dashed var(--oh-border-strong, #d1d5db);
+  background: transparent;
+  min-height: 94px;
+  margin-bottom: var(--oh-3);
+  border-radius: var(--oh-radius-lg);
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  border-radius: var(--oh-radius-lg);
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  opacity: 0.95;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.oh-kanban-list.cdk-drop-list-dragging .oh-candidate-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Modal Drawer Overlay Styling */
+.oh-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  backdrop-filter: blur(1.5px);
+}
+
+.oh-modal-content {
+  background: var(--oh-surface);
+  border-radius: 0;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 460px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  animation: oh-drawer-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oh-drawer-header {
+  padding: var(--oh-6) var(--oh-6) var(--oh-4);
+  border-bottom: 1px solid var(--oh-border);
+  flex-shrink: 0;
+
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background-size: 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background-color: var(--oh-gray-100);
+      opacity: 0.8;
+    }
+  }
+}
+
+.oh-drawer-body {
+  padding: var(--oh-4) var(--oh-6) var(--oh-6);
+  overflow-y: auto;
+}
+
+.oh-drawer-footer {
+  padding: var(--oh-5) var(--oh-6);
+  border-top: 1px solid var(--oh-border);
+  background: var(--oh-surface);
+  flex-shrink: 0;
+}
+
+@keyframes oh-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.oh-label--tight {
+  justify-content: flex-start;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oh-gray-700);
+  margin-bottom: var(--oh-1);
+  display: flex;
+  align-items: center;
+}
+
+// Resume Upload styling
+.oh-resume-upload-zone {
+  border: 2px dashed var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  background: #f9fafb;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  label {
+    cursor: pointer !important;
+  }
+
+  .oh-clear-upload-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--oh-gray-100);
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--oh-gray-600);
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      background-color: var(--oh-gray-200);
+      color: var(--oh-gray-900);
+    }
+  }
+
+  &:hover {
+    border-color: var(--oh-primary);
+    background: rgba(15, 118, 110, 0.01);
+  }
+
+  &--active {
+    border-color: var(--oh-primary);
+    background: rgba(15, 118, 110, 0.02);
+
+    &:hover {
+      border-color: var(--oh-primary);
+      background: rgba(15, 118, 110, 0.02);
+    }
+  }
+}
+
+.oh-upload-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--oh-gray-400);
+}
+
+.oh-resume-upload-zone--active .oh-upload-icon {
+  color: var(--oh-primary);
+}
+
+.oh-upload-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--oh-gray-700);
+}
+
+.oh-upload-subtitle {
+  font-size: 11px;
+  color: var(--oh-gray-400);
+}
+
+.oh-upload-success {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--oh-primary);
+}
+
+.oh-upload-success-sub {
+  font-size: 11px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+// AI loader
+.oh-ai-loader {
+  background: rgba(15, 118, 110, 0.05);
+  border-radius: var(--oh-radius-lg);
+}
+
+::ng-deep .oh-compact-field {
+  .mat-mdc-text-field-wrapper {
+    height: 40px !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 100% !important;
+    align-items: center !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: unset !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  input:focus-visible,
+  mat-select:focus-visible,
+  .mat-mdc-select-trigger:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+// Custom amber/orange slide toggle styles
+::ng-deep .mat-mdc-slide-toggle {
+  &.mat-mdc-slide-toggle-checked,
+  &.mat-checked {
+    --mdc-switch-selected-focus-state-layer-color: #d97706 !important;
+    --mdc-switch-selected-handle-color: #d97706 !important;
+    --mdc-switch-selected-hover-handle-color: #d97706 !important;
+    --mdc-switch-selected-track-color: #fde047 !important;
+    --mdc-switch-selected-focus-handle-color: #d97706 !important;
+    --mdc-switch-selected-hover-track-color: #fde047 !important;
+
+    .mdc-switch__track {
+      background-color: #fde047 !important;
+      border-color: #fde047 !important;
+
+      &::before,
+      &::after {
+        background-color: #fde047 !important;
+        border-color: #fde047 !important;
+      }
+    }
+
+    .mdc-switch__thumb {
+      background-color: #d97706 !important;
+    }
+
+    .mdc-switch__icon path {
+      fill: #ffffff !important;
+    }
+  }
+}
+
+// Reset textarea element default borders inside form fields
+textarea.mat-mdc-input-element {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  resize: vertical;
+}

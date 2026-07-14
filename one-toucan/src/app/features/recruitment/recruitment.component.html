@@ -1,0 +1,197 @@
+<div class="oh-recruitment-container">
+  <!-- Screen Title and Actions -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h2 class="oh-recruitment-title mb-0">Recruitment Pipeline</h2>
+    <button mat-flat-button color="primary" (click)="toggleAddDrawer()">
+      <mat-icon class="me-1">person_add</mat-icon> Add Candidate
+    </button>
+  </div>
+
+  <!-- Top KPI Widgets Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3" *ngFor="let kpi of kpis">
+      <div class="oh-kpi-card">
+        <p class="oh-kpi-card__title">{{ kpi.title }}</p>
+        <h2 class="oh-kpi-card__value oh-kpi-card__value--{{ kpi.colorClass }}">{{ kpi.value }}</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kanban Drag & Drop Board -->
+  <div class="oh-kanban-board" cdkDropListGroup>
+    <div class="row g-3 flex-nowrap overflow-auto pb-3">
+      <div class="col-3 oh-kanban-col-wrapper" *ngFor="let col of columns()">
+        <div class="oh-kanban-column">
+          <!-- Column Header -->
+          <div class="oh-kanban-column__header d-flex align-items-center gap-2 mb-3">
+            <span class="oh-bullet oh-bullet--{{ col.bulletColor }}"></span>
+            <span class="oh-column-title">{{ col.name }}</span>
+            <span class="oh-column-badge">{{ col.totalCount }}</span>
+          </div>
+
+          <!-- Draggable Candidates Container -->
+          <div
+            class="oh-kanban-list"
+            cdkDropList
+            [cdkDropListData]="col.candidates"
+            (cdkDropListDropped)="onCardDrop($event)"
+          >
+            <div
+              class="oh-candidate-card"
+              *ngFor="let candidate of col.candidates"
+              cdkDrag
+            >
+              <!-- Drag Placeholder -->
+              <div class="oh-candidate-card-placeholder" *cdkDragPlaceholder></div>
+
+              <!-- Top Content (Avatar, Name, Title) -->
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="oh-avatar oh-avatar--md" [ngClass]="getAvatarClass(candidate.avatarColor)">
+                  {{ candidate.initials }}
+                </span>
+                <div>
+                  <h4 class="oh-candidate-name mb-0 font-weight-bold">{{ candidate.name }}</h4>
+                  <p class="oh-candidate-role mb-0">{{ candidate.role }}</p>
+                </div>
+              </div>
+
+              <!-- Bottom Content (Source, Match %) -->
+              <div class="d-flex align-items-center justify-content-between pt-2 mt-2 border-top">
+                <span class="oh-candidate-source">
+                  {{ candidate.source }}
+                  <span *ngIf="candidate.referredBy"> (by {{ candidate.referredBy }})</span>
+                  <span *ngIf="candidate.agencyName"> (via {{ candidate.agencyName }})</span>
+                </span>
+                <span class="oh-candidate-match">{{ candidate.match }}% match</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Candidate Drawer Overlay -->
+<div class="oh-modal-backdrop" *ngIf="showAddDrawer()">
+  <div class="oh-modal-content">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold">Add Candidate</h3>
+      <button type="button" class="btn-close" (click)="toggleAddDrawer()" aria-label="Close"></button>
+    </div>
+    
+    <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1 overflow-auto">
+      <!-- Resume Upload Dropzone -->
+      <div class="oh-resume-upload-zone" [class.oh-resume-upload-zone--active]="resumeFileName()">
+        <input type="file" #fileInput id="resumeFileInput" (change)="onFileSelected($event)" class="d-none" accept=".pdf,.doc,.docx" />
+        
+        <button
+          *ngIf="resumeFileName()"
+          type="button"
+          class="oh-clear-upload-btn"
+          (click)="clearUploadedFile($event)"
+          aria-label="Remove Resume"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <label for="resumeFileInput" class="w-100 h-100 d-flex flex-column align-items-center justify-content-center cursor-pointer p-4 m-0 text-center">
+          <mat-icon class="oh-upload-icon mb-2">cloud_upload</mat-icon>
+          <span class="oh-upload-title" *ngIf="!resumeFileName()">Upload Resume (PDF, DOCX)</span>
+          <span class="oh-upload-subtitle" *ngIf="!resumeFileName()">AI will automatically fill details</span>
+          <span class="oh-upload-success" *ngIf="resumeFileName()">{{ resumeFileName() }}</span>
+          <span class="oh-upload-success-sub" *ngIf="resumeFileName() && !isAnalyzing()">Resume parsed successfully!</span>
+        </label>
+      </div>
+
+      <!-- AI Parsing Loader -->
+      <div class="oh-ai-loader text-center p-3" *ngIf="isAnalyzing()">
+        <div class="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
+        <p class="oh-body-sm text-primary mb-0 font-weight-bold">AI is parsing and analyzing the resume...</p>
+      </div>
+
+      <!-- Form Inputs -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="candName">Candidate Name</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="candName" [(ngModel)]="candName" placeholder="e.g. Siddharth Malhotra" />
+        </mat-form-field>
+      </div>
+
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="candRole">Applied Role</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select id="candRole" [(ngModel)]="candRole">
+            <mat-option value="Backend Engineer">Backend Engineer</mat-option>
+            <mat-option value="Frontend Engineer">Frontend Engineer</mat-option>
+            <mat-option value="QA Engineer">QA Engineer</mat-option>
+            <mat-option value="DevOps">DevOps</mat-option>
+            <mat-option value="Data Analyst">Data Analyst</mat-option>
+            <mat-option value="Product Designer">Product Designer</mat-option>
+            <mat-option value="Sr. Engineer">Sr. Engineer</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="candEducation">Education Details</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="candEducation" [(ngModel)]="candEducation" placeholder="e.g. B.Tech in Computer Science" />
+        </mat-form-field>
+      </div>
+
+      <div class="border-top border-bottom py-2">
+        <div class="d-flex align-items-center justify-content-between">
+          <span class="font-weight-bold oh-body-sm" style="font-size: 13px;">Candidate has prior experience</span>
+          <mat-slide-toggle [(ngModel)]="candHasExp" color="primary"></mat-slide-toggle>
+        </div>
+
+        <div class="oh-field mt-3" *ngIf="candHasExp">
+          <label class="oh-label oh-label--tight" for="candExperience">Previous Experience Details</label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <textarea matInput id="candExperience" [(ngModel)]="candExperience" rows="3" placeholder="e.g. 2 years at TCS, 1 year at Cognizant"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="candSkills">Skills (comma-separated)</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="candSkills" [(ngModel)]="candSkills" placeholder="e.g. Angular, CSS, TypeScript" />
+        </mat-form-field>
+      </div>
+
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="candSource">Recruitment Source</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select id="candSource" [(ngModel)]="candSource">
+            <mat-option value="Portal">Portal</mat-option>
+            <mat-option value="Referral">Referral</mat-option>
+            <mat-option value="Agency">Agency</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="oh-field" *ngIf="candSource === 'Referral'">
+        <label class="oh-label oh-label--tight" for="candReferrerName">Referred By (Name)</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="candReferrerName" [(ngModel)]="candReferrerName" placeholder="e.g. Rahul Menon" />
+        </mat-form-field>
+      </div>
+
+      <div class="oh-field" *ngIf="candSource === 'Agency'">
+        <label class="oh-label oh-label--tight" for="candAgencyName">Agency Partner (Name)</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="candAgencyName" [(ngModel)]="candAgencyName" placeholder="e.g. TechForce" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="oh-drawer-footer d-flex gap-2 justify-content-end mt-auto">
+      <button mat-button type="button" (click)="toggleAddDrawer()">Cancel</button>
+      <button mat-flat-button color="primary" type="button" [disabled]="!candName.trim() || isAnalyzing()" (click)="submitCandidate()">
+        Add Candidate
+      </button>
+    </div>
+  </div>
+</div>
