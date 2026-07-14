@@ -27,7 +27,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Reconciliation report CSV export',
         points: 3,
         assigneeInitials: 'RM',
-        assigneeColorClass: 'oh-avatar-blue',
+        assigneeColorClass: 'oh-avatar-circle--blue',
         priorityDotColor: 'green'
       },
       {
@@ -36,7 +36,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Audit log retention config',
         points: 2,
         assigneeInitials: 'SK',
-        assigneeColorClass: 'oh-avatar-purple',
+        assigneeColorClass: 'oh-avatar-circle--purple',
         priorityDotColor: 'yellow'
       },
       {
@@ -45,7 +45,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Bulk user import via SCIM',
         points: 5,
         assigneeInitials: 'AK',
-        assigneeColorClass: 'oh-avatar-pink',
+        assigneeColorClass: 'oh-avatar-circle--pink',
         priorityDotColor: 'yellow'
       }
     ]
@@ -61,7 +61,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Permission matrix CRUD grid',
         points: 8,
         assigneeInitials: 'PN',
-        assigneeColorClass: 'oh-avatar-teal',
+        assigneeColorClass: 'oh-avatar-circle--teal',
         priorityDotColor: 'red'
       },
       {
@@ -70,7 +70,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Session monitor — revoke JWT',
         points: 5,
         assigneeInitials: 'DR',
-        assigneeColorClass: 'oh-avatar-blue',
+        assigneeColorClass: 'oh-avatar-circle--blue',
         priorityDotColor: 'red'
       },
       {
@@ -79,7 +79,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Org tree drag reorder',
         points: 5,
         assigneeInitials: 'SI',
-        assigneeColorClass: 'oh-avatar-teal',
+        assigneeColorClass: 'oh-avatar-circle--teal',
         priorityDotColor: 'yellow'
       }
     ]
@@ -95,7 +95,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'SSO — SAML assertion parse',
         points: 3,
         assigneeInitials: 'RM',
-        assigneeColorClass: 'oh-avatar-blue',
+        assigneeColorClass: 'oh-avatar-circle--blue',
         priorityDotColor: 'red'
       },
       {
@@ -104,7 +104,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'MFA enforcement for admins',
         points: 5,
         assigneeInitials: 'AK',
-        assigneeColorClass: 'oh-avatar-pink',
+        assigneeColorClass: 'oh-avatar-circle--pink',
         priorityDotColor: 'red'
       }
     ]
@@ -120,7 +120,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Login — remember device',
         points: 2,
         assigneeInitials: 'SK',
-        assigneeColorClass: 'oh-avatar-purple',
+        assigneeColorClass: 'oh-avatar-circle--purple',
         priorityDotColor: 'green'
       },
       {
@@ -129,7 +129,7 @@ export const INITIAL_BOARD: ProjectColumn[] = [
         title: 'Role inheritance from parent',
         points: 5,
         assigneeInitials: 'PN',
-        assigneeColorClass: 'oh-avatar-teal',
+        assigneeColorClass: 'oh-avatar-circle--teal',
         priorityDotColor: 'yellow'
       }
     ]

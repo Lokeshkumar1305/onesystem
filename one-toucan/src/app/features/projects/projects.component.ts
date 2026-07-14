@@ -77,7 +77,7 @@ export class ProjectsComponent implements OnDestroy {
   storyTypeInput: 'FEATURE' | 'BUG' | 'CHORE' | 'SECURITY' = 'FEATURE';
 
   getAvatarClass(color: string): string {
-    return `oh-avatar--${color}`;
+    return `oh-avatar-circle--${color}`;
   }
 
   getBadgeClass(type: string): string {
@@ -200,10 +200,10 @@ export class ProjectsComponent implements OnDestroy {
 
     const keyNum = Math.floor(Math.random() * 90) + 200; // e.g. ATL-200+
     const typesColors: Record<string, string> = {
-      FEATURE: 'oh-avatar-blue',
-      BUG: 'oh-avatar-pink',
-      SECURITY: 'oh-avatar-teal',
-      CHORE: 'oh-avatar-purple'
+      FEATURE: 'oh-avatar-circle--blue',
+      BUG: 'oh-avatar-circle--pink',
+      SECURITY: 'oh-avatar-circle--teal',
+      CHORE: 'oh-avatar-circle--purple'
     };
 
     const newCard: ProjectCard = {
@@ -212,7 +212,7 @@ export class ProjectsComponent implements OnDestroy {
       title: title,
       points: [1, 2, 3, 5, 8][Math.floor(Math.random() * 5)],
       assigneeInitials: 'RM',
-      assigneeColorClass: typesColors[this.storyTypeInput] || 'oh-avatar-blue',
+      assigneeColorClass: typesColors[this.storyTypeInput] || 'oh-avatar-circle--blue',
       priorityDotColor: ['green', 'yellow', 'red'][Math.floor(Math.random() * 3)] as any
     };
 

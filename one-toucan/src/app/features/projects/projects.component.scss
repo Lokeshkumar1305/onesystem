@@ -379,45 +379,90 @@ textarea:focus-visible {
 }
 
 .oh-member-chip {
-  background: var(--oh-surface-sunken);
+  background: #ffffff;
   border-radius: var(--oh-radius-full);
-  padding: 4px 8px 4px 4px;
+  padding: 6px 12px 6px 6px;
   border: 1px solid var(--oh-border);
   display: flex;
   align-items: center;
+  gap: 8px;
+
+  // .oh-avatar-circle's -6px margin is meant for OVERLAPPING avatar stacks
+  // (the Kanban board header) — inside a chip it just crams the circle
+  // against the name text, so it's cancelled here; sized up from --xs's
+  // 22px too, to read clearly at chip scale.
+  .oh-avatar-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 10.5px;
+    margin-right: 0;
+  }
 }
 
 .oh-member-chip-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--oh-gray-700);
 }
 
 .oh-member-chip-close {
+  width: 20px;
+  height: 20px;
   border: none;
+  border-radius: 50%;
   background: none;
   color: var(--oh-gray-400);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  margin-left: 2px;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 
   &:hover {
+    background-color: var(--oh-gray-100);
     color: var(--oh-gray-800);
   }
 }
 
 .oh-member-inline-input {
-  border: none;
+  border: 1px solid transparent;
   outline: none;
   font-size: 12px;
-  padding: 4px;
+  padding: 4px 8px;
+  border-radius: var(--oh-radius-md);
   flex-grow: 1;
   min-width: 120px;
   color: var(--oh-gray-700);
+
+  // The global :focus-visible ring (styles.scss) paints a thick 3px
+  // box-shadow directly on the raw <input>, which read as an oversized
+  // border — swapped for a thin 1px border matching the rest of the app.
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-color: var(--oh-primary);
+  }
+}
+
+.oh-member-add-btn {
+  border: none;
+  background: var(--oh-primary);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--oh-radius-md);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--oh-primary-hover, var(--oh-primary));
+  }
 }
 
 // Bottom Fixed Footer bar

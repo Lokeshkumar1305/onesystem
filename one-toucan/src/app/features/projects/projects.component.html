@@ -404,6 +404,14 @@
                   [(ngModel)]="newMemberInput"
                   (keyup.enter)="addTeamMember()"
                 />
+                <button
+                  *ngIf="newMemberInput.trim()"
+                  type="button"
+                  class="oh-member-add-btn"
+                  (click)="addTeamMember()"
+                >
+                  Add
+                </button>
               </div>
             </div>
 
