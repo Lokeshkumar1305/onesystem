@@ -1,0 +1,230 @@
+@use './tree-node' as tree;
+@include tree.tree-node-styles;
+
+.oh-tree-container {
+  background: var(--oh-surface);
+}
+
+.oh-org-kpi {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  box-shadow: none;
+
+  .oh-display-h2 {
+    font-size: 32px;
+    color: var(--oh-gray-900);
+    line-height: 1.1;
+  }
+}
+
+.oh-icon-tile {
+  &--blue {
+    background: var(--oh-info-bg);
+    color: var(--oh-info);
+  }
+  &--green {
+    background: var(--oh-success-bg);
+    color: var(--oh-success);
+  }
+  &--purple {
+    background: var(--oh-violet-bg);
+    color: var(--oh-violet);
+  }
+  &--orange {
+    background: var(--oh-warning-bg);
+    color: var(--oh-accent-700);
+  }
+}
+
+.oh-org-form-container {
+  background: var(--oh-gray-25);
+  border-bottom: 1px solid var(--oh-border);
+}
+
+.oh-branch-code-badge {
+  background: var(--oh-success-bg);
+  color: var(--oh-success);
+  font-size: 11px;
+  font-weight: 700;
+  padding: var(--oh-1) var(--oh-2);
+  border-radius: var(--oh-radius-md);
+  border: 1px solid rgba(25, 135, 84, 0.15);
+  letter-spacing: 0.5px;
+}
+
+.oh-branch-row {
+  border-bottom: 1px solid var(--oh-border);
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--oh-gray-25);
+  }
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.oh-branch-row__headcount {
+  font-size: 14.5px;
+}
+
+.oh-spend-code {
+  font-family: var(--oh-font-mono, monospace);
+  font-size: 10px;
+  color: var(--oh-gray-500);
+  background: var(--oh-gray-100);
+  padding: 2px 6px;
+  border-radius: var(--oh-radius-sm);
+  font-weight: 600;
+}
+
+.oh-spend-name {
+  font-size: 13.5px;
+  color: var(--oh-gray-800);
+}
+
+.oh-spend-amount {
+  font-size: 14px;
+  color: var(--oh-gray-900);
+}
+
+.oh-spend-progress-track {
+  height: 6px;
+  background-color: var(--oh-gray-100);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.oh-spend-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+
+  &--green {
+    background-color: var(--oh-success);
+  }
+
+  &--blue {
+    background-color: var(--oh-primary);
+  }
+
+  &--orange {
+    background-color: var(--oh-warning-hover);
+  }
+
+  &--purple {
+    background-color: var(--oh-violet);
+  }
+}
+
+/* Modal Overlay Styling */
+.oh-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  backdrop-filter: blur(1.5px);
+}
+
+.oh-modal-content {
+  background: var(--oh-surface);
+  border-radius: 0;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 460px;
+  padding: 0; // Remove parent padding to let children touch edges
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  animation: oh-drawer-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oh-drawer-header {
+  padding: var(--oh-6) var(--oh-6) var(--oh-4);
+  border-bottom: 1px solid var(--oh-border);
+  flex-shrink: 0;
+
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background-size: 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background-color: var(--oh-gray-100);
+      opacity: 0.8;
+    }
+  }
+}
+
+.oh-drawer-body {
+  padding: var(--oh-4) var(--oh-6) var(--oh-6);
+  overflow-y: auto;
+}
+
+.oh-drawer-footer {
+  padding: var(--oh-5) var(--oh-6);
+  border-top: 1px solid var(--oh-border);
+  background: var(--oh-surface);
+  flex-shrink: 0;
+}
+
+@keyframes oh-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+// .oh-label defaults to justify-content: space-between (needed elsewhere,
+// e.g. the login page's "Password / Forgot?" row). These field labels only
+// have the required-asterisk as a second child, which should sit right next
+// to the text instead.
+.oh-label--tight {
+  justify-content: flex-start;
+  gap: 2px;
+}
+
+::ng-deep .oh-compact-field {
+  .mat-mdc-text-field-wrapper {
+    height: 50px !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 100% !important;
+    align-items: center !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: unset !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  // The global :focus-visible ring (styles.scss) paints a square box-shadow
+  // directly on the <input>/<mat-select>, on top of the field's own outline —
+  // redundant and shows as a "double border", so it's suppressed here.
+  input:focus-visible,
+  mat-select:focus-visible,
+  .mat-mdc-select-trigger:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+

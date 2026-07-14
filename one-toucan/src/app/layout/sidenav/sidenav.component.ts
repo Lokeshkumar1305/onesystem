@@ -35,7 +35,7 @@ export class SidenavComponent {
     {
       title: 'Foundation',
       items: [
-        { label: 'Organization', icon: 'building' },
+        { label: 'Organization', icon: 'building', route: '/organization' },
         { label: 'Employees', icon: 'people', route: '/employees' },
         { label: 'Recruitment', icon: 'person-plus' },
         { label: 'Onboarding', icon: 'person-check', route: '/onboarding' }

@@ -65,3 +65,25 @@ a {
   outline: none;
   box-shadow: var(--oh-focus-ring);
 }
+
+// CDK drag-drop (used by the Department Tree) creates these outside any
+// single component's view encapsulation, so they're styled globally here.
+.cdk-drag-preview {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-radius: var(--oh-radius-md);
+  background: var(--oh-surface);
+  opacity: 0.95;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+body.oh-modal-open {
+  .oh-shell__sidenav,
+  .oh-header {
+    filter: blur(1.5px) brightness(0.92);
+    pointer-events: none;
+    transition: filter 0.25s ease, brightness 0.25s ease;
+  }
+}

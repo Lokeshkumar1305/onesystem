@@ -3,7 +3,7 @@ import { Component, computed, signal, ViewChild, ElementRef } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { provideNativeDateAdapter } from '@angular/material/core';
+
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -56,7 +56,6 @@ const BUNDLE_PRESETS: Record<AccessBundleId, string[]> = {
     MatSlideToggleModule,
     LogoComponent
   ],
-  providers: [provideNativeDateAdapter()],
   templateUrl: './onboarding.component.html',
   styleUrl: './onboarding.component.scss'
 })

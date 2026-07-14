@@ -95,7 +95,7 @@
 }
 
 .oh-onboarding__progress-label {
-  color: color-mix(in srgb, var(--oh-gray-white) 65%, transparent);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .oh-onboarding__steps {
@@ -128,8 +128,8 @@
   font-weight: 700;
   font-size: 13px;
   flex-shrink: 0;
-  border: 1.5px solid color-mix(in srgb, var(--oh-gray-white) 30%, transparent);
-  color: color-mix(in srgb, var(--oh-gray-white) 55%, transparent);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.55);
   background: transparent;
   z-index: 1;
 
@@ -154,7 +154,7 @@
   transform: translateX(-50%);
   width: 2px;
   height: 28px;
-  background: color-mix(in srgb, var(--oh-gray-white) 20%, transparent);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .oh-onboarding__step--done .oh-onboarding__step-marker {
@@ -179,7 +179,7 @@
   font-family: var(--oh-font-ui);
   font-weight: 600;
   font-size: 14px;
-  color: color-mix(in srgb, var(--oh-gray-white) 60%, transparent);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .oh-onboarding__step--active .oh-onboarding__step-title,
@@ -190,11 +190,11 @@
 .oh-onboarding__step-subtitle {
   font-family: var(--oh-font-ui);
   font-size: 12px;
-  color: color-mix(in srgb, var(--oh-gray-white) 40%, transparent);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .oh-onboarding__rail-footer {
-  color: color-mix(in srgb, var(--oh-gray-white) 45%, transparent);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .oh-onboarding__content {

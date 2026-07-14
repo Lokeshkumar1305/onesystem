@@ -1,0 +1,65 @@
+<div
+  cdkDrag
+  [cdkDragData]="dept"
+  class="oh-tree-row d-flex align-items-center justify-content-between"
+  [class.oh-tree-row--child]="dept.level > 0"
+  [style.padding-left.px]="dept.level > 0 ? 56 + (dept.level - 1) * 32 : 16"
+>
+  <span
+    *ngIf="dept.level > 0"
+    class="oh-tree-connector"
+    [style.left.px]="28 + (dept.level - 1) * 32"
+  ></span>
+  <div class="d-flex align-items-center gap-3">
+    <span class="oh-tree-drag-handle" cdkDragHandle aria-label="Drag to reorder">
+      <i class="bi bi-grip-vertical" aria-hidden="true"></i>
+    </span>
+    <span class="oh-tree-bullet oh-tree-bullet--{{ dept.color }}" [class.oh-tree-bullet--sub]="dept.level > 0"></span>
+    <div class="oh-tree-row__info">
+      <p class="oh-tree-row__name mb-0 font-weight-semibold">{{ dept.name }}</p>
+      <p class="oh-caption text-muted mb-0">Head · {{ dept.head }}</p>
+    </div>
+  </div>
+  <div class="d-flex align-items-center gap-3">
+    <span class="oh-badge oh-badge--neutral">{{ dept.headcount }}</span>
+    <button
+      type="button"
+      class="oh-dept-action-btn oh-dept-action-btn--add"
+      (click)="host.addSubDepartment(dept)"
+      [attr.aria-label]="'Add sub-department under ' + dept.name"
+      [title]="'Add sub-department under ' + dept.name"
+    >
+      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+    </button>
+    <button
+      type="button"
+      class="oh-dept-action-btn oh-dept-action-btn--edit"
+      (click)="host.editDepartment(dept)"
+      aria-label="Edit department"
+    >
+      <i class="bi bi-pencil-square" aria-hidden="true"></i>
+    </button>
+    <button
+      type="button"
+      class="oh-dept-action-btn oh-dept-action-btn--delete"
+      (click)="host.removeDepartment(dept)"
+      aria-label="Delete department"
+    >
+      <i class="bi bi-trash" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<div
+  *ngIf="childrenOf(dept.id).length"
+  cdkDropList
+  class="oh-tree-droplist"
+  [cdkDropListData]="childrenOf(dept.id)"
+  (cdkDropListDropped)="host.onSiblingDrop($event, dept.id)"
+>
+  <oh-department-tree-node
+    *ngFor="let child of childrenOf(dept.id)"
+    [dept]="child"
+    [host]="host"
+  ></oh-department-tree-node>
+</div>
