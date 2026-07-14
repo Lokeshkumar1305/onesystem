@@ -62,6 +62,8 @@ export class OrganizationComponent implements OnDestroy {
   newOrgName = '';
   newOrgBranch = '';
   newOrgDept = '';
+  newOrgCostCenterName = '';
+  newOrgCostCenterAmount = '';
 
   // KPI Computations
   readonly branchesCount = computed(() => this.branches().length);
@@ -322,6 +324,9 @@ export class OrganizationComponent implements OnDestroy {
     const orgName = this.newOrgName.trim();
     const branchName = this.newOrgBranch.trim() || 'Headquarters';
     const deptName = this.newOrgDept.trim() || 'General';
+    const ccName = this.newOrgCostCenterName.trim() || 'General & Admin';
+    const ccAmount = this.newOrgCostCenterAmount.trim() || '₹0';
+    const ccCode = 'CC-' + ccName.toUpperCase().replace(/\s+/g, '').substring(0, 3);
 
     // Add new organization to organizations list
     this.organizations.update(list => [...list, orgName]);
@@ -335,7 +340,7 @@ export class OrganizationComponent implements OnDestroy {
       { code: 'HQ-01', name: branchName, type: 'Flexible', headcount: 0 }
     ]);
     this.costCenters.set([
-      { code: 'CC-GEN', name: 'General & Admin', amount: '₹0', progress: 0, color: 'green' }
+      { code: ccCode, name: ccName, amount: ccAmount, progress: 30, color: 'green' }
     ]);
 
     this.toggleOrgModal();
@@ -373,5 +378,7 @@ export class OrganizationComponent implements OnDestroy {
     this.newOrgName = '';
     this.newOrgBranch = '';
     this.newOrgDept = '';
+    this.newOrgCostCenterName = '';
+    this.newOrgCostCenterAmount = '';
   }
 }

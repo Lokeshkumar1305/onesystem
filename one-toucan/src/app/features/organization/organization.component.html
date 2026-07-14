@@ -253,6 +253,18 @@
           <input matInput id="newOrgDept" [(ngModel)]="newOrgDept" placeholder="e.g. Operations" />
         </mat-form-field>
       </div>
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="newOrgCostCenterName">Initial Cost Center Name</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="newOrgCostCenterName" [(ngModel)]="newOrgCostCenterName" placeholder="e.g. Operations OpEx" />
+        </mat-form-field>
+      </div>
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight" for="newOrgCostCenterAmount">Initial Cost Center Spend / Budget</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput id="newOrgCostCenterAmount" [(ngModel)]="newOrgCostCenterAmount" placeholder="e.g. ₹50 L" />
+        </mat-form-field>
+      </div>
     </div>
 
     <div class="oh-drawer-footer d-flex gap-2 justify-content-end mt-auto">
