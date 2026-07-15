@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/shell/shell.component').then(m => m.ShellComponent),
     children: [
       {
+        path: 'home',
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+        data: { title: 'Workspace', subtitle: 'Choose a module to get started' }
+      },
+      {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
@@ -46,6 +51,42 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/projects/projects.component').then(m => m.ProjectsComponent),
         data: { title: 'Projects', subtitle: 'Project list & execution details' }
+      },
+      {
+        path: 'requirements',
+        loadComponent: () =>
+          import('./features/requirements/requirements.component').then(m => m.RequirementsComponent),
+        data: { title: 'Product Backlog', subtitle: 'Requirements & issue tracking' }
+      },
+      {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./features/tasks/tasks.component').then(m => m.TasksComponent),
+        data: { title: 'My Tasks', subtitle: 'Task tracking and execution' }
+      },
+      {
+        path: 'resource-allocation',
+        loadComponent: () =>
+          import('./features/resource-allocation/resource-allocation.component').then(m => m.ResourceAllocationComponent),
+        data: { title: 'Resource Allocation', subtitle: 'Workload & capacity management' }
+      },
+      {
+        path: 'attendance',
+        loadComponent: () =>
+          import('./features/attendance/attendance.component').then(m => m.AttendanceComponent),
+        data: { title: 'Attendance', subtitle: 'Work logs & team trackings' }
+      },
+      {
+        path: 'leave',
+        loadComponent: () =>
+          import('./features/leave/leave.component').then(m => m.LeaveComponent),
+        data: { title: 'Leave Management', subtitle: 'Balances, requests & time-off planning' }
+      },
+      {
+        path: 'bugs',
+        loadComponent: () =>
+          import('./features/bugs/bugs.component').then(m => m.BugsComponent),
+        data: { title: 'Bugs', subtitle: 'Defect tracking & triage' }
       }
     ]
   },

@@ -1,22 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 import { CurrentUserService } from '../../core/auth/current-user.service';
+import { WorkspaceModuleService } from '../../core/workspace/workspace-module.service';
+
+import { LogoComponent } from '../../shared/ui/logo/logo.component';
 
 interface NavItem {
   label: string;
   icon: string;
   route?: string;
-}
-
-import { LogoComponent } from '../../shared/ui/logo/logo.component';
-
-interface NavGroup {
-  title: string;
-  items: NavItem[];
 }
 
 @Component({
@@ -26,68 +24,35 @@ interface NavGroup {
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.scss'
 })
-export class SidenavComponent {
-  activeLabel = 'Dashboard';
+export class SidenavComponent implements OnInit, OnDestroy {
+  private routerSub?: Subscription;
 
-  // Icon names are bootstrap-icons suffixes (rendered as class="bi bi-<icon>").
-  readonly groups: NavGroup[] = [
-    { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
-    {
-      title: 'Foundation',
-      items: [
-        { label: 'Organization', icon: 'building', route: '/organization' },
-        { label: 'Employees', icon: 'people', route: '/employees' },
-        { label: 'Recruitment', icon: 'person-plus', route: '/recruitment' },
-        { label: 'Onboarding', icon: 'person-check', route: '/onboarding' }
-      ]
-    },
-    {
-      title: 'Delivery',
-      items: [
-        { label: 'Skills & Competency', icon: 'stars' },
-        { label: 'Idea Management', icon: 'lightbulb' },
-        { label: 'Business Analysis', icon: 'graph-up' }
-      ]
-    },
-    {
-      title: 'Execution',
-      items: [
-        { label: 'Projects', icon: 'folder', route: '/projects' },
-        { label: 'Requirements', icon: 'list-check' },
-        { label: 'My Tasks', icon: 'check2-square' },
-        { label: 'Resource Allocation', icon: 'diagram-3' }
-      ]
-    },
-    {
-      title: 'Workforce',
-      items: [
-        { label: 'Attendance', icon: 'calendar-check' },
-        { label: 'Leave', icon: 'airplane' },
-        { label: 'Timesheets', icon: 'clock' }
-      ]
-    },
-    {
-      title: 'Knowledge',
-      items: [
-        { label: 'Documents', icon: 'file-text' },
-        { label: 'Knowledge Base', icon: 'book' },
-        { label: 'KT Management', icon: 'mortarboard' }
-      ]
-    },
-    {
-      title: 'Intelligence',
-      items: [
-        { label: 'Notifications', icon: 'bell' },
-        { label: 'Analytics', icon: 'bar-chart', route: '/dashboard' },
-        { label: 'System Config', icon: 'gear' }
-      ]
-    }
-  ];
+  readonly activeModule = this.workspaceModules.activeModule;
+  readonly groups = computed(() => this.activeModule()?.groups ?? []);
+
+  activeRoute = '';
 
   constructor(
     private readonly router: Router,
-    private readonly currentUser: CurrentUserService
+    private readonly currentUser: CurrentUserService,
+    private readonly workspaceModules: WorkspaceModuleService
   ) {}
+
+  ngOnInit(): void {
+    this.syncActiveState(this.router.url);
+    this.routerSub = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(event => this.syncActiveState((event as NavigationEnd).urlAfterRedirects));
+  }
+
+  ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+  }
+
+  private syncActiveState(url: string): void {
+    this.activeRoute = url.split('?')[0].split('#')[0];
+    this.workspaceModules.syncFromUrl(this.activeRoute);
+  }
 
   get userName(): string {
     return this.currentUser.fullName();
@@ -97,8 +62,19 @@ export class SidenavComponent {
     return this.currentUser.initials();
   }
 
+  get isHome(): boolean {
+    return this.activeRoute === '/home';
+  }
+
+  isActive(item: NavItem): boolean {
+    return !!item.route && this.activeRoute === item.route;
+  }
+
+  goHome(): void {
+    this.router.navigateByUrl('/home');
+  }
+
   select(item: NavItem): void {
-    this.activeLabel = item.label;
     if (item.route) {
       this.router.navigateByUrl(item.route);
     }

@@ -46,6 +46,6 @@ export class LoginComponent {
     if (email) {
       this.currentUser.setEmail(email);
     }
-    this.router.navigateByUrl('/dashboard');
+    this.router.navigateByUrl('/home');
   }
 }

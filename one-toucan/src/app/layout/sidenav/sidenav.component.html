@@ -4,19 +4,38 @@
   </div>
 
   <mat-nav-list class="oh-nav" dense>
-    <ng-container *ngFor="let group of groups">
-      <h3 matSubheader class="oh-nav__group-title">{{ group.title }}</h3>
-      <button
-        mat-list-item
-        *ngFor="let item of group.items"
-        class="oh-nav__item"
-        [activated]="item.label === activeLabel"
-        [class.oh-nav__item--active]="item.label === activeLabel"
-        (click)="select(item)"
-      >
-        <i matListItemIcon class="bi bi-{{ item.icon }} oh-nav__item-icon" aria-hidden="true"></i>
-        <span matListItemTitle class="oh-nav__item-label">{{ item.label }}</span>
-      </button>
+    <button
+      mat-list-item
+      class="oh-nav__item oh-nav__item--home"
+      [activated]="isHome"
+      [class.oh-nav__item--active]="isHome"
+      (click)="goHome()"
+    >
+      <i matListItemIcon class="bi bi-grid oh-nav__item-icon" aria-hidden="true"></i>
+      <span matListItemTitle class="oh-nav__item-label">Home</span>
+    </button>
+
+    <ng-container *ngIf="activeModule() as module">
+      <h3 matSubheader class="oh-nav__module-title">
+        <i class="bi bi-{{ module.icon }}" aria-hidden="true"></i>
+        {{ module.label }}
+      </h3>
+
+      <ng-container *ngFor="let group of groups()">
+        <h3 matSubheader class="oh-nav__group-title">{{ group.title }}</h3>
+        <button
+          mat-list-item
+          *ngFor="let item of group.items"
+          class="oh-nav__item"
+          [activated]="isActive(item)"
+          [class.oh-nav__item--active]="isActive(item)"
+          [disabled]="!item.route"
+          (click)="select(item)"
+        >
+          <i matListItemIcon class="bi bi-{{ item.icon }} oh-nav__item-icon" aria-hidden="true"></i>
+          <span matListItemTitle class="oh-nav__item-label">{{ item.label }}</span>
+        </button>
+      </ng-container>
     </ng-container>
   </mat-nav-list>
 

@@ -1,0 +1,743 @@
+<!-- Top View Subnav bar -->
+<div class="oh-subnav border-bottom border-light bg-white px-4 py-2 d-flex align-items-center">
+  <div class="d-flex gap-2">
+    <button
+      class="oh-subnav-btn"
+      [class.active]="activeTab() === 'personal'"
+      (click)="activeTab.set('personal')"
+    >
+      My Attendance
+    </button>
+    <button
+      class="oh-subnav-btn"
+      [class.active]="activeTab() === 'team'"
+      (click)="activeTab.set('team')"
+    >
+      Team Attendance
+    </button>
+  </div>
+</div>
+
+<div class="container-fluid oh-attendance-page py-4" (click)="closeRowMenu()">
+  <!-- VIEW 1: MY PERSONAL ATTENDANCE -->
+  <div *ngIf="activeTab() === 'personal'" class="d-flex flex-column gap-4">
+    <!-- Top metrics cards row -->
+    <div class="row g-4">
+      <!-- Attendance Stats Card -->
+      <div class="col-lg-4 col-md-6">
+        <mat-card appearance="outlined" class="oh-metric-card h-100">
+          <mat-card-content class="p-4 d-flex flex-column justify-content-between h-100">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="oh-card-title mb-0">Attendance Stats</h3>
+                <span class="oh-dropdown-trigger text-primary text-decoration-none cursor-pointer oh-caption font-weight-bold">
+                  Last Week <i class="bi bi-chevron-down ms-1"></i>
+                </span>
+              </div>
+
+              <!-- Stats Rows -->
+              <div class="d-flex flex-column gap-3">
+                <!-- Me -->
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="oh-stat-avatar oh-stat-avatar--orange">
+                      <i class="bi bi-person"></i>
+                    </span>
+                    <span class="font-weight-bold text-dark fs-6">Me</span>
+                  </div>
+                  <div class="d-flex gap-4 text-end">
+                    <div>
+                      <p class="oh-stat-value mb-0 text-dark">8h 38m</p>
+                      <p class="oh-caption mb-0 text-muted">AVG HRS / DAY</p>
+                    </div>
+                    <div>
+                      <p class="oh-stat-value mb-0 text-dark">0%</p>
+                      <p class="oh-caption mb-0 text-muted">ON TIME ARRIVAL</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- My Team -->
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="oh-stat-avatar oh-stat-avatar--blue">
+                      <i class="bi bi-people"></i>
+                    </span>
+                    <span class="font-weight-bold text-dark fs-6">My Team</span>
+                  </div>
+                  <div class="d-flex gap-4 text-end">
+                    <div>
+                      <p class="oh-stat-value mb-0 text-dark">7h 16m</p>
+                      <p class="oh-caption mb-0 text-muted">AVG HRS / DAY</p>
+                    </div>
+                    <div>
+                      <p class="oh-stat-value mb-0 text-dark">26%</p>
+                      <p class="oh-caption mb-0 text-muted">ON TIME ARRIVAL</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-4 pt-3 border-top border-light">
+              <div>
+                <p class="oh-stats-date mb-0">Tue, 14 Jul 2026</p>
+              </div>
+              <div>
+                <div class="oh-stats-clock-box px-3 py-1.5 border rounded">
+                  {{ clockTime() }}
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Timings Card -->
+      <div class="col-lg-4 col-md-6">
+        <mat-card appearance="outlined" class="oh-metric-card h-100">
+          <mat-card-content class="p-4 d-flex flex-column justify-content-between h-100">
+            <div>
+              <h3 class="oh-card-title mb-3">Timings</h3>
+              
+              <!-- Week Days strip -->
+              <div class="d-flex gap-2 mb-4">
+                <span class="oh-day-bubble active">M</span>
+                <span class="oh-day-bubble active">T</span>
+                <span class="oh-day-bubble active">W</span>
+                <span class="oh-day-bubble active">T</span>
+                <span class="oh-day-bubble active">F</span>
+                <span class="oh-day-bubble">S</span>
+                <span class="oh-day-bubble">S</span>
+              </div>
+
+              <!-- Today Shift Tracker -->
+              <div>
+                <p class="oh-caption mb-2 text-dark font-weight-bold">Today (9:30 AM - 6:30 PM)</p>
+                <div class="oh-timings-progress-wrapper mb-2">
+                  <div class="oh-timings-progress-fill" style="width: 50%;"></div>
+                  <div class="oh-timings-progress-break" style="left: 50%; width: 10%;"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="oh-caption text-muted">Duration: 9h 0m</span>
+                  <span class="oh-caption text-muted"><i class="bi bi-cup-hot me-1"></i> 60 min break</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Actions/Clock Card -->
+      <div class="col-lg-4 col-md-12">
+        <mat-card appearance="outlined" class="oh-quick-check-card w-100 h-100">
+          <mat-card-content class="p-4 d-flex flex-column justify-content-between h-100">
+            <div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <p class="oh-caption mb-0 text-white-50 font-weight-bold">Today &middot; Tue 14 Jul 2026</p>
+                <span class="oh-policy-link cursor-pointer text-white-50 oh-caption font-weight-bold">
+                  <i class="bi bi-file-earmark-text me-1"></i> Policy
+                </span>
+              </div>
+              
+              <!-- Punch Info -->
+              <div class="mb-3">
+                <div class="d-flex align-items-baseline gap-2">
+                  <h3 class="display-4 font-weight-bold text-white mb-0" *ngIf="isCheckedIn()">09:02</h3>
+                  <h3 class="display-4 font-weight-bold text-white mb-0" *ngIf="!isCheckedIn()">{{ clockTime().split(' ')[0] }}</h3>
+                  <span class="oh-caption text-white-50 font-weight-bold">
+                    {{ isCheckedIn() ? 'checked in' : 'checked out' }}
+                  </span>
+                </div>
+                <p class="oh-caption text-white-50 mb-0 mt-1">
+                  Office &middot; Bengaluru HQ &middot; {{ checkInElapsed() }} elapsed
+                </p>
+              </div>
+
+              <!-- Button Checkout -->
+              <button
+                class="btn btn-light w-100 py-2 font-weight-bold oh-btn-checkout"
+                (click)="toggleCheckIn()"
+              >
+                {{ isCheckedIn() ? 'Check out' : 'Check in' }}
+              </button>
+            </div>
+
+            <!-- Mon-Fri Tracker circles strip -->
+            <div class="d-flex justify-content-between align-items-center pt-2 mt-3">
+              <!-- Mon -->
+              <div class="text-center">
+                <p class="oh-caption text-white-50 mb-1 font-weight-bold">MON</p>
+                <span class="oh-check-circle checked"><i class="bi bi-check-lg"></i></span>
+              </div>
+              <!-- Tue -->
+              <div class="text-center">
+                <p class="oh-caption text-white-50 mb-1 font-weight-bold">TUE</p>
+                <span class="oh-check-circle checked" [class.active]="!isCheckedIn()"><i class="bi bi-check-lg" *ngIf="isCheckedIn()"></i></span>
+              </div>
+              <!-- Wed -->
+              <div class="text-center">
+                <p class="oh-caption text-white-50 mb-1 font-weight-bold">WED</p>
+                <span class="oh-check-circle"></span>
+              </div>
+              <!-- Thu -->
+              <div class="text-center">
+                <p class="oh-caption text-white-50 mb-1 font-weight-bold">THU</p>
+                <span class="oh-check-circle"></span>
+              </div>
+              <!-- Fri -->
+              <div class="text-center">
+                <p class="oh-caption text-white-50 mb-1 font-weight-bold">FRI</p>
+                <span class="oh-check-circle"></span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Logs & Requests Section -->
+    <mat-card appearance="outlined" class="oh-panel">
+      <mat-card-content class="p-4">
+        <!-- Sub nav list headers -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 border-bottom border-light pb-3 mb-4">
+          <div class="d-flex gap-4">
+            <span
+              class="oh-logs-subtab-btn cursor-pointer"
+              [class.active]="logsSubTab() === 'logs'"
+              (click)="logsSubTab.set('logs')"
+            >
+              Attendance Log
+            </span>
+            <span
+              class="oh-logs-subtab-btn cursor-pointer"
+              [class.active]="logsSubTab() === 'calendar'"
+              (click)="logsSubTab.set('calendar')"
+            >
+              Calendar
+            </span>
+            <span
+              class="oh-logs-subtab-btn cursor-pointer"
+              [class.active]="logsSubTab() === 'requests'"
+              (click)="logsSubTab.set('requests')"
+            >
+              Attendance Requests
+            </span>
+          </div>
+
+          <!-- Format Toggle -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="oh-caption text-muted">24 hour format</span>
+            <mat-slide-toggle
+              [checked]="use24HourFormat()"
+              (change)="toggle24Hour($event.checked)"
+            >
+            </mat-slide-toggle>
+          </div>
+        </div>
+
+        <!-- Tab 1: Attendance Log List -->
+        <div *ngIf="logsSubTab() === 'logs'">
+          <!-- Filter strip: 30 Days, months -->
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h4 class="oh-heading-h4 mb-0 text-dark font-weight-bold">Last 30 Days</h4>
+            <div class="d-flex gap-1 oh-month-filter-group">
+              <button
+                class="oh-month-btn"
+                [class.active]="activeMonthFilter() === '30days'"
+                (click)="activeMonthFilter.set('30days')"
+              >
+                30 DAYS
+              </button>
+              <button
+                class="oh-month-btn"
+                [class.active]="activeMonthFilter() === 'jun'"
+                (click)="activeMonthFilter.set('jun')"
+              >
+                JUN
+              </button>
+              <button
+                class="oh-month-btn"
+                [class.active]="activeMonthFilter() === 'may'"
+                (click)="activeMonthFilter.set('may')"
+              >
+                MAY
+              </button>
+              <button
+                class="oh-month-btn"
+                [class.active]="activeMonthFilter() === 'apr'"
+                (click)="activeMonthFilter.set('apr')"
+              >
+                APR
+              </button>
+            </div>
+          </div>
+
+          <!-- Logs Table -->
+          <div class="table-responsive">
+            <table class="oh-logs-table w-100">
+              <thead>
+                <tr>
+                  <th class="text-start pb-2">Date</th>
+                  <th class="text-start pb-2">Attendance Visual</th>
+                  <th class="text-center pb-2">Effective Hours</th>
+                  <th class="text-center pb-2">Break Taken</th>
+                  <th class="text-center pb-2">Gross Hours</th>
+                  <th class="text-center pb-2" style="width: 60px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Loop over logs -->
+                <ng-container *ngFor="let row of personalLogs()">
+                  <!-- Weekend off row -->
+                  <tr *ngIf="row.isWeekend" class="oh-weekend-row align-middle">
+                    <td class="text-start py-3 font-weight-bold text-dark">
+                      {{ row.date }} <span class="oh-badge oh-badge--neutral ms-2">W-OFF</span>
+                    </td>
+                    <td colspan="4" class="text-center py-3 text-muted oh-caption italic-text">
+                      Full day Weekly-off
+                    </td>
+                    <td class="text-center py-3">—</td>
+                  </tr>
+
+                  <!-- Active work row -->
+                  <tr *ngIf="!row.isWeekend" class="align-middle">
+                    <!-- Date -->
+                    <td class="text-start py-3 font-weight-bold text-dark">
+                      {{ row.date }}
+                    </td>
+
+                    <!-- Attendance Visual -->
+                    <td class="text-start py-3 pe-4">
+                      <!-- Custom visual block timeline representation -->
+                      <div class="oh-timeline-visualizer-bar" *ngIf="row.timelineSegments && row.timelineSegments.length > 0">
+                        <div
+                          *ngFor="let seg of row.timelineSegments"
+                          [class]="seg.type === 'work' ? 'oh-timeline-segment--work' : 'oh-timeline-segment--break'"
+                          [style.width.%]="seg.widthPct"
+                        ></div>
+                      </div>
+                      <span *ngIf="!row.timelineSegments || row.timelineSegments.length === 0" class="text-muted oh-caption">—</span>
+                    </td>
+
+                    <!-- Effective Hours -->
+                    <td class="text-center py-3 font-weight-bold text-dark">
+                      <i class="bi bi-circle-fill text-primary oh-micro-dot me-1" *ngIf="row.effectiveHours !== '0h 0m+'"></i>
+                      <i class="bi bi-circle oh-micro-dot me-1 text-muted" *ngIf="row.effectiveHours === '0h 0m+'"></i>
+                      {{ row.effectiveHours }}
+                    </td>
+
+                    <!-- Break Taken -->
+                    <td class="text-center py-3 text-dark">
+                      {{ row.breakTaken }}
+                    </td>
+
+                    <!-- Gross Hours -->
+                    <td class="text-center py-3 text-dark font-weight-bold">
+                      {{ row.grossHours }}
+                    </td>
+
+                    <!-- Action context menu -->
+                    <td class="text-center py-3 position-relative">
+                      <button
+                        class="oh-action-menu-trigger"
+                        (click)="toggleRowMenu(row.date, $event)"
+                        title="Actions"
+                      >
+                        <i class="bi bi-three-dots"></i>
+                      </button>
+
+                      <!-- Floating row action menu options -->
+                      <div class="oh-floating-action-menu" *ngIf="activeMenuRowDate() === row.date">
+                        <button type="button" (click)="openRegularize(row.date)">Regularize</button>
+                        <button type="button" (click)="openLeaveRequest(row.date)">Request Leave</button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Calendar View -->
+        <div *ngIf="logsSubTab() === 'calendar'" class="py-2 px-4">
+          <!-- Calendar Month Navigation Header -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-outline-light oh-btn-nav-cal" (click)="prevMonth()" title="Previous Month">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <h4 class="oh-heading-h4 mb-0 text-dark font-weight-bold" style="min-width: 140px; text-align: center;">
+                {{ monthLabel() }}
+              </h4>
+              <button class="btn btn-outline-light oh-btn-nav-cal" (click)="nextMonth()" title="Next Month">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+            <div class="d-flex gap-2">
+              <span class="oh-badge oh-badge--neutral">W-OFF: Weekend Off</span>
+              <span class="oh-badge oh-badge--success">Present</span>
+              <span class="oh-badge oh-badge--info">On Leave</span>
+            </div>
+          </div>
+
+          <!-- Calendar Grid -->
+          <div class="oh-calendar-grid">
+            <!-- Weekday Titles -->
+            <div class="oh-calendar-header">MON</div>
+            <div class="oh-calendar-header">TUE</div>
+            <div class="oh-calendar-header">WED</div>
+            <div class="oh-calendar-header">THU</div>
+            <div class="oh-calendar-header">FRI</div>
+            <div class="oh-calendar-header text-danger">SAT</div>
+            <div class="oh-calendar-header text-danger">SUN</div>
+
+            <!-- Calendar Days Loop -->
+            <ng-container *ngFor="let cell of calendarDays()">
+              <!-- Day Slot -->
+              <div
+                class="oh-calendar-cell"
+                [class.oh-calendar-cell--weekend]="cell.isWeekend"
+                [class.oh-calendar-cell--active]="cell.isCurrentMonth && cell.dayNumber === 14 && currentMonth() === 6 && currentYear() === 2026"
+                [class.oh-calendar-cell--muted]="!cell.isCurrentMonth"
+              >
+                <!-- Day Number -->
+                <div class="d-flex justify-content-between align-items-start">
+                  <span class="oh-calendar-day-num font-weight-bold" [class.text-danger]="cell.isWeekend">
+                    {{ cell.dayNumber }}
+                  </span>
+                  
+                  <!-- Today Indicator -->
+                  <span *ngIf="cell.isCurrentMonth && cell.dayNumber === 14 && currentMonth() === 6 && currentYear() === 2026" class="oh-badge oh-badge-pill oh-badge--warning oh-badge--xs">Today</span>
+                </div>
+
+                <!-- Status / Content inside cell (Only for current month) -->
+                <div class="oh-calendar-cell-content mt-2 d-flex flex-column align-items-center justify-content-center">
+                  <ng-container *ngIf="cell.isCurrentMonth">
+                    <!-- Weekend Off -->
+                    <ng-container *ngIf="cell.isWeekend">
+                      <span class="oh-badge oh-badge--neutral">W-OFF</span>
+                    </ng-container>
+
+                    <!-- Weekdays -->
+                    <ng-container *ngIf="!cell.isWeekend">
+                      <!-- Present / Log entry hours -->
+                      <div *ngIf="cell.log && cell.log.effectiveHours !== '0h 0m' && cell.log.effectiveHours !== 'Leave'" class="text-center">
+                        <span class="oh-badge oh-badge--success py-0.5 px-2">
+                          {{ cell.log.effectiveHours }}
+                        </span>
+                      </div>
+
+                      <!-- On Leave -->
+                      <div *ngIf="cell.log && cell.log.effectiveHours === 'Leave'" class="text-center">
+                        <span class="oh-badge oh-badge--info py-0.5 px-2">Leave</span>
+                      </div>
+
+                      <!-- Empty Weekday (No entry yet) -->
+                      <div *ngIf="!cell.log" class="text-center">
+                        <span class="oh-badge oh-badge--neutral py-0.5 px-2 text-muted" style="opacity: 0.5;">—</span>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </div>
+
+                <!-- Shift timings footer inside cell (Only for current month) -->
+                <div class="mt-auto pt-2 text-start" *ngIf="cell.isCurrentMonth">
+                  <p class="mb-0 text-muted" style="font-size: 10px; font-weight: 500;" *ngIf="!cell.isWeekend">
+                    9:30 AM - 6:30 PM
+                  </p>
+                  <p class="mb-0 text-muted" style="font-size: 10px; font-weight: 500;" *ngIf="cell.isWeekend">
+                    W-OFF
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Tab 3: Attendance Requests placeholder -->
+        <div *ngIf="logsSubTab() === 'requests'" class="text-center py-5">
+          <i class="bi bi-file-earmark-check display-4 text-muted mb-3 d-block"></i>
+          <p class="mb-0 text-muted">Attendance Regularization and Leave requests will display here.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- VIEW 2: TEAM ATTENDANCE (MANAGER DASHBOARD) -->
+  <div *ngIf="activeTab() === 'team'" class="d-flex flex-column gap-4">
+    <!-- Top metrics cards row -->
+    <div class="row g-4">
+      <!-- Present today count -->
+      <div class="col-lg-3 col-sm-6">
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-4">
+            <p class="oh-caption text-muted mb-1 uppercase-day font-weight-bold">Present Today</p>
+            <h3 class="display-6 mb-0 text-success font-weight-bold">{{ teamMetrics().present }}</h3>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- On leave count -->
+      <div class="col-lg-3 col-sm-6">
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-4">
+            <p class="oh-caption text-muted mb-1 uppercase-day font-weight-bold">On Leave</p>
+            <h3 class="display-6 mb-0 text-primary font-weight-bold">{{ teamMetrics().leave }}</h3>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Late marks count -->
+      <div class="col-lg-3 col-sm-6">
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-4">
+            <p class="oh-caption text-muted mb-1 uppercase-day font-weight-bold">Late Marks</p>
+            <h3 class="display-6 mb-0 text-warning font-weight-bold">{{ teamMetrics().late }}</h3>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Average working hours -->
+      <div class="col-lg-3 col-sm-6">
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-4">
+            <p class="oh-caption text-muted mb-1 uppercase-day font-weight-bold">Avg Hours</p>
+            <h3 class="display-6 mb-0 text-dark font-weight-bold">{{ teamMetrics().avgHrs }}</h3>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Main Content layout -->
+    <div class="row g-4">
+      <!-- Right Panel: Searchable team list -->
+      <div class="col-lg-12">
+        <mat-card appearance="outlined" class="oh-panel h-100">
+          <mat-card-content class="p-4">
+            <!-- Header bar search & members count -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+              <div>
+                <h3 class="oh-heading-h3 mb-1 text-dark">Team Attendance</h3>
+                <p class="oh-caption text-muted mb-0">Thu 25 Jun &middot; {{ filteredTeam().length }} members</p>
+              </div>
+
+              <!-- Search -->
+              <div class="oh-search-container" (click)="$event.stopPropagation()">
+                <i class="bi bi-search oh-search-icon"></i>
+                <input
+                  type="text"
+                  class="oh-search-input"
+                  placeholder="Search team member or status..."
+                  [value]="teamSearchQuery()"
+                  (input)="teamSearchQuery.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <!-- Team Attendance list Table -->
+            <div class="table-responsive">
+              <table class="oh-team-table w-100">
+                <thead>
+                  <tr>
+                    <th class="text-start pb-2">Member</th>
+                    <th class="text-center pb-2">In</th>
+                    <th class="text-center pb-2">Out</th>
+                    <th class="text-center pb-2">Hrs</th>
+                    <th class="text-center pb-2" style="width: 100px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let member of filteredTeam()" class="align-middle">
+                    <!-- Member info -->
+                    <td class="text-start py-3">
+                      <div class="d-flex align-items-center gap-3">
+                        <span
+                          class="oh-avatar oh-avatar--sm flex-shrink-0"
+                          [style.background]="'var(' + member.avatarBgVar + ')'"
+                          [style.color]="'var(' + member.avatarColorVar + ')'"
+                        >
+                          {{ member.initials }}
+                        </span>
+                        <div>
+                          <p class="oh-team-name mb-0 font-weight-bold text-dark">{{ member.name }}</p>
+                          <p class="oh-caption mb-0 text-muted">{{ member.location }}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- In -->
+                    <td class="text-center py-3 text-dark">
+                      {{ member.inTime }}
+                    </td>
+
+                    <!-- Out -->
+                    <td class="text-center py-3 text-dark">
+                      {{ member.outTime }}
+                    </td>
+
+                    <!-- Hours -->
+                    <td class="text-center py-3 text-dark font-weight-bold">
+                      {{ member.hours }}
+                    </td>
+
+                    <!-- Status badge -->
+                    <td class="text-center py-3">
+                      <span
+                        class="oh-badge"
+                        [class.oh-badge--success]="member.status === 'Present'"
+                        [class.oh-badge--warning]="member.status === 'Late'"
+                        [class.oh-badge--info]="member.status === 'On Leave'"
+                        [class.oh-badge--danger]="member.status === 'Absent'"
+                      >
+                        {{ member.status }}
+                      </span>
+                    </td>
+                  </tr>
+
+                  <!-- Empty state -->
+                  <tr *ngIf="filteredTeam().length === 0">
+                    <td colspan="5" class="text-center py-5">
+                      <i class="bi bi-people-fill display-4 text-muted mb-2 d-block"></i>
+                      <p class="oh-caption text-muted mb-0">No matching team members found.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAYS -->
+
+<!-- 1. Regularization Request Drawer -->
+<div class="oh-modal-backdrop" *ngIf="showRegularizeDrawer()">
+  <div class="oh-modal-content">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold">
+        Regularize Attendance
+      </h3>
+      <button type="button" class="btn-close" (click)="closeDrawers()" aria-label="Close"></button>
+    </div>
+
+    <!-- Regularization Form -->
+    <form [formGroup]="regularizeForm" (ngSubmit)="submitRegularization()" class="d-flex flex-column h-100">
+      <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1">
+        <!-- Date display -->
+        <div class="p-3 bg-light rounded mb-2">
+          <p class="oh-caption text-muted mb-0">Target Log Date</p>
+          <h4 class="h5 mb-0 font-weight-bold text-dark">{{ selectedLogDate() }}</h4>
+        </div>
+
+        <!-- In time -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="timeIn">Check In Time *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput id="timeIn" formControlName="timeIn" placeholder="e.g. 09:02 AM" />
+          </mat-form-field>
+        </div>
+
+        <!-- Out time -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="timeOut">Check Out Time *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput id="timeOut" formControlName="timeOut" placeholder="e.g. 06:15 PM" />
+          </mat-form-field>
+        </div>
+
+        <!-- Reason -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="reason">Reason for Regularization *</label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <textarea matInput id="reason" formControlName="reason" rows="4" placeholder="Brief explanation..."></textarea>
+          </mat-form-field>
+          <div *ngIf="regularizeForm.get('reason')?.touched && regularizeForm.get('reason')?.invalid" class="text-danger oh-caption mt-1">
+            Reason is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="oh-drawer-footer d-flex gap-2 justify-content-end mt-auto">
+        <button mat-button type="button" (click)="closeDrawers()">Cancel</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="regularizeForm.invalid">
+          Submit Request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 2. Leave Request Drawer -->
+<div class="oh-modal-backdrop" *ngIf="showLeaveDrawer()">
+  <div class="oh-modal-content">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold">
+        Request Leave
+      </h3>
+      <button type="button" class="btn-close" (click)="closeDrawers()" aria-label="Close"></button>
+    </div>
+
+    <!-- Leave Form -->
+    <form [formGroup]="leaveForm" (ngSubmit)="submitLeave()" class="d-flex flex-column h-100">
+      <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1">
+        <!-- Date display -->
+        <div class="p-3 bg-light rounded mb-2">
+          <p class="oh-caption text-muted mb-0">Requested From Date</p>
+          <h4 class="h5 mb-0 font-weight-bold text-dark">{{ selectedLogDate() }}</h4>
+        </div>
+
+        <!-- Type -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="leaveType">Leave Type *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <mat-select id="leaveType" formControlName="leaveType">
+              <mat-option value="Casual">Casual Leave</mat-option>
+              <mat-option value="Sick">Sick Leave</mat-option>
+              <mat-option value="Earned">Earned Leave</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Start -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="startDate">Start Date *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput type="date" id="startDate" formControlName="startDate" />
+          </mat-form-field>
+        </div>
+
+        <!-- End -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="endDate">End Date *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput type="date" id="endDate" formControlName="endDate" />
+          </mat-form-field>
+        </div>
+
+        <!-- Reason -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="leaveReason">Reason *</label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <textarea matInput id="leaveReason" formControlName="reason" rows="4" placeholder="Brief explanation..."></textarea>
+          </mat-form-field>
+          <div *ngIf="leaveForm.get('reason')?.touched && leaveForm.get('reason')?.invalid" class="text-danger oh-caption mt-1">
+            Reason is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="oh-drawer-footer d-flex gap-2 justify-content-end mt-auto">
+        <button mat-button type="button" (click)="closeDrawers()">Cancel</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="leaveForm.invalid">
+          Submit Request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -36,6 +36,33 @@
   }
 }
 
+.oh-nav__module-title {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+  font-family: var(--oh-font-ui) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--oh-primary) !important;
+  height: auto !important;
+  padding: var(--oh-5) var(--oh-3) var(--oh-1) !important;
+  border-top: 1px solid var(--oh-border);
+  margin-top: var(--oh-2);
+
+  i {
+    font-size: 15px;
+  }
+}
+
+.oh-nav__item--home {
+  margin-bottom: var(--oh-1);
+}
+
+.oh-nav__item[disabled] {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .oh-nav__group-title {
   font-family: var(--oh-font-ui) !important;
   font-size: 11px !important;

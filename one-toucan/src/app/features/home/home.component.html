@@ -1,0 +1,35 @@
+<div class="oh-home">
+  <div class="oh-home__greeting">
+    <h1 class="oh-display-h2 mb-2">{{ greeting }}, {{ userFirstName }}</h1>
+    <p class="oh-caption mb-0">Choose a workspace to get started.</p>
+  </div>
+
+  <div class="oh-home__grid">
+    <button
+      type="button"
+      class="oh-home__card"
+      [class.oh-home__card--violet]="module.accent === 'violet'"
+      [class.oh-home__card--teal]="module.accent === 'teal'"
+      [class.oh-home__card--amber]="module.accent === 'amber'"
+      *ngFor="let module of modules"
+      (click)="enterModule(module)"
+    >
+      <span class="oh-home__card-icon">
+        <i class="bi bi-{{ module.icon }}" aria-hidden="true"></i>
+      </span>
+
+      <p class="oh-overline oh-home__card-tagline mb-0">{{ module.tagline }}</p>
+      <h2 class="oh-heading-h3 oh-home__card-title mb-0">{{ module.label }}</h2>
+      <p class="oh-body oh-home__card-desc mb-0">{{ module.description }}</p>
+
+      <div class="oh-home__card-chips">
+        <span class="oh-badge oh-badge--neutral" *ngFor="let label of highlightItems(module)">{{ label }}</span>
+      </div>
+
+      <span class="oh-home__card-cta">
+        Open workspace
+        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+      </span>
+    </button>
+  </div>
+</div>

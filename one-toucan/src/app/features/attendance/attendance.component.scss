@@ -1,0 +1,633 @@
+.oh-attendance-page {
+  .oh-panel {
+    background: var(--oh-surface);
+    border: 1px solid var(--oh-border);
+    border-radius: var(--oh-radius-xl);
+    box-shadow: var(--oh-shadow-sm);
+  }
+}
+
+/* Subnav View Switcher Bar */
+.oh-subnav {
+  background: var(--oh-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.oh-subnav-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--oh-font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oh-gray-500);
+  padding: var(--oh-3) var(--oh-5);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  border-radius: var(--oh-radius-md);
+
+  &:hover {
+    color: var(--oh-primary);
+    background-color: var(--oh-gray-50);
+  }
+
+  &.active {
+    color: var(--oh-primary);
+    background-color: var(--oh-primary-soft);
+    font-weight: 700;
+  }
+}
+
+/* Attendance Stats avatar circles */
+.oh-stat-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 14px;
+  
+  &--orange {
+    background-color: #fef3c7;
+    color: #d97706;
+  }
+  
+  &--blue {
+    background-color: #dbeafe;
+    color: #2563eb;
+  }
+}
+
+.oh-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Day Bubbles (Timings Card) */
+.oh-day-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-family: var(--oh-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--oh-gray-100);
+  color: var(--oh-gray-400);
+
+  &.active {
+    background-color: var(--oh-primary-soft);
+    color: var(--oh-primary);
+    border: 1px solid var(--oh-primary);
+  }
+}
+
+/* Timings Progress Tracker Bar */
+.oh-timings-progress-wrapper {
+  height: 10px;
+  background-color: var(--oh-gray-100);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.oh-timings-progress-fill {
+  height: 100%;
+  background-color: var(--oh-primary); /* Primary active fill */
+  border-radius: 5px;
+}
+
+.oh-timings-progress-break {
+  height: 100%;
+  background-color: #f59e0b; /* Amber break interval */
+  position: absolute;
+  top: 0;
+}
+
+/* Actions Button overrides */
+.oh-clock-btn {
+  height: 44px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  border-radius: var(--oh-radius-lg) !important;
+}
+
+/* Logs & Requests Subtabs */
+.oh-logs-subtab-btn {
+  font-family: var(--oh-font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oh-gray-500);
+  padding-bottom: var(--oh-3);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  &:hover {
+    color: var(--oh-primary);
+  }
+
+  &.active {
+    color: var(--oh-primary);
+    font-weight: 700;
+
+    &::after {
+      background-color: var(--oh-primary);
+    }
+  }
+}
+
+/* Month Filter buttons */
+.oh-month-filter-group {
+  background-color: var(--oh-gray-100);
+  padding: 3px;
+  border-radius: var(--oh-radius-lg);
+}
+
+.oh-month-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--oh-gray-500);
+  border-radius: var(--oh-radius-md);
+  transition: background-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--oh-gray-900);
+  }
+
+  &.active {
+    background-color: var(--oh-surface);
+    color: var(--oh-primary) !important;
+    box-shadow: var(--oh-shadow-xs);
+  }
+}
+
+/* Tables Formatting */
+.oh-panel {
+  .table-responsive {
+    margin-left: -24px;
+    margin-right: -24px;
+    width: calc(100% + 48px) !important;
+  }
+}
+
+.oh-logs-table,
+.oh-team-table {
+  border-collapse: collapse;
+
+  th:first-child,
+  td:first-child {
+    padding-left: 24px !important;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 24px !important;
+  }
+
+  th {
+    font-family: var(--oh-font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--oh-gray-400);
+    border-bottom: 1px solid var(--oh-border);
+  }
+
+  td {
+    border-bottom: 1px solid var(--oh-border-light);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.oh-weekend-row {
+  background-color: #faf6f0 !important; /* light tan weekend strip */
+  
+  td {
+    border-bottom: 1px solid var(--oh-border-light);
+  }
+}
+
+.italic-text {
+  font-style: italic;
+}
+
+/* Custom Visual Timeline visualizer */
+.oh-timeline-visualizer-bar {
+  display: flex;
+  height: 8px;
+  background-color: var(--oh-gray-100);
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 140px;
+}
+
+.oh-timeline-segment--work {
+  background-color: var(--oh-primary); /* Primary active work */
+  height: 100%;
+}
+
+.oh-timeline-segment--break {
+  background-color: #f59e0b; /* Break period */
+  height: 100%;
+}
+
+.oh-micro-dot {
+  font-size: 8px;
+  vertical-align: middle;
+}
+
+/* Action dropdown menu */
+.oh-action-menu-trigger {
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--oh-gray-400);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--oh-gray-100);
+    color: var(--oh-gray-900);
+  }
+}
+
+.oh-floating-action-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% - 4px);
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-md);
+  box-shadow: var(--oh-shadow-md);
+  padding: 6px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+
+  button {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--oh-gray-700);
+    cursor: pointer;
+    border-radius: var(--oh-radius-sm);
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--oh-gray-50);
+      color: var(--oh-primary);
+    }
+  }
+}
+
+/* Quick check manager green card styles */
+.oh-quick-check-card {
+  background-color: #115e59 !important; /* Deep emerald teal */
+  border-radius: var(--oh-radius-xl) !important;
+  border: none !important;
+  box-shadow: var(--oh-shadow-md) !important;
+  color: white !important;
+  align-self: flex-start; /* Prevents height stretching to match row */
+}
+
+.oh-btn-checkout {
+  height: 42px;
+  font-weight: 700;
+  border-radius: var(--oh-radius-lg);
+  color: #115e59 !important;
+  background-color: white !important;
+  border: none;
+  box-shadow: var(--oh-shadow-sm);
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background-color: #f3f4f6 !important;
+  }
+}
+
+/* Check circles MON-FRI trackers */
+.oh-check-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  margin-top: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &.checked {
+    background-color: #e6f4f1;
+    border-color: #e6f4f1;
+    color: #115e59;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  &.active {
+    border-color: #fb923c;
+    background-color: #fb923c;
+    color: white;
+
+    &::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background-color: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+/* Team lists */
+.oh-team-name {
+  font-size: 14px;
+}
+
+.oh-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+}
+
+.oh-search-input {
+  width: 100%;
+  height: 40px;
+  border-radius: var(--oh-radius-md);
+  border: 1px solid var(--oh-border);
+  padding-left: calc(var(--oh-3) * 2 + 15px);
+  padding-right: var(--oh-4);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-visible,
+  &:focus {
+    border-color: var(--oh-primary);
+    box-shadow: var(--oh-focus-ring);
+  }
+}
+
+.oh-search-icon {
+  position: absolute;
+  left: var(--oh-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--oh-gray-400);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Side Drawers styles */
+.oh-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  backdrop-filter: blur(1.5px);
+}
+
+.oh-modal-content {
+  background: var(--oh-surface);
+  border-radius: 0;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 460px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  animation: oh-drawer-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oh-drawer-header {
+  padding: var(--oh-6) var(--oh-6) var(--oh-4);
+  border-bottom: 1px solid var(--oh-border);
+  flex-shrink: 0;
+
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background-size: 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background-color: var(--oh-gray-100);
+      opacity: 0.8;
+    }
+  }
+}
+
+.oh-drawer-body {
+  padding: var(--oh-4) var(--oh-6) var(--oh-6);
+  overflow-y: auto;
+}
+
+.oh-drawer-footer {
+  padding: var(--oh-5) var(--oh-6);
+  border-top: 1px solid var(--oh-border);
+  background: var(--oh-surface);
+  flex-shrink: 0;
+}
+
+@keyframes oh-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.oh-label--tight {
+  justify-content: flex-start;
+  gap: 2px;
+}
+
+::ng-deep .oh-compact-field {
+  .mat-mdc-text-field-wrapper {
+    height: 50px !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    height: 100% !important;
+    align-items: center !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    min-height: unset !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  input:focus-visible,
+  mat-select:focus-visible,
+  .mat-mdc-select-trigger:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.oh-stats-clock-box {
+  background-color: var(--oh-surface);
+  border: 1px solid var(--oh-border) !important;
+  border-radius: var(--oh-radius-md);
+  font-family: var(--oh-font-ui);
+  font-size: 18px !important; /* Increased from 15px */
+  font-weight: 600 !important; /* Semibold */
+  color: var(--oh-gray-900);
+  padding: 6px 14px !important; /* Increased padding */
+}
+
+.oh-stats-date {
+  font-family: var(--oh-font-ui);
+  font-size: 15px !important; /* Increased from 12px/caption */
+  font-weight: 600 !important; /* Semibold */
+  color: var(--oh-gray-700) !important;
+}
+
+/* Calendar Subtab styling */
+.oh-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0; /* Collapsed grid borders */
+  border-left: 1px solid var(--oh-border);
+  border-top: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  overflow: hidden;
+}
+
+.oh-calendar-header {
+  text-align: center;
+  font-family: var(--oh-font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--oh-gray-500);
+  background-color: var(--oh-gray-50); /* Light gray background for weekday headers */
+  padding: 12px 8px;
+  border-right: 1px solid var(--oh-border);
+  border-bottom: 1px solid var(--oh-border);
+  text-transform: uppercase;
+}
+
+.oh-calendar-cell {
+  background-color: var(--oh-surface);
+  border-right: 1px solid var(--oh-border);
+  border-bottom: 1px solid var(--oh-border);
+  padding: 12px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(.oh-calendar-cell--empty) {
+    background-color: var(--oh-gray-50);
+  }
+
+  &--empty {
+    background-color: var(--oh-gray-50);
+  }
+
+  &--weekend {
+    background-color: #faf6f0 !important; /* Beige background for weekend off */
+  }
+
+  &--active {
+    background-color: rgba(17, 94, 89, 0.02) !important;
+    outline: 1.5px solid var(--oh-primary);
+    outline-offset: -1.5px;
+  }
+
+  &--muted {
+    background-color: var(--oh-surface-sunken) !important;
+    opacity: 0.55;
+
+    .oh-calendar-day-num {
+      color: var(--oh-gray-400) !important;
+    }
+  }
+}
+
+.oh-calendar-day-num {
+  font-size: 13px;
+  color: var(--oh-gray-700);
+}
+
+.oh-calendar-cell-content {
+  flex-grow: 1;
+}
+
+.oh-btn-nav-cal {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--oh-border) !important;
+  background-color: var(--oh-surface) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--oh-gray-600) !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+
+  &:hover {
+    background-color: var(--oh-gray-50) !important;
+    color: var(--oh-primary) !important;
+  }
+
+  i {
+    font-size: 14px !important;
+  }
+}

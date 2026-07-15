@@ -1,0 +1,114 @@
+:host {
+  display: block;
+}
+
+.oh-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--oh-10);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--oh-10) var(--oh-4) var(--oh-6);
+}
+
+.oh-home__greeting {
+  text-align: center;
+}
+
+.oh-home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--oh-6);
+  width: 100%;
+}
+
+.oh-home__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: var(--oh-2);
+  padding: var(--oh-8) var(--oh-6);
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-2xl);
+  box-shadow: var(--oh-shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+
+  --oh-card-accent: var(--oh-primary);
+  --oh-card-accent-bg: var(--oh-primary-soft);
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--oh-shadow-lg);
+    border-color: var(--oh-card-accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--oh-focus-ring), var(--oh-shadow-lg);
+  }
+
+  &--violet {
+    --oh-card-accent: var(--oh-violet);
+    --oh-card-accent-bg: var(--oh-violet-bg);
+  }
+
+  &--teal {
+    --oh-card-accent: var(--oh-chart-teal);
+    --oh-card-accent-bg: var(--oh-primary-soft);
+  }
+
+  &--amber {
+    --oh-card-accent: var(--oh-accent-600);
+    --oh-card-accent-bg: var(--oh-accent-50);
+  }
+}
+
+.oh-home__card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--oh-radius-xl);
+  background: var(--oh-card-accent-bg);
+  color: var(--oh-card-accent);
+  font-size: 24px;
+  margin-bottom: var(--oh-2);
+}
+
+.oh-home__card-tagline {
+  color: var(--oh-card-accent);
+}
+
+.oh-home__card-title {
+  color: var(--oh-gray-900);
+}
+
+.oh-home__card-desc {
+  color: var(--oh-gray-600);
+}
+
+.oh-home__card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--oh-2);
+  margin-top: var(--oh-2);
+}
+
+.oh-home__card-cta {
+  margin-top: var(--oh-4);
+  padding-top: var(--oh-4);
+  width: 100%;
+  border-top: 1px solid var(--oh-border);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--oh-2);
+  font-family: var(--oh-font-ui);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--oh-card-accent);
+}

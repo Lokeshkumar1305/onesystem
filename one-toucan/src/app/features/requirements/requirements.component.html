@@ -1,0 +1,283 @@
+<div class="container-fluid oh-requirements-list">
+  <!-- Header Panel -->
+  <mat-card appearance="outlined" class="oh-panel oh-requirements-list__head mb-4">
+    <mat-card-content class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-requirements-list__head-icon">
+          <i class="bi bi-list-check" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 class="oh-heading-h3 mb-1">Product Backlog</h2>
+          <p class="oh-caption mb-0">Polaris Settlement Engine &middot; <strong>{{ totalPoints() }} points</strong></p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button mat-flat-button color="primary" (click)="openAddForm()">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i>
+          Item
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table & Filters Panel -->
+  <mat-card appearance="outlined" class="oh-panel">
+    <mat-card-content class="p-0">
+      <!-- Search & Filters Row -->
+      <div class="oh-requirements-list__search-row">
+        <div class="oh-requirements-list__search">
+          <i class="bi bi-search oh-requirements-list__search-icon" aria-hidden="true"></i>
+          <input
+            class="oh-input"
+            placeholder="Search by ID, title, type, priority, status..."
+            [ngModel]="searchQuery"
+            (ngModelChange)="onSearchChange($event)"
+            aria-label="Search requirements"
+          />
+          <button
+            *ngIf="searchQuery"
+            type="button"
+            class="oh-requirements-list__search-clear"
+            (click)="onSearchChange('')"
+            aria-label="Clear search"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button
+          *ngIf="searchQuery"
+          mat-flat-button
+          color="primary"
+          class="oh-requirements-list__filter-btn"
+          (click)="onSearchChange(searchQuery)"
+        >
+          <i class="bi bi-search" aria-hidden="true"></i>
+          Search
+        </button>
+        <button mat-stroked-button class="oh-requirements-list__filter-btn">
+          <i class="bi bi-filter" aria-hidden="true"></i>
+          Filter
+        </button>
+      </div>
+
+      <!-- Requirements Table -->
+      <table mat-table [dataSource]="pageRows()" class="oh-requirements-table w-100">
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <input type="checkbox" [checked]="allSelectedOnPage()" (change)="toggleSelectAll()" aria-label="Select all" />
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)" [attr.aria-label]="'Select ' + row.id" />
+          </td>
+        </ng-container>
+
+        <!-- Requirement Badge + Title + Key Column -->
+        <ng-container matColumnDef="requirement">
+          <th mat-header-cell *matHeaderCellDef>Requirement</th>
+          <td mat-cell *matCellDef="let row">
+            <div class="d-flex align-items-center gap-3">
+              <span class="oh-badge oh-badge--xs" [class]="typeBadgeClass(row.type)">
+                {{ row.type }}
+              </span>
+              <div>
+                <p class="oh-requirements-table__title mb-0">{{ row.title }}</p>
+                <p class="oh-caption mb-0">{{ row.id }}</p>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Priority Column -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Priority</th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <span class="oh-badge" [class]="priorityBadgeClass(row.priority)">{{ row.priority }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Points Column -->
+        <ng-container matColumnDef="pts">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Pts</th>
+          <td mat-cell *matCellDef="let row" class="text-center oh-mono-data font-weight-bold">
+            {{ row.pts }}
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef class="text-end">Status</th>
+          <td mat-cell *matCellDef="let row" class="text-end">
+            <span class="oh-badge" [class]="statusBadgeClass(row.status)">{{ row.status }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Action Buttons Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Action</th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <div class="oh-requirements-table__actions">
+              <button
+                class="oh-requirements-table__action oh-requirements-table__action--edit"
+                (click)="openEditForm(row)"
+                [attr.aria-label]="'Edit ' + row.id"
+              >
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+              </button>
+              <button
+                class="oh-requirements-table__action oh-requirements-table__action--delete"
+                (click)="deleteRequirement(row)"
+                [attr.aria-label]="'Delete ' + row.id"
+              >
+                <i class="bi bi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="totalCount() === 0" class="text-center p-5">
+        <i class="bi bi-folder-x display-4 text-muted d-block mb-3"></i>
+        <h4 class="h5 mb-1">No Requirements Found</h4>
+        <p class="text-muted oh-caption mb-0">Try adjusting your search criteria or add a new requirement item.</p>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="oh-requirements-list__footer">
+        <span class="oh-caption">
+          Showing <strong>{{ rangeStart() }}–{{ rangeEnd() }}</strong> of <strong>{{ totalCount() }}</strong>
+        </span>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="oh-requirements-list__page-size">
+            <span class="oh-caption">Rows:</span>
+            <select class="oh-select" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+
+          <div class="oh-requirements-list__pager">
+            <button
+              class="oh-requirements-list__page-btn"
+              [disabled]="pageIndex() === 0"
+              (click)="prevPage()"
+              aria-label="Previous page"
+            >
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button
+              *ngFor="let page of pageNumbers()"
+              class="oh-requirements-list__page-btn"
+              [class.oh-requirements-list__page-btn--active]="page === pageIndex() + 1"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+            <span *ngIf="hasMorePages()" class="oh-requirements-list__page-ellipsis">…</span>
+            <button
+              class="oh-requirements-list__page-btn"
+              [disabled]="pageIndex() >= pageCount() - 1"
+              (click)="nextPage()"
+              aria-label="Next page"
+            >
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Drawer / Side Panel Overlay Form for Adding and Editing Requirements -->
+<div class="oh-modal-backdrop" *ngIf="showForm()">
+  <div class="oh-modal-content">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold">
+        {{ isEditMode() ? 'Edit Requirement' : 'Add Requirement' }}
+      </h3>
+      <button type="button" class="btn-close" (click)="closeForm()" aria-label="Close"></button>
+    </div>
+
+    <form [formGroup]="requirementForm" (ngSubmit)="saveRequirement()" class="d-flex flex-column h-100">
+      <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1">
+        <!-- Requirement Type -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="type">Requirement Type *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <mat-select id="type" formControlName="type">
+              <mat-option *ngFor="let type of typeOptions" [value]="type">{{ type }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Requirement ID / Key -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="id">ID / Key *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput id="id" formControlName="id" placeholder="e.g. PSE-143" [readonly]="isEditMode()" />
+          </mat-form-field>
+          <div *ngIf="requirementForm.get('id')?.touched && requirementForm.get('id')?.invalid" class="text-danger oh-caption mt-1">
+            <span *ngIf="requirementForm.get('id')?.errors?.['required']">ID is required.</span>
+            <span *ngIf="requirementForm.get('id')?.errors?.['pattern']">ID format must be prefix followed by digits (e.g. PSE-143 or PSE-E1).</span>
+            <span *ngIf="requirementForm.get('id')?.errors?.['duplicate']">This ID key already exists. Please choose a unique key.</span>
+          </div>
+        </div>
+
+        <!-- Requirement Title -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="title">Title *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput id="title" formControlName="title" placeholder="e.g. Setup retry queue for webhooks" />
+          </mat-form-field>
+          <div *ngIf="requirementForm.get('title')?.touched && requirementForm.get('title')?.invalid" class="text-danger oh-caption mt-1">
+            Title is required.
+          </div>
+        </div>
+
+        <!-- Priority -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="priority">Priority *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <mat-select id="priority" formControlName="priority">
+              <mat-option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Story Points -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="pts">Story Points (Pts) *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput type="number" id="pts" formControlName="pts" />
+          </mat-form-field>
+          <div *ngIf="requirementForm.get('pts')?.touched && requirementForm.get('pts')?.invalid" class="text-danger oh-caption mt-1">
+            Points is required and must be 0 or greater.
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="oh-field">
+          <label class="oh-label oh-label--tight" for="status">Status *</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <mat-select id="status" formControlName="status">
+              <mat-option *ngFor="let status of statusOptions" [value]="status">{{ status }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Drawer Footer -->
+      <div class="oh-drawer-footer d-flex gap-2 justify-content-end mt-auto">
+        <button mat-button type="button" (click)="closeForm()">Cancel</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="requirementForm.invalid">
+          {{ isEditMode() ? 'Save Changes' : 'Create Item' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
