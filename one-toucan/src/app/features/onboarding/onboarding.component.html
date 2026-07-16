@@ -37,8 +37,9 @@
 
   <section class="oh-onboarding__content">
     <div class="oh-onboarding__scroll container-fluid">
-      <!-- Step 1: Personal Details -->
-      <ng-container *ngIf="currentStep() === 1">
+      <div class="oh-onboarding__scroll-inner">
+        <!-- Step 1: Personal Details -->
+        <ng-container *ngIf="currentStep() === 1">
         <h2 class="oh-display-h2">Personal Details</h2>
         <p class="oh-body oh-onboarding__step-desc">
           {{ firstName }}'s identity and contact information. Used for payroll, statutory records and emergencies.
@@ -604,6 +605,7 @@
           Bank &amp; PF details and signed contract review. She'll receive a secure link to upload these before day one.
         </div>
       </ng-container>
+      </div>
     </div>
 
     <div class="oh-onboarding__footer">

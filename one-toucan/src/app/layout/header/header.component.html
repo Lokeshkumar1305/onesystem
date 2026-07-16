@@ -1,7 +1,6 @@
 <mat-toolbar class="oh-header d-flex align-items-center gap-3 px-4">
   <div class="oh-header__page text-truncate">
-    <h1 class="oh-header__title mb-0 text-truncate">{{ pageTitle }}</h1>
-    <p class="oh-header__subtitle mb-0 text-truncate">{{ pageSubtitle }}</p>
+    <h1 class="oh-header__title mb-0 text-truncate">{{ activeModuleLabel || pageTitle }}</h1>
   </div>
 
   <mat-form-field appearance="outline" subscriptSizing="dynamic" class="oh-header__search mx-auto">
@@ -14,6 +13,11 @@
     <button mat-icon-button class="oh-header__notif" matTooltip="Notifications" aria-label="Notifications">
       <mat-icon>notifications</mat-icon>
       <span class="oh-header__badge-count" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+    </button>
+
+    <!-- App Launcher Grid Button -->
+    <button mat-icon-button class="oh-header__apps" [matMenuTriggerFor]="appsMenu" matTooltip="App Launcher" aria-label="App Launcher">
+      <mat-icon>apps</mat-icon>
     </button>
 
     <button class="oh-header__profile" [matMenuTriggerFor]="profileMenu" aria-label="Account menu">
@@ -38,6 +42,33 @@
       <button mat-menu-item>
         <mat-icon>logout</mat-icon>
         <span>Log out</span>
+      </button>
+    </mat-menu>
+
+    <!-- Apps Launcher Dropdown Menu -->
+    <mat-menu #appsMenu="matMenu" xPosition="before" class="oh-apps-menu">
+      <div class="oh-apps-menu__header p-3 border-bottom border-light">
+        <span class="oh-overline text-muted" style="font-size: 10px; letter-spacing: 0.05em; font-weight: 700;">Switch Workspace</span>
+      </div>
+      <div class="oh-apps-menu__grid p-2 d-flex flex-column gap-1" style="min-width: 280px;">
+        <button mat-menu-item *ngFor="let mod of workspaceModulesList" (click)="switchApp(mod)" class="oh-apps-menu__item py-2 h-auto" style="border-radius: var(--oh-radius-md);">
+          <div class="d-flex align-items-center gap-3 w-100">
+            <span class="oh-apps-menu__icon-wrapper d-flex align-items-center justify-content-center flex-shrink-0" 
+                  [style.background]="getAppAccentBg(mod.accent)" 
+                  [style.color]="getAppAccentColor(mod.accent)"
+                  style="width: 38px; height: 38px; border-radius: var(--oh-radius-lg);">
+              <i class="bi bi-{{ mod.icon }}" style="font-size: 18px;"></i>
+            </span>
+            <div class="d-flex flex-column text-start" style="line-height: 1.25;">
+              <span class="fw-bold text-dark" style="font-size: 13px;">{{ mod.label }}</span>
+              <span class="text-muted text-wrap" style="font-size: 11px; max-width: 200px;">{{ mod.tagline }}</span>
+            </div>
+          </div>
+        </button>
+      </div>
+      <mat-divider />
+      <button mat-menu-item (click)="goToPortalSelector()" class="text-center text-primary py-2 fw-semibold" style="font-size: 12.5px;">
+        <i class="bi bi-grid me-2"></i> View All Portals
       </button>
     </mat-menu>
   </div>

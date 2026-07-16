@@ -33,10 +33,10 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     icon: 'people',
     tagline: 'People & Workforce',
     description: 'Organization structure, employees, recruitment, onboarding, attendance and leave.',
-    homeRoute: '/organization',
+    homeRoute: '/onehr-dashboard',
     accent: 'violet',
     groups: [
-      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
+      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/onehr-dashboard' }] },
       {
         title: 'Foundation',
         items: [
@@ -66,7 +66,7 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
         title: 'Intelligence',
         items: [
           { label: 'Notifications', icon: 'bell' },
-          { label: 'Analytics', icon: 'bar-chart', route: '/dashboard' },
+          { label: 'Analytics', icon: 'bar-chart', route: '/onehr-dashboard' },
           { label: 'System Config', icon: 'gear' }
         ]
       }
@@ -78,9 +78,10 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     icon: 'kanban',
     tagline: 'Plan & Deliver',
     description: 'Create and run projects, allocate resources and track delivery health.',
-    homeRoute: '/projects',
+    homeRoute: '/dashboard',
     accent: 'teal',
     groups: [
+      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
       {
         title: 'Execution',
         items: [
@@ -104,9 +105,10 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     icon: 'compass',
     tagline: 'Build & Ship',
     description: 'Author user stories, manage tasks and raise or triage bugs.',
-    homeRoute: '/requirements',
+    homeRoute: '/dashboard',
     accent: 'amber',
     groups: [
+      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
       {
         title: 'Delivery Board',
         items: [

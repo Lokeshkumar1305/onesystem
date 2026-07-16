@@ -6,14 +6,32 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--oh-10);
+  justify-content: center;
+  gap: var(--oh-8);
+  min-height: 100vh;
   max-width: 1120px;
   margin: 0 auto;
   padding: var(--oh-10) var(--oh-4) var(--oh-6);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: -15%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15, 118, 110, 0.05) 0%, rgba(255,255,255,0) 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: -1;
+  }
 }
 
 .oh-home__greeting {
   text-align: center;
+  margin-bottom: var(--oh-4);
 }
 
 .oh-home__grid {

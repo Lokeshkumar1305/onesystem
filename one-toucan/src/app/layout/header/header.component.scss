@@ -189,3 +189,37 @@
     box-shadow: none;
   }
 }
+
+// Apps Launcher Switcher styles
+::ng-deep .oh-apps-menu {
+  border-radius: var(--oh-radius-xl) !important;
+  border: 1px solid var(--oh-border) !important;
+  box-shadow: var(--oh-shadow-xl) !important;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+    overflow-x: hidden !important;
+  }
+
+  .oh-apps-menu__header {
+    background: var(--oh-surface-sunken);
+  }
+
+  .oh-apps-menu__item {
+    transition: background 0.15s ease;
+    
+    &:hover {
+      background: var(--oh-surface-sunken) !important;
+      
+      .oh-apps-menu__icon-wrapper {
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  .oh-apps-menu__icon-wrapper {
+    transition: transform 0.15s ease;
+  }
+}

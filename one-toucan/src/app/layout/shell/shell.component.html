@@ -5,6 +5,25 @@
 
   <mat-sidenav-content class="oh-shell__content-wrap">
     <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" />
+
+    <!-- Sub-Header Breadcrumb and Screen Tabs Card -->
+    <div class="oh-sub-header shadow-sm bg-white" *ngIf="pageTitle">
+
+      <!-- Horizontal Tabs Row -->
+      <div class="px-4 d-flex align-items-center gap-4 oh-sub-tabs" style="overflow-x: auto;">
+        <button 
+          *ngFor="let tab of activeModuleTabs"
+          type="button"
+          class="btn p-0 border-0 oh-sub-tab d-flex flex-column align-items-center position-relative text-uppercase"
+          [class.oh-sub-tab--active]="isTabActive(tab)"
+          (click)="navigateToTab(tab)"
+        >
+          <span class="oh-sub-tab-text">{{ tab.label }}</span>
+          <span class="oh-sub-tab-arrow" *ngIf="isTabActive(tab)"></span>
+        </button>
+      </div>
+    </div>
+
     <div class="oh-shell__content">
       <router-outlet />
     </div>

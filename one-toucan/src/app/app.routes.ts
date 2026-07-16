@@ -11,18 +11,22 @@ export const routes: Routes = [
     loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent)
   },
   {
+    path: 'home',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell/shell.component').then(m => m.ShellComponent),
     children: [
       {
-        path: 'home',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
-        data: { title: 'Workspace', subtitle: 'Choose a module to get started' }
-      },
-      {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
+      },
+      {
+        path: 'onehr-dashboard',
+        loadComponent: () => import('./features/onehr-dashboard/onehr-dashboard.component').then(m => m.OnehrDashboardComponent),
+        data: { title: 'OneHR', subtitle: 'Hope you are having a great day' }
       },
       {
         path: 'organization',

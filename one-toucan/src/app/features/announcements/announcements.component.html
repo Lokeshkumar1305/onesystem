@@ -1,0 +1,302 @@
+<div [ngSwitch]="activeSubView()">
+  <!-- Announcements Dashboard View -->
+  <div *ngSwitchCase="'announcements'">
+    <!-- Top tab bar navigation matching the mockup -->
+    <div class="d-flex align-items-center gap-4 border-bottom pb-2 mb-4">
+      <div class="d-flex align-items-center gap-1 active-tab-indicator position-relative cursor-pointer">
+        <span class="oh-overline font-weight-bold" style="font-size: 11px; letter-spacing: 0.8px; color: var(--oh-primary);">ANNOUNCEMENTS</span>
+        <!-- Small triangle indicator below -->
+        <div class="position-absolute bottom-0 start-50 translate-middle-x" style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid var(--oh-primary); margin-bottom: -10px;"></div>
+      </div>
+      <div class="cursor-pointer" (click)="backToDashboard.emit()">
+        <span class="oh-overline text-muted" style="font-size: 11px; letter-spacing: 0.8px;">POLLS</span>
+      </div>
+      <div class="cursor-pointer" (click)="backToDashboard.emit()">
+        <span class="oh-overline text-muted" style="font-size: 11px; letter-spacing: 0.8px;">ARTICLES</span>
+      </div>
+      <button mat-icon-button class="ms-auto" (click)="backToDashboard.emit()" style="color: var(--oh-gray-500); width: 32px; height: 32px;" title="Back to Dashboard">
+        <i class="bi bi-x-lg" aria-hidden="true" style="font-size: 14px;"></i>
+      </button>
+    </div>
+
+    <!-- Title and Create button -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h2 style="font-family: var(--oh-font-ui); font-weight: 700; font-size: 24px; color: var(--oh-gray-900); margin: 0;">Announcements</h2>
+      <button mat-flat-button color="primary" (click)="activeSubView.set('create-announcement')" style="border-radius: var(--oh-radius-lg); font-weight: 600;">
+        <i class="bi bi-plus-lg me-2" aria-hidden="true"></i> Create Announcement
+      </button>
+    </div>
+
+    <!-- Sub-tabs/pills -->
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <button class="btn btn-sm px-3" style="border-radius: 20px; font-weight: 600; font-size: 12px; background: var(--oh-primary-soft); color: var(--oh-primary); border: none;">
+        Active ({{ announcementsList.length }})
+      </button>
+      <button class="btn btn-sm px-3 text-muted" style="border-radius: 20px; font-weight: 600; font-size: 12px; background: var(--oh-gray-50); border: 1px solid var(--oh-border);">
+        Drafts (0)
+      </button>
+      <button class="btn btn-sm px-3 text-muted" style="border-radius: 20px; font-weight: 600; font-size: 12px; background: var(--oh-gray-50); border: 1px solid var(--oh-border);">
+        All ({{ announcementsList.length }})
+      </button>
+    </div>
+
+    <!-- Filter Bar -->
+    <mat-card appearance="outlined" class="oh-panel mb-4">
+      <mat-card-content class="p-3">
+        <div class="row g-3 align-items-center">
+          <div class="col-md-3">
+            <label class="oh-label mb-1 text-muted">Date Range</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field">
+              <mat-date-range-input [rangePicker]="rangePicker">
+                <input matStartDate placeholder="Start date">
+                <input matEndDate placeholder="End date">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matIconSuffix [for]="rangePicker"></mat-datepicker-toggle>
+              <mat-date-range-picker #rangePicker></mat-date-range-picker>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <label class="oh-label mb-1 text-muted">Announcement Type</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field">
+              <mat-select value="All">
+                <mat-option value="All">All Types</mat-option>
+                <mat-option value="General">General</mat-option>
+                <mat-option value="Event">Event</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <label class="oh-label mb-1 text-muted">Status</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field">
+              <mat-select value="All">
+                <mat-option value="All">All Statuses</mat-option>
+                <mat-option value="Active">Active</mat-option>
+                <mat-option value="Draft">Draft</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-3">
+            <label class="oh-label mb-1 text-muted">Search</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field">
+              <input matInput placeholder="Search Announcements" />
+              <mat-icon matSuffix style="font-size: 16px; width: 16px; height: 16px; color: var(--oh-gray-400);">search</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Empty State or List of Announcements -->
+    <div *ngIf="announcementsList.length === 0" class="text-center py-5 border rounded" style="background: var(--oh-surface); border-color: var(--oh-border) !important; border-radius: var(--oh-radius-lg);">
+      <svg width="80" height="80" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-300);" class="mb-3">
+        <!-- Thin outline box empty state vector -->
+        <path d="M20 35 L50 20 L80 35 L50 50 Z" stroke-width="1.2" />
+        <path d="M20 35 L20 65 L50 80 L50 50" stroke-width="1.2" />
+        <path d="M80 35 L80 65 L50 80" stroke-width="1.2" />
+        <path d="M35 27.5 L65 42.5" stroke-width="1" stroke-dasharray="2 2" />
+      </svg>
+      <h5 style="font-family: var(--oh-font-ui); font-weight: 600; font-size: 15px; color: var(--oh-gray-700);" class="mb-1">No Announcements yet</h5>
+      <p class="oh-caption text-muted mb-0">Get started by creating your first announcement!</p>
+    </div>
+
+    <div *ngIf="announcementsList.length > 0" class="d-flex flex-column gap-3">
+      <mat-card appearance="outlined" class="oh-panel" *ngFor="let ann of announcementsList">
+        <mat-card-content class="p-3 d-flex align-items-center justify-content-between">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge" [class.bg-success]="ann.type === 'General'" [class.bg-info]="ann.type === 'Event'" style="font-size: 9px; text-transform: uppercase;">{{ ann.type }}</span>
+              <span class="oh-caption text-muted">{{ ann.date }}</span>
+            </div>
+            <h4 style="font-family: var(--oh-font-ui); font-weight: 600; font-size: 15px; color: var(--oh-gray-900); margin: 0 0 4px;">{{ ann.title }}</h4>
+            <p class="oh-caption text-muted mb-0">{{ ann.description }}</p>
+          </div>
+          <span class="badge bg-success-soft text-success" style="font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px;">{{ ann.status }}</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Create Announcement View -->
+  <div *ngSwitchCase="'create-announcement'">
+    <!-- Header row with Back and Publish buttons -->
+    <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+      <button class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none" (click)="cancelCreate()" style="color: var(--oh-primary); font-weight: 600; font-size: 13.5px;">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Announcements
+      </button>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-outline-secondary px-3" style="border-radius: var(--oh-radius-lg); font-weight: 600; font-size: 12.5px; border-color: var(--oh-border);" (click)="cancelCreate()">
+          Save as Draft
+        </button>
+        <button class="btn px-4" style="background: var(--oh-primary); color: white; border-radius: var(--oh-radius-lg); font-weight: 600; font-size: 12.5px;" (click)="publishAnnouncement()">
+          Configure &amp; Publish
+        </button>
+      </div>
+    </div>
+
+    <!-- Form layout: two columns -->
+    <div class="row g-4">
+      <!-- Left Column: Details -->
+      <div class="col-lg-7">
+        <div class="d-flex flex-column gap-4">
+          <!-- Title Input -->
+          <div>
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <label class="oh-label text-muted">Title</label>
+              <span class="oh-caption text-muted" style="font-size: 11px;">{{ announcementTitle().length }}/120</span>
+            </div>
+            <mat-form-field appearance="outline" class="w-100">
+              <input
+                matInput
+                placeholder="Enter title"
+                maxlength="120"
+                [ngModel]="announcementTitle()"
+                (ngModelChange)="announcementTitle.set($event)"
+              />
+            </mat-form-field>
+          </div>
+
+          <!-- Description Input -->
+          <div>
+            <label class="oh-label text-muted mb-1">Description</label>
+            <!-- Mock rich text editor toolbar -->
+            <div class="border rounded-top p-2 bg-light d-flex align-items-center gap-3 border-bottom-0" style="border-color: var(--oh-border) !important;">
+              <span class="oh-caption text-muted font-weight-bold" style="cursor: pointer; font-size: 12px;">Normal</span>
+              <div style="width: 1px; height: 16px; background: var(--oh-border);"></div>
+              <i class="bi bi-type-bold cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-type-italic cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-type-underline cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-list-ul cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-list-ol cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-quote cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-link-45deg cursor-pointer text-muted" style="font-size: 14px;"></i>
+              <i class="bi bi-image cursor-pointer text-muted" style="font-size: 14px;"></i>
+            </div>
+            <mat-form-field appearance="outline" class="w-100 mdc-text-field--textarea-flat">
+              <textarea
+                matInput
+                rows="6"
+                placeholder="Enter Description"
+                [ngModel]="announcementDescription()"
+                (ngModelChange)="announcementDescription.set($event)"
+                style="border-top-left-radius: 0; border-top-right-radius: 0; font-size: 13.5px;"
+              ></textarea>
+            </mat-form-field>
+          </div>
+
+          <!-- Type Selection -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <mat-card-content class="p-3">
+              <label class="oh-overline d-block mb-3" style="font-size: 10px; color: var(--oh-gray-500);">Announcement Type</label>
+              
+              <mat-radio-group
+                [ngModel]="announcementType()"
+                (ngModelChange)="announcementType.set($event)"
+                color="primary"
+                class="d-flex align-items-center gap-4 mb-3"
+              >
+                <mat-radio-button value="General">General</mat-radio-button>
+                <mat-radio-button value="Event">Event</mat-radio-button>
+              </mat-radio-group>
+
+              <!-- Active Date Range datepicker -->
+              <div class="border-top pt-3 mt-2 mb-3">
+                <label class="oh-label text-muted mb-1">Active Date Range</label>
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-date-range-input [rangePicker]="createRangePicker">
+                    <input matStartDate placeholder="Start date">
+                    <input matEndDate placeholder="End date">
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matIconSuffix [for]="createRangePicker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #createRangePicker></mat-date-range-picker>
+                </mat-form-field>
+              </div>
+
+              <!-- Needs acknowledgement switch matching the layout -->
+              <div class="d-flex align-items-center justify-content-between border-top pt-3 mt-2">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-info-circle text-muted" style="font-size: 14px;"></i>
+                  <span style="font-size: 12.5px; font-weight: 500; color: var(--oh-gray-700);">Needs Acknowledgement?</span>
+                </div>
+                <mat-slide-toggle [checked]="needsAcknowledgement()" (change)="needsAcknowledgement.set($event.checked)"></mat-slide-toggle>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Attachments -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <mat-card-content class="p-3">
+              <label class="oh-overline d-block mb-2" style="font-size: 10px; color: var(--oh-gray-500);">Additional attachments</label>
+              <button class="btn btn-outline-primary btn-sm px-3 mb-2 d-flex align-items-center gap-2" style="border-radius: var(--oh-radius-md); font-weight: 600; font-size: 12px;">
+                <i class="bi bi-paperclip" aria-hidden="true"></i> Add attachment
+              </button>
+              <p class="oh-caption text-muted mb-0" style="font-size: 10.5px;">Supported file types are .png, .jpg, .jpeg, .pdf &middot; Max file size supported is 20 MB</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Right Column: Image & Wall Preview -->
+      <div class="col-lg-5">
+        <div class="d-flex flex-column gap-4">
+          <!-- Announcement Image -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <mat-card-content class="p-3">
+              <label class="oh-overline d-block mb-3" style="font-size: 10px; color: var(--oh-gray-500);">Announcement Image</label>
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <button class="btn btn-outline-primary btn-sm px-3 d-flex align-items-center gap-2" style="border-radius: var(--oh-radius-md); font-weight: 600; font-size: 12px;">
+                  <i class="bi bi-upload" aria-hidden="true"></i> Upload image
+                </button>
+                <button class="btn btn-outline-secondary btn-sm px-3 d-flex align-items-center gap-2" style="border-radius: var(--oh-radius-md); font-weight: 600; font-size: 12px; border-color: var(--oh-border);">
+                  <i class="bi bi-image" aria-hidden="true"></i> Get from Pexels
+                </button>
+              </div>
+              <p class="oh-caption text-muted mb-0" style="font-size: 10.5px;">Note: Image should be in 1:1 aspect ratio only (e.g. 1080 X 1080px).</p>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Wall Preview -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <mat-card-content class="p-3">
+              <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <label class="oh-overline" style="font-size: 10px; color: var(--oh-gray-500); margin: 0;">Wall Preview</label>
+                <button class="btn btn-link btn-sm p-0 text-decoration-none d-flex align-items-center gap-1" style="font-size: 11px; font-weight: 600; color: var(--oh-primary);">
+                  <i class="bi bi-arrows-fullscreen" style="font-size: 10px;"></i> Full screen preview
+                </button>
+              </div>
+
+              <!-- Card Preview container -->
+              <div class="border rounded p-3 bg-white" style="border-color: var(--oh-border) !important; border-radius: var(--oh-radius-lg) !important;">
+                <div class="row g-3 align-items-center">
+                  <div class="col-4">
+                    <!-- Pointing hand illustration or mega-phone line vector -->
+                    <svg width="100%" height="80" viewBox="0 0 100 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                      <!-- Hand pointer silhouette -->
+                      <path d="M20 50 Q25 40 35 40 L60 40 Q65 40 65 43 Q65 46 60 46 L45 46 L45 49 L55 49 Q60 49 60 52 Q60 55 55 55 L45 55 L45 58 L52 58 Q57 58 57 61 Q57 64 52 64 L30 64 Z" stroke-width="1.2" />
+                      <line x1="60" y1="43" x2="80" y2="35" stroke="var(--oh-primary)" stroke-width="1.5" stroke-dasharray="3 3" />
+                      <polygon points="80,35 74,33 77,38" fill="var(--oh-primary)" stroke="none" />
+                    </svg>
+                  </div>
+                  <div class="col-8">
+                    <h5 style="font-family: var(--oh-font-ui); font-weight: 700; font-size: 14px; color: var(--oh-gray-900); margin: 0 0 4px;">
+                      {{ announcementTitle() || 'Header' }}
+                    </h5>
+                    <p class="oh-caption text-muted mb-0" style="font-size: 12px; line-height: 1.4;">
+                      {{ announcementDescription() || 'Description' }}
+                    </p>
+                  </div>
+                </div>
+                <!-- Card preview footer -->
+                <div class="d-flex align-items-center gap-3 border-top pt-2 mt-3" style="color: var(--oh-gray-400);">
+                  <i class="bi bi-hand-thumbs-up" style="font-size: 12px;"></i>
+                  <i class="bi bi-heart" style="font-size: 12px;"></i>
+                  <i class="bi bi-chat-left" style="font-size: 12px;"></i>
+                  <i class="bi bi-eye" style="font-size: 12px;"></i>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

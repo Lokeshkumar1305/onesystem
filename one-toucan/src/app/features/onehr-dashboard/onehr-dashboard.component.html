@@ -1,0 +1,757 @@
+<div class="container-fluid oh-hr-dashboard" [ngSwitch]="activeSubView()">
+  <div *ngSwitchCase="'dashboard'">
+    <!-- Hero banner -->
+  <div class="oh-hr-hero mb-4">
+    <div class="oh-hr-hero__waves" aria-hidden="true"></div>
+    <div class="oh-hr-hero__body">
+      <div class="oh-hr-hero__left">
+        <h2 class="oh-hr-hero__title mb-1">Welcome {{ userFullName }}!</h2>
+        <p class="oh-hr-hero__subtitle mb-4">Hope you are having a great day</p>
+        <div class="oh-hr-hero__profile">
+          <div class="oh-hr-hero__profile-row">
+            <span>Profile &middot; 89.19% Completed</span>
+          </div>
+          <mat-progress-bar mode="determinate" value="89.19" class="oh-hr-hero__progress"></mat-progress-bar>
+        </div>
+      </div>
+
+      <div class="oh-punch-card">
+        <div class="oh-punch-card__row">
+          <span class="oh-punch-card__date">
+            <i class="bi bi-calendar3" aria-hidden="true"></i>
+            {{ formattedDate }}
+          </span>
+          <button mat-icon-button class="oh-punch-card__settings" aria-label="Punch settings">
+            <i class="bi bi-gear-fill" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button
+          mat-flat-button
+          class="oh-punch-card__btn"
+          [class.oh-punch-card__btn--marked]="attendanceMarked()"
+          (click)="markAttendance()"
+        >
+          <i class="bi" [class.bi-check-circle-fill]="attendanceMarked()" [class.bi-fingerprint]="!attendanceMarked()" aria-hidden="true"></i>
+          {{ attendanceMarked() ? 'Attendance Marked' : 'Mark Attendance' }}
+        </button>
+        <p class="oh-punch-card__status mb-0">Last punch: <strong>{{ lastPunchTime() }}</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Column 1: Live status, team status, inbox, celebrations -->
+    <div class="col-lg-4">
+      <div class="oh-hr-col">
+        <mat-card appearance="outlined" class="oh-panel mb-3">
+          <mat-card-content class="d-flex align-items-center justify-content-between py-3">
+            <div class="d-flex align-items-center gap-3">
+              <svg width="40" height="40" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-primary); flex-shrink: 0;">
+                <!-- Outer Clock Circle -->
+                <circle cx="18" cy="18" r="14" stroke="currentColor" stroke-width="1.2" />
+                <!-- Center Dot -->
+                <circle cx="18" cy="18" r="1.2" fill="currentColor" stroke="none" />
+                <!-- Hour hand -->
+                <line x1="18" y1="18" x2="18" y2="10" stroke="currentColor" stroke-width="1.2" />
+                <!-- Minute hand -->
+                <line x1="18" y1="18" x2="24" y2="18" stroke="currentColor" stroke-width="1" />
+                <!-- Hour indicator notches -->
+                <line x1="18" y1="5" x2="18" y2="7" stroke="currentColor" stroke-width="1.2" />
+                <line x1="18" y1="29" x2="18" y2="31" stroke="currentColor" stroke-width="1.2" />
+                <line x1="5" y1="18" x2="7" y2="18" stroke="currentColor" stroke-width="1.2" />
+                <line x1="29" y1="18" x2="31" y2="18" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+              <div>
+                <span class="oh-overline d-block mb-1">Live Time</span>
+                <span class="oh-live-time" style="font-size: 16px; font-weight: 700; font-family: monospace;">{{ formattedTime }}</span>
+              </div>
+            </div>
+            <span class="oh-caption" style="font-weight: 500;">{{ formattedDate }}</span>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel mb-3">
+          <mat-card-content class="d-flex align-items-center justify-content-between py-3">
+            <div>
+              <span class="oh-overline d-block mb-1" style="text-transform: none; font-size: 13.5px; font-weight: 600; color: var(--oh-gray-900);">On Leave Today</span>
+              <p class="mb-1" style="font-weight: 500; font-size: 13px; color: var(--oh-gray-700);">Everyone is working today!</p>
+              <p class="oh-caption mb-0" style="color: var(--oh-gray-400);">No one is on leave today.</p>
+            </div>
+            <div>
+              <svg width="100" height="60" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                <!-- Thin Calendar Outline -->
+                <rect x="35" y="12" width="30" height="36" rx="2" stroke="currentColor" stroke-width="1.2" />
+                <!-- Calendar Binder Rings -->
+                <line x1="42" y1="8" x2="42" y2="14" stroke="currentColor" stroke-width="1.2" />
+                <line x1="58" y1="8" x2="58" y2="14" stroke="currentColor" stroke-width="1.2" />
+                <!-- Horizontal grid lines inside calendar -->
+                <line x1="41" y1="22" x2="59" y2="22" stroke="var(--oh-gray-200)" stroke-width="1" />
+                <line x1="41" y1="29" x2="59" y2="29" stroke="var(--oh-gray-200)" stroke-width="1" />
+                <line x1="41" y1="36" x2="59" y2="36" stroke="var(--oh-gray-200)" stroke-width="1" />
+                
+                <!-- Thin check circle badge overlapping calendar -->
+                <circle cx="68" cy="40" r="10" fill="#ecfdf5" stroke="var(--oh-success)" stroke-width="1.2" />
+                <!-- Very thin tick -->
+                <path d="M64 40 L67 43 L72 37" stroke="var(--oh-success)" stroke-width="1.2" />
+              </svg>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel mb-3">
+          <mat-card-content class="d-flex align-items-center justify-content-between py-3">
+            <div>
+              <span class="oh-overline d-block mb-1" style="text-transform: none; font-size: 13.5px; font-weight: 600; color: var(--oh-gray-900);">Working Remotely</span>
+              <p class="mb-1" style="font-weight: 500; font-size: 13px; color: var(--oh-gray-700);">Everyone is at office!</p>
+              <p class="oh-caption mb-0" style="color: var(--oh-gray-400);">No one is working remotely today.</p>
+            </div>
+            <div>
+              <svg width="100" height="60" viewBox="0 0 100 60" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                <!-- Thin Desk Line -->
+                <line x1="20" y1="48" x2="80" y2="48" stroke="currentColor" stroke-width="1.2" />
+                
+                <!-- Thin Monitor Outline -->
+                <rect x="34" y="16" width="32" height="20" rx="1.5" stroke="currentColor" stroke-width="1.2" />
+                <!-- Screen stand -->
+                <path d="M46 36 L44 44 L56 44 L54 36" stroke="currentColor" stroke-width="1.2" />
+                <!-- Desk Lamp (left side) -->
+                <path d="M26 48 L26 34 L32 30" stroke="currentColor" stroke-width="1.2" />
+                <path d="M30 28 L34 32" stroke="currentColor" stroke-width="1.2" />
+                
+                <!-- Coffee Cup outline (right side) -->
+                <rect x="70" y="38" width="6" height="10" rx="1" stroke="currentColor" stroke-width="1.2" />
+                <path d="M76 41 Q78 41 78 45 Q76 45 76 45" stroke="currentColor" stroke-width="1.2" />
+              </svg>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content>
+            <div class="oh-inbox-row">
+              <span class="oh-icon-tile oh-icon-tile--primary">
+                <i class="bi bi-envelope-check" aria-hidden="true"></i>
+              </span>
+              <div>
+                <p class="oh-inbox-row__title mb-0">Inbox</p>
+                <p class="oh-caption mb-0">No pending actions</p>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-0">
+            <div class="d-flex align-items-center justify-content-between pe-3 border-bottom" style="background: var(--oh-surface-sunken); border-top-left-radius: var(--oh-radius-lg); border-top-right-radius: var(--oh-radius-lg);">
+              <div class="oh-tabbar oh-tabbar--padded" style="background: transparent; border-bottom: none;">
+                <button
+                  class="oh-tabbar__tab"
+                  [class.oh-tabbar__tab--active]="activeCelebrateTab === 'Birthdays'"
+                  (click)="activeCelebrateTab = 'Birthdays'"
+                  style="border-bottom: 2px solid transparent; margin-bottom: -1px;"
+                >
+                  <i class="bi bi-cake2" style="color: #f43f5e;" aria-hidden="true"></i>
+                  0 Birthdays
+                </button>
+                <button
+                  class="oh-tabbar__tab"
+                  [class.oh-tabbar__tab--active]="activeCelebrateTab === 'Anniversaries'"
+                  (click)="activeCelebrateTab = 'Anniversaries'"
+                  style="border-bottom: 2px solid transparent; margin-bottom: -1px;"
+                >
+                  <i class="bi bi-balloon" style="color: #a855f7;" aria-hidden="true"></i>
+                  0 Work Anniversaries
+                </button>
+                <button
+                  class="oh-tabbar__tab"
+                  [class.oh-tabbar__tab--active]="activeCelebrateTab === 'Joinees'"
+                  (click)="activeCelebrateTab = 'Joinees'"
+                  style="border-bottom: 2px solid transparent; margin-bottom: -1px;"
+                >
+                  <i class="bi bi-people" style="color: #6366f1;" aria-hidden="true"></i>
+                  0 New joinees
+                </button>
+              </div>
+              <button mat-icon-button (click)="isCelebrateCardExpanded.set(!isCelebrateCardExpanded())" style="color: var(--oh-gray-400); width: 24px; height: 24px; line-height: 24px; display: inline-flex; align-items: center; justify-content: center; padding: 0;" aria-label="Toggle section">
+                <i class="bi" [class.bi-chevron-up]="isCelebrateCardExpanded()" [class.bi-chevron-down]="!isCelebrateCardExpanded()" aria-hidden="true" style="font-size: 13px;"></i>
+              </button>
+            </div>
+
+            <div class="oh-card-body" [ngSwitch]="activeCelebrateTab" *ngIf="isCelebrateCardExpanded()">
+              <!-- Birthdays Tab content -->
+              <div *ngSwitchCase="'Birthdays'">
+                <h4 class="oh-caption mb-3" style="font-weight: 600; text-transform: none; font-size: 13.5px; color: var(--oh-gray-900);">Birthdays today</h4>
+                
+                <div class="oh-celebrate-empty-vector">
+                  <svg width="120" height="90" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                    <!-- Streamers & Sparkles -->
+                    <path d="M25 22 C35 12, 45 32, 55 22 C65 12, 75 32, 85 22 C95 12, 105 32, 115 22" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="2 2" />
+                    <circle cx="30" cy="18" r="1.5" fill="#f43f5e" stroke="none" />
+                    <circle cx="70" cy="14" r="1.5" fill="#eab308" stroke="none" />
+                    <circle cx="100" cy="18" r="1.5" fill="#38bdf8" stroke="none" />
+                    
+                    <!-- Plate -->
+                    <line x1="25" y1="78" x2="95" y2="78" stroke="#cbd5e1" stroke-width="1.2" />
+                    <path d="M35 78 Q60 84 85 78" stroke="#cbd5e1" stroke-width="1.2" />
+
+                    <!-- Bottom Cake Layer -->
+                    <rect x="38" y="54" width="44" height="24" rx="2" stroke="#f43f5e" stroke-width="1.2" fill="#fff1f2" />
+                    <path d="M38 60 C43 63 47 57 52 60 C57 63 61 57 66 60 C71 63 75 57 82 60" stroke="#f43f5e" stroke-width="1" />
+
+                    <!-- Top Cake Layer -->
+                    <rect x="46" y="38" width="28" height="16" rx="1.5" stroke="#f43f5e" stroke-width="1.2" fill="#fff1f2" />
+                    <path d="M46 43 C51 45 55 41 60 43 C65 45 69 41 74 43" stroke="#f43f5e" stroke-width="1" />
+
+                    <!-- Candle -->
+                    <line x1="60" y1="38" x2="60" y2="28" stroke="#64748b" stroke-width="1.2" />
+                    <!-- Flame -->
+                    <path d="M60 28 C58 26 58 21 60 17 Q62 21 60 28 Z" fill="#eab308" stroke="#d97706" stroke-width="1" />
+                  </svg>
+                  <p class="oh-caption mt-2 mb-0" style="color: var(--oh-gray-500);">No birthdays today.</p>
+                </div>
+
+                <h4 class="oh-overline oh-card-body__label" style="font-size: 10px; margin-top: 16px;">Upcoming Birthdays</h4>
+                <div class="oh-birthdays">
+                  <div *ngFor="let bday of upcomingBirthdays" class="oh-birthday">
+                    <span class="oh-avatar oh-avatar--sm oh-birthday__avatar">{{ bday.avatar }}</span>
+                    <p class="oh-birthday__name mb-0">{{ bday.name }}</p>
+                    <p class="oh-caption mb-0">{{ bday.date }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Anniversaries Tab content -->
+              <div *ngSwitchCase="'Anniversaries'">
+                <h4 class="oh-caption mb-3" style="font-weight: 600; text-transform: none; font-size: 13.5px; color: var(--oh-gray-900);">Work Anniversaries today</h4>
+
+                <div class="oh-celebrate-empty-vector">
+                  <svg width="120" height="90" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                    <!-- Confetti Stars -->
+                    <path d="M30 25 L32 29 L37 29 L33 32 L35 37 L30 34 L25 37 L27 32 L23 29 L28 29 Z" fill="#fef08a" stroke="#eab308" stroke-width="0.8" />
+                    <path d="M90 30 L91.5 33 L95 33 L92 35.5 L93.5 39 L90 36.5 L86.5 39 L88 35.5 L85 33 L88.5 33 Z" fill="#c7d2fe" stroke="#6366f1" stroke-width="0.8" />
+                    <circle cx="45" cy="18" r="1.5" fill="#f43f5e" stroke="none" />
+                    <circle cx="75" cy="22" r="1.5" fill="#10b981" stroke="none" />
+
+                    <!-- Medal Ribbon -->
+                    <path d="M50 48 L44 76 L52 70 L60 76 L54 48" stroke="#3b82f6" stroke-width="1.2" fill="#eff6ff" />
+                    <path d="M70 48 L64 76 L72 70 L80 76 L74 48" stroke="#f43f5e" stroke-width="1.2" fill="#fef2f2" />
+
+                    <!-- Medal Circle -->
+                    <circle cx="60" cy="38" r="18" fill="#fef3c7" stroke="#d97706" stroke-width="1.2" />
+                    <circle cx="60" cy="38" r="14" stroke="#d97706" stroke-width="0.8" stroke-dasharray="2 2" />
+                    <!-- Medal Star inside -->
+                    <path d="M60 29 L62.5 34 L68 34.5 L64 38.5 L65.5 44 L60 41 L54.5 44 L56 38.5 L52 34.5 L57.5 34 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                  </svg>
+                  <p class="oh-caption mt-2 mb-0" style="color: var(--oh-gray-500);">No Work Anniversaries today.</p>
+                </div>
+
+                <h4 class="oh-overline oh-card-body__label" style="font-size: 10px; margin-top: 16px;">Upcoming Work Anniversaries</h4>
+                <div class="oh-birthdays">
+                  <div *ngFor="let ann of upcomingAnniversaries" class="oh-birthday">
+                    <span class="oh-avatar oh-avatar--sm oh-birthday__avatar" style="background: var(--oh-primary-soft); color: var(--oh-primary);">{{ ann.avatar }}</span>
+                    <p class="oh-birthday__name mb-0">{{ ann.name }}</p>
+                    <p class="oh-caption mb-0">{{ ann.date }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Joinees Tab content -->
+              <div *ngSwitchCase="'Joinees'">
+                <h4 class="oh-caption mb-3" style="font-weight: 600; text-transform: none; font-size: 13.5px; color: var(--oh-gray-900);">New joinees today</h4>
+
+                <div class="oh-celebrate-empty-vector">
+                  <svg width="120" height="90" viewBox="0 0 120 90" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="color: var(--oh-gray-400);">
+                    <!-- Stars & Sparkles -->
+                    <path d="M35 30 L37 33 L40 33 L37 35 L38 38 L35 36 L32 38 L33 35 L30 33 L33 33 Z" fill="#c7d2fe" stroke="#6366f1" stroke-width="0.8" />
+                    <path d="M85 20 L86.5 22.5 L89.5 22.5 L87 24 L88 26.5 L85 25 L82 26.5 L83 24 L80.5 22.5 L83.5 22.5 Z" fill="#fef08a" stroke="#eab308" stroke-width="0.8" />
+                    <circle cx="45" cy="15" r="1.5" fill="#f43f5e" stroke="none" />
+                    <circle cx="75" cy="35" r="1.5" fill="#10b981" stroke="none" />
+
+                    <!-- Launch Pad / Base -->
+                    <line x1="30" y1="80" x2="90" y2="80" stroke="#cbd5e1" stroke-width="1.2" />
+
+                    <!-- Thrust/Flames -->
+                    <path d="M54 62 L60 76 L66 62 Z" fill="#ffedd5" stroke="#f97316" stroke-width="1.2" />
+                    <path d="M57 62 L60 70 L63 62 Z" fill="#fee2e2" stroke="#ef4444" stroke-width="1" />
+
+                    <!-- Rocket Fins -->
+                    <path d="M44 62 L50 62 L48 50 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2" />
+                    <path d="M76 62 L70 62 L72 50 Z" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2" />
+
+                    <!-- Rocket Fuselage -->
+                    <path d="M50 62 L50 38 Q50 20 60 14 Q70 20 70 38 L70 62 Z" fill="#f8fafc" stroke="#6366f1" stroke-width="1.2" />
+                    
+                    <!-- Rocket Window -->
+                    <circle cx="60" cy="38" r="5" fill="#e0f2fe" stroke="#3b82f6" stroke-width="1" />
+                  </svg>
+                  <p class="oh-caption mt-2 mb-0" style="color: var(--oh-gray-500);">No new joinees today.</p>
+                </div>
+
+                <h4 class="oh-overline oh-card-body__label" style="font-size: 10px; margin-top: 16px;">Recent joinees</h4>
+                <div class="oh-birthdays">
+                  <div *ngFor="let jn of recentJoinees" class="oh-birthday">
+                    <span class="oh-avatar oh-avatar--sm oh-birthday__avatar" style="background: var(--oh-success-bg); color: var(--oh-success);">{{ jn.avatar }}</span>
+                    <p class="oh-birthday__name mb-0">{{ jn.name }}</p>
+                    <p class="oh-caption mb-0">{{ jn.date }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content>
+            <h3 class="oh-card-header__title mb-3">Leave Balances</h3>
+            <div class="oh-leave-rings">
+              <div class="oh-leave-rings__item">
+                <div class="oh-leave-ring" style="--val: 73%">
+                  <span class="oh-leave-ring__val">11</span>
+                </div>
+                <span class="oh-overline">Annual</span>
+              </div>
+              <div class="oh-leave-rings__item">
+                <div class="oh-leave-ring" style="--val: 40%; --ring-color: var(--oh-pink)">
+                  <span class="oh-leave-ring__val">4</span>
+                </div>
+                <span class="oh-overline">Sick</span>
+              </div>
+            </div>
+            <div class="oh-leave-rings__footer">
+              <a href="javascript:void(0)" class="oh-card-header__link">Request Leave</a>
+              <a href="javascript:void(0)" class="oh-leave-rings__balances-link">Balances</a>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Column 2: Composer & activity feed -->
+    <div class="col-lg-5">
+      <div class="oh-hr-col">
+        <div class="oh-scope-tabs">
+          <button
+            class="oh-scope-tabs__tab"
+            [class.oh-scope-tabs__tab--active]="activeScope === 'Organization'"
+            (click)="activeScope = 'Organization'"
+          >
+            Organization
+          </button>
+          <button
+            class="oh-scope-tabs__tab"
+            [class.oh-scope-tabs__tab--active]="activeScope === 'Development'"
+            (click)="activeScope = 'Development'"
+          >
+            Dev &amp; Arch
+          </button>
+        </div>
+
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content class="p-0">
+            <div class="oh-tabbar oh-tabbar--padded">
+              <button
+                class="oh-tabbar__tab"
+                [class.oh-tabbar__tab--active]="activeComposeTab === 'Post'"
+                (click)="activeComposeTab = 'Post'"
+              >
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Post
+              </button>
+              <button
+                class="oh-tabbar__tab"
+                [class.oh-tabbar__tab--active]="activeComposeTab === 'Badge'"
+                (click)="activeComposeTab = 'Badge'"
+              >
+                <i class="bi bi-award" aria-hidden="true"></i>
+                Badge
+              </button>
+              <button
+                class="oh-tabbar__tab"
+                [class.oh-tabbar__tab--active]="activeComposeTab === 'Reward'"
+                (click)="activeComposeTab = 'Reward'"
+              >
+                <i class="bi bi-gift" aria-hidden="true"></i>
+                Reward
+              </button>
+              <button
+                class="oh-tabbar__tab"
+                [class.oh-tabbar__tab--active]="activeComposeTab === 'Endorse skill'"
+                (click)="activeComposeTab = 'Endorse skill'"
+              >
+                <i class="bi bi-person-check" aria-hidden="true"></i>
+                Endorse
+              </button>
+            </div>
+
+            <div class="oh-composer">
+              <textarea
+                class="oh-composer__textarea"
+                rows="3"
+                placeholder="Write your post here and mention your peers..."
+                [(ngModel)]="newPostText"
+              ></textarea>
+              <div class="oh-composer__footer">
+                <button mat-flat-button color="primary" [disabled]="!newPostText.trim()" (click)="submitPost()">
+                  Share Post
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card appearance="outlined" class="oh-panel" style="cursor: pointer;" (click)="activeSubView.set('announcements')">
+          <mat-card-content class="oh-announce">
+            <div class="d-flex align-items-center gap-2" *ngIf="announcementsList().length === 0">
+              <i class="bi bi-megaphone oh-announce__icon" aria-hidden="true"></i>
+              <span class="oh-caption">No announcements</span>
+            </div>
+            <div class="d-flex flex-column gap-1" *ngIf="announcementsList().length > 0" style="flex: 1; text-align: left; overflow: hidden;">
+              <span class="oh-overline" style="font-size: 9px; color: var(--oh-primary);">LATEST ANNOUNCEMENT</span>
+              <p class="mb-0 font-weight-bold" style="font-size: 12.5px; color: var(--oh-gray-900);">{{ announcementsList()[0].title }}</p>
+              <p class="oh-caption mb-0 text-truncate" style="max-width: 280px; color: var(--oh-gray-500);">{{ announcementsList()[0].description }}</p>
+            </div>
+            <button mat-icon-button class="oh-announce__add" aria-label="Add announcement" (click)="$event.stopPropagation(); activeSubView.set('announcements')">
+              <i class="bi bi-plus-lg" aria-hidden="true"></i>
+            </button>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="oh-feed">
+          <mat-card appearance="outlined" class="oh-panel" *ngFor="let post of feedPosts()">
+            <mat-card-content>
+              <div class="oh-feed-post__header">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="oh-avatar oh-avatar--sm oh-feed-post__avatar">{{ post.authorAvatar }}</span>
+                  <div>
+                    <h4 class="oh-feed-post__author mb-0">{{ post.authorName }}</h4>
+                    <p class="oh-caption mb-0">{{ post.authorRole }} &middot; {{ post.timeAgo }}</p>
+                  </div>
+                </div>
+                <button mat-icon-button class="oh-feed-post__menu" aria-label="Post actions">
+                  <i class="bi bi-three-dots-vertical" aria-hidden="true"></i>
+                </button>
+              </div>
+
+              <div class="oh-feed-post__badge" *ngIf="post.type === 'Badge'">
+                <span class="oh-feed-post__badge-icon">
+                  <i class="bi bi-trophy" aria-hidden="true"></i>
+                </span>
+                <div>
+                  <span class="oh-badge oh-badge--warning oh-feed-post__badge-label">Awarded Badge</span>
+                  <h5 class="oh-feed-post__badge-name mb-0">{{ post.badgeName }}</h5>
+                </div>
+              </div>
+
+              <p class="oh-feed-post__content">{{ post.content }}</p>
+
+              <div class="oh-feed-post__toolbar">
+                <div class="oh-feed-post__toolbar-actions">
+                  <button
+                    mat-button
+                    class="oh-feed-post__action"
+                    [class.oh-feed-post__action--active]="post.hasLiked"
+                    (click)="toggleLike(post)"
+                  >
+                    <i class="bi" [class.bi-hand-thumbs-up-fill]="post.hasLiked" [class.bi-hand-thumbs-up]="!post.hasLiked" aria-hidden="true"></i>
+                    Like
+                  </button>
+                  <button mat-button class="oh-feed-post__action" (click)="toggleComments(post)">
+                    <i class="bi bi-chat-left-text" aria-hidden="true"></i>
+                    Comment
+                  </button>
+                </div>
+                <div class="oh-feed-post__toolbar-meta" *ngIf="post.likes > 0 || post.commentsCount > 0">
+                  <span *ngIf="post.likes > 0">{{ post.likes }} reaction{{ post.likes === 1 ? '' : 's' }}</span>
+                  <span *ngIf="post.likes > 0 && post.commentsCount > 0">&middot;</span>
+                  <span *ngIf="post.commentsCount > 0">{{ post.commentsCount }} Comment{{ post.commentsCount === 1 ? '' : 's' }}</span>
+                </div>
+              </div>
+
+              <div class="oh-feed-post__comments" *ngIf="isCommentsOpen(post.id)">
+                <div class="oh-feed-post__comment" *ngFor="let comment of post.comments">
+                  <span class="oh-avatar oh-avatar--sm oh-feed-post__comment-avatar">{{ initialsOf(comment.author) }}</span>
+                  <div class="oh-feed-post__comment-bubble">
+                    <p class="oh-feed-post__comment-author mb-0">{{ comment.author }}</p>
+                    <p class="oh-feed-post__comment-text mb-0">{{ comment.content }}</p>
+                  </div>
+                </div>
+
+                <div class="oh-feed-post__composer">
+                  <span class="oh-avatar oh-avatar--sm oh-feed-post__composer-avatar">{{ userInitials }}</span>
+                  <div class="oh-feed-post__composer-input-wrap">
+                    <input
+                      type="text"
+                      class="oh-feed-post__composer-input"
+                      placeholder="Write your comment here... Press ENTER to submit"
+                      [ngModel]="commentDrafts[post.id] || ''"
+                      (ngModelChange)="setCommentDraft(post.id, $event)"
+                      (keydown.enter)="submitComment(post)"
+                    />
+                    <button
+                      type="button"
+                      class="oh-feed-post__emoji-btn"
+                      (click)="toggleEmojiPicker(post.id, $event)"
+                      aria-label="Add emoji"
+                    >
+                      <i class="bi bi-emoji-smile" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="oh-emoji-picker" *ngIf="isEmojiPickerOpen(post.id)" (click)="$event.stopPropagation()">
+                      <div class="oh-emoji-picker__tabs">
+                        <button
+                          *ngFor="let cat of emojiCategories"
+                          type="button"
+                          class="oh-emoji-picker__tab"
+                          [class.oh-emoji-picker__tab--active]="activeEmojiCategory() === cat.key"
+                          (click)="activeEmojiCategory.set(cat.key)"
+                          [attr.aria-label]="cat.key"
+                        >
+                          <i class="bi bi-{{ cat.icon }}" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                      <div class="oh-emoji-picker__grid">
+                        <button
+                          *ngFor="let emoji of activeEmojiList()"
+                          type="button"
+                          class="oh-emoji-picker__emoji"
+                          (click)="insertEmoji(post.id, emoji)"
+                        >
+                          {{ emoji }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: Calendar, holidays, leave balances -->
+    <div class="col-lg-3">
+      <div class="oh-hr-col">
+        <mat-card appearance="outlined" class="oh-panel">
+          <mat-card-content>
+            <div class="oh-card-header">
+              <h3 class="oh-card-header__title mb-0">Calendar</h3>
+              <a href="javascript:void(0)" (click)="goToAttendance()" class="oh-card-header__link">Go to calendar</a>
+            </div>
+
+            <div class="oh-cal-nav">
+              <button class="oh-cal-nav__arrow" (click)="prevMonth()" aria-label="Previous month">
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+              </button>
+              <span class="oh-cal-nav__label oh-cal-nav__label--clickable" (click)="goToCurrentMonth()" title="Jump to current month">
+                {{ calendarMonthLabel }}
+              </span>
+              <button class="oh-cal-nav__arrow" (click)="nextMonth()" aria-label="Next month">
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+            </div>
+
+            <div class="oh-cal-card__grid">
+              <div class="oh-cal-card__weekday">Su</div>
+              <div class="oh-cal-card__weekday">Mo</div>
+              <div class="oh-cal-card__weekday">Tu</div>
+              <div class="oh-cal-card__weekday">We</div>
+              <div class="oh-cal-card__weekday">Th</div>
+              <div class="oh-cal-card__weekday">Fr</div>
+              <div class="oh-cal-card__weekday">Sa</div>
+
+              <div
+                *ngFor="let day of calendarDays"
+                class="oh-cal-card__cell"
+                [class.oh-cal-card__cell--padding]="day.isPadding"
+                [class.oh-cal-card__cell--today]="day.status === 'today'"
+                [class.oh-cal-card__cell--present]="day.status === 'present'"
+                [class.oh-cal-card__cell--holiday]="day.status === 'holiday'"
+              >
+                {{ day.date }}
+              </div>
+            </div>
+
+            <div class="oh-cal-card__legend">
+              <div class="oh-cal-card__legend-item">
+                <span class="oh-cal-card__legend-dot oh-cal-card__legend-dot--today"></span>
+                <span>Today</span>
+              </div>
+              <div class="oh-cal-card__legend-item">
+                <span class="oh-cal-card__legend-dot oh-cal-card__legend-dot--present"></span>
+                <span>Present</span>
+              </div>
+              <div class="oh-cal-card__legend-item">
+                <span class="oh-cal-card__legend-dot oh-cal-card__legend-dot--holiday"></span>
+                <span>Holiday</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="oh-panel oh-holiday-card">
+          <div class="oh-holiday-card__hero" [style.background]="activeHoliday() ? activeHoliday()!.cardBg : ''">
+            <div class="oh-holiday-card__hero-header">
+              <span class="oh-overline oh-holiday-card__hero-label">Holidays</span>
+              <a href="javascript:void(0)" (click)="goToLeave()" class="oh-holiday-card__view-all">View All</a>
+            </div>
+
+            <div class="oh-holiday-card__hero-body">
+              <button type="button" class="oh-holiday-card__nav" (click)="prevHoliday()" aria-label="Previous holiday">
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+              </button>
+
+              <div class="oh-holiday-card__hero-content" *ngIf="activeHoliday()">
+                <div class="oh-holiday-card__hero-text">
+                  <h4 class="mb-1" [title]="activeHoliday()?.name || ''">{{ activeHoliday()?.name }}</h4>
+                  <p class="mb-0">{{ activeHoliday()?.day }}, {{ activeHoliday()?.date }}</p>
+                </div>
+
+                <div class="oh-holiday-card__hero-icon" [ngSwitch]="activeHoliday()?.name">
+                  <svg *ngSwitchCase="'Ganesh Chaturthi'" width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M42 20 Q50 5 58 20 C54 20 46 20 42 20 Z" />
+                    <path d="M46 20 L54 20 M48 16 L52 16" />
+                    <path d="M40 28 C25 22 20 40 35 45 C38 46 40 44 40 40 Z" />
+                    <path d="M60 28 C75 22 80 40 65 45 C62 46 60 44 60 40 Z" />
+                    <path d="M40 28 C45 28 48 34 50 38" />
+                    <path d="M60 28 C55 28 52 34 50 38" />
+                    <path d="M50 38 C50 50 42 58 45 68 C47 74 55 76 56 68 C57 65 52 64 50 62" />
+                    <path d="M46 32 C48 35 52 35 54 32" stroke-width="1.2" />
+                    <path d="M48 34 L52 34" stroke-width="1.2" />
+                    <circle cx="50" cy="30" r="1.5" fill="white" />
+                    <path d="M30 65 C22 68 20 78 30 82 C40 85 50 82 50 82" />
+                    <path d="M70 65 C78 68 80 78 70 82 C60 85 50 82 50 82" />
+                    <path d="M50 55 C45 55 42 62 45 70 C47 76 53 76 55 70" />
+                    <path d="M25 55 L75 57" stroke-width="1.5" stroke="rgba(255,255,255,0.7)" />
+                    <circle cx="28" cy="55" r="2" fill="white" />
+                    <circle cx="72" cy="57" r="2" fill="white" />
+                  </svg>
+
+                  <svg *ngSwitchCase="'Gandhi Jayanti'" width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="34" cy="45" r="22" stroke-width="2.5" />
+                    <circle cx="34" cy="45" r="3" fill="white" />
+                    <line x1="34" y1="23" x2="34" y2="67" />
+                    <line x1="12" y1="45" x2="56" y2="45" />
+                    <line x1="18" y1="29" x2="50" y2="61" />
+                    <line x1="18" y1="61" x2="50" y2="29" />
+                    <line x1="76" y1="35" x2="76" y2="65" stroke-width="2.5" />
+                    <line x1="71" y1="50" x2="81" y2="50" stroke-width="2" />
+                    <line x1="34" y1="23" x2="76" y2="50" stroke-dasharray="2 2" stroke-width="1" />
+                    <line x1="34" y1="67" x2="76" y2="50" stroke-dasharray="2 2" stroke-width="1" />
+                    <line x1="15" y1="72" x2="82" y2="72" stroke-width="3" />
+                    <line x1="34" y1="45" x2="34" y2="72" stroke-width="2.5" />
+                    <line x1="76" y1="60" x2="76" y2="72" stroke-width="2.5" />
+                    <g transform="translate(42, 75) scale(0.24)">
+                      <circle cx="20" cy="20" r="10" stroke="white" stroke-width="6" fill="none" />
+                      <circle cx="45" cy="20" r="10" stroke="white" stroke-width="6" fill="none" />
+                      <path d="M30 20 C32 17 33 17 35 20" stroke="white" stroke-width="6" />
+                    </g>
+                  </svg>
+
+                  <svg *ngSwitchCase="'Dussehra'" width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="30" y1="15" x2="30" y2="85" stroke-dasharray="2 3" opacity="0.8" />
+                    <path d="M30 15 Q80 50 30 85" stroke-width="3" />
+                    <line x1="15" y1="50" x2="68" y2="50" stroke-width="2.5" />
+                    <path d="M68 50 L52 38 M68 50 L52 62" stroke-width="2.5" />
+                    <path d="M15 50 L8 42 M15 50 L8 58" stroke-width="2" />
+                  </svg>
+
+                  <svg *ngSwitchCase="'Diwali Festival'" width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 50 C20 75 80 75 80 50 C70 52 30 52 20 50 Z" fill="rgba(255,255,255,0.1)" />
+                    <path d="M40 70 L35 80 L65 80 L60 70" />
+                    <path d="M50 46 C45 35 48 20 50 15 C52 20 55 35 50 46 Z" fill="white" />
+                    <path d="M50 40 C48 35 49 28 50 25 C51 28 52 35 50 40 Z" fill="rgba(255,255,255,0.5)" />
+                    <path d="M50 8 L50 4 M32 23 L28 20 M68 23 L72 20 M20 40 L15 38 M80 40 L85 38" stroke-width="1.2" stroke-dasharray="3 3" />
+                  </svg>
+
+                  <svg *ngSwitchCase="'Christmas'" width="72" height="72" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M50 8 L52 14 L58 14 L53 18 L55 24 L50 20 L45 24 L47 18 L42 14 L48 14 Z" fill="white" stroke-width="0.5" />
+                    <path d="M50 22 L35 38 L65 38 Z" fill="rgba(255,255,255,0.1)" />
+                    <path d="M50 38 L25 58 L75 58 Z" fill="rgba(255,255,255,0.15)" />
+                    <path d="M50 56 L15 78 L85 78 Z" fill="rgba(255,255,255,0.2)" />
+                    <path d="M44 78 L44 92 L56 92 L56 78" stroke-width="2.2" />
+                  </svg>
+                </div>
+              </div>
+
+              <button type="button" class="oh-holiday-card__nav" (click)="nextHoliday()" aria-label="Next holiday">
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="oh-holiday-card__list">
+            <h4 class="oh-overline oh-holiday-card__list-label">Other Public Holidays</h4>
+            <div class="oh-holiday-card__scroll">
+              <div
+                *ngFor="let hol of onlyUpcomingHolidays(); let idx = index"
+                class="oh-holiday-item"
+                [class.oh-holiday-item--active]="idx === activeHolidayIndex()"
+                [id]="'oh-holiday-item-' + idx"
+                (click)="activeHolidayIndex.set(idx)"
+              >
+                <span
+                  *ngIf="idx === activeHolidayIndex()"
+                  class="oh-holiday-item__accent"
+                  [style.background]="hol.cardBg"
+                ></span>
+
+                <div class="oh-holiday-item__icon" [style.background]="hol.cardBg">
+                  <div [ngSwitch]="hol.name">
+                    <svg *ngSwitchCase="'Ganesh Chaturthi'" width="28" height="28" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M42 20 Q50 5 58 20 C54 20 46 20 42 20 Z" />
+                      <path d="M40 28 C25 22 20 40 35 45 C38 46 40 44 40 40 Z" />
+                      <path d="M60 28 C75 22 80 40 65 45 C62 46 60 44 60 40 Z" />
+                      <path d="M50 38 C50 50 42 58 45 68 C47 74 55 76 56 68" />
+                    </svg>
+                    <svg *ngSwitchCase="'Gandhi Jayanti'" width="28" height="28" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="35" cy="45" r="18" />
+                      <circle cx="35" cy="45" r="3" fill="white" />
+                      <line x1="35" y1="27" x2="35" y2="63" />
+                      <line x1="17" y1="45" x2="53" y2="45" />
+                      <line x1="75" y1="35" x2="75" y2="65" />
+                      <line x1="20" y1="70" x2="80" y2="70" />
+                    </svg>
+                    <svg *ngSwitchCase="'Dussehra'" width="28" height="28" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="30" y1="15" x2="30" y2="85" stroke-dasharray="2 3" opacity="0.8" />
+                      <path d="M30 15 Q80 50 30 85" stroke-width="5.5" />
+                      <line x1="15" y1="50" x2="68" y2="50" stroke-width="5" />
+                      <path d="M68 50 L52 38 M68 50 L52 62" stroke-width="5" />
+                      <path d="M15 50 L8 42 M15 50 L8 58" stroke-width="4.5" />
+                    </svg>
+                    <svg *ngSwitchCase="'Diwali Festival'" width="28" height="28" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 50 C20 75 80 75 80 50 C70 52 30 52 20 50 Z" fill="rgba(255,255,255,0.15)" />
+                      <path d="M50 46 C45 35 48 20 50 15 C52 20 55 35 50 46 Z" fill="white" />
+                    </svg>
+                    <svg *ngSwitchCase="'Christmas'" width="28" height="28" viewBox="0 0 100 100" fill="none" stroke="white" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M50 8 L52 14 L58 14 L53 18 L55 24 L50 20 L45 24 L47 18 L42 14 L48 14 Z" fill="white" stroke-width="1.2" />
+                      <path d="M50 22 L35 38 L65 38 Z" fill="rgba(255,255,255,0.15)" />
+                      <path d="M50 38 L25 58 L75 58 Z" fill="rgba(255,255,255,0.2)" />
+                      <path d="M50 56 L15 78 L85 78 Z" fill="rgba(255,255,255,0.25)" />
+                      <path d="M44 78 L44 92 L56 92 L56 78" stroke-width="5" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="oh-holiday-item__text">
+                  <h6 class="mb-0">{{ hol.name }}</h6>
+                  <span class="oh-caption">{{ hol.date }} &middot; {{ hol.day }}</span>
+                </div>
+                <span class="oh-holiday-item__dot" *ngIf="idx === activeHolidayIndex()"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- End of dashboard Case -->
+
+  <div *ngSwitchCase="'announcements'">
+    <oh-announcements
+      [announcementsList]="announcementsList()"
+      (backToDashboard)="activeSubView.set('dashboard')"
+      (announcementPublished)="onAnnouncementPublished($event)"
+    ></oh-announcements>
+  </div>
+</div>

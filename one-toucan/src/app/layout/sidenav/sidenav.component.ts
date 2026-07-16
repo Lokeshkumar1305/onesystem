@@ -62,16 +62,8 @@ export class SidenavComponent implements OnInit, OnDestroy {
     return this.currentUser.initials();
   }
 
-  get isHome(): boolean {
-    return this.activeRoute === '/home';
-  }
-
   isActive(item: NavItem): boolean {
     return !!item.route && this.activeRoute === item.route;
-  }
-
-  goHome(): void {
-    this.router.navigateByUrl('/home');
   }
 
   select(item: NavItem): void {

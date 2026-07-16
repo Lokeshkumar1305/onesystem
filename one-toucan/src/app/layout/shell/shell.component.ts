@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 
 import { HeaderComponent } from '../header/header.component';
 import { SidenavComponent } from '../sidenav/sidenav.component';
+import { WorkspaceModuleService } from '../../core/workspace/workspace-module.service';
 
 @Component({
   selector: 'oh-shell',
@@ -20,12 +21,73 @@ export class ShellComponent implements OnInit {
 
   constructor(
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly workspaceModules: WorkspaceModuleService
   ) {}
 
   ngOnInit(): void {
     this.updatePageMeta();
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => this.updatePageMeta());
+  }
+
+  get activeModuleLabel(): string {
+    return this.workspaceModules.activeModule()?.label ?? 'Workspace';
+  }
+
+  get activeModuleTabs(): { label: string; route: string }[] {
+    const mod = this.workspaceModules.activeModule();
+    if (!mod) return [];
+    
+    const currentUrl = this.router.url.split('?')[0].split('#')[0];
+    
+    // Find the group that contains the current active route
+    const activeGroup = mod.groups.find(group => 
+      group.items.some(item => 
+        item.route && (currentUrl === item.route || currentUrl.startsWith(item.route + '/'))
+      )
+    );
+
+    // If an active group is found, return its items (that have routes)
+    if (activeGroup) {
+      const tabs: { label: string; route: string }[] = [];
+      for (const item of activeGroup.items) {
+        if (item.route) {
+          tabs.push({ label: item.label, route: item.route });
+        }
+      }
+      return tabs.filter((t, i, self) => self.findIndex(o => o.route === t.route) === i);
+    }
+
+    // Fallback: If no group matches (e.g. at a parent level), return all routes
+    const fallbackTabs: { label: string; route: string }[] = [];
+    for (const group of mod.groups) {
+      for (const item of group.items) {
+        if (item.route) {
+          fallbackTabs.push({ label: item.label, route: item.route });
+        }
+      }
+    }
+    return fallbackTabs.filter((t, i, self) => self.findIndex(o => o.route === t.route) === i);
+  }
+
+  isTabActive(tab: { label: string; route: string }): boolean {
+    const currentUrl = this.router.url.split('?')[0].split('#')[0];
+    return currentUrl === tab.route || currentUrl.startsWith(tab.route + '/');
+  }
+
+  navigateToTab(tab: { label: string; route: string }): void {
+    this.router.navigateByUrl(tab.route);
+  }
+
+  goToHome(): void {
+    this.router.navigateByUrl('/home');
+  }
+
+  goToActiveModuleHome(): void {
+    const home = this.workspaceModules.activeModule()?.homeRoute;
+    if (home) {
+      this.router.navigateByUrl(home);
+    }
   }
 
   private updatePageMeta(): void {
