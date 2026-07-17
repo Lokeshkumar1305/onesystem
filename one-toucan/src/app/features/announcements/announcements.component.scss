@@ -2,6 +2,19 @@
   padding-bottom: 2px;
 }
 
+.oh-onboarding-list__head-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--oh-radius-lg);
+  background: var(--oh-primary-soft);
+  color: var(--oh-primary);
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
 .oh-panel {
   border-color: var(--oh-border) !important;
   box-shadow: var(--oh-shadow-sm) !important;
@@ -21,7 +34,7 @@
     }
 
     .mat-mdc-text-field-wrapper {
-      height: 48px !important;
+      height: 44px !important;
     }
 
     .mat-mdc-form-field-flex {
@@ -29,8 +42,8 @@
     }
 
     .mat-mdc-form-field-infix {
-      padding-top: 12px !important;
-      padding-bottom: 12px !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
     }
   }
 
@@ -42,6 +55,51 @@
 
     textarea.mat-mdc-input-element {
       margin-top: 0 !important;
+    }
+  }
+
+  .mat-mdc-form-field {
+    input.mat-mdc-input-element,
+    textarea.mat-mdc-input-element {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+    }
+  }
+
+  .oh-time-select-panel {
+    min-width: 130px !important;
+    max-width: 130px !important;
+
+    // Custom thin scrollbar
+    &::-webkit-scrollbar {
+      width: 6px !important;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent !important;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--oh-gray-300) !important;
+      border-radius: var(--oh-radius-full) !important;
+      &:hover {
+        background-color: var(--oh-gray-400) !important;
+      }
+    }
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--oh-gray-300) transparent !important;
+
+    .mdc-list-item__primary-text {
+      white-space: nowrap !important;
+    }
+
+    .mat-mdc-option {
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+      border-bottom: 1px solid var(--oh-border) !important;
+      &:last-child {
+        border-bottom: none !important;
+      }
     }
   }
 }

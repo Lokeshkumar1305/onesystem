@@ -399,7 +399,7 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card appearance="outlined" class="oh-panel" style="cursor: pointer;" (click)="activeSubView.set('announcements')">
+        <mat-card appearance="outlined" class="oh-panel" style="cursor: pointer;" (click)="openAnnouncements()">
           <mat-card-content class="oh-announce">
             <div class="d-flex align-items-center gap-2" *ngIf="announcementsList().length === 0">
               <i class="bi bi-megaphone oh-announce__icon" aria-hidden="true"></i>
@@ -410,7 +410,7 @@
               <p class="mb-0 font-weight-bold" style="font-size: 12.5px; color: var(--oh-gray-900);">{{ announcementsList()[0].title }}</p>
               <p class="oh-caption mb-0 text-truncate" style="max-width: 280px; color: var(--oh-gray-500);">{{ announcementsList()[0].description }}</p>
             </div>
-            <button mat-icon-button class="oh-announce__add" aria-label="Add announcement" (click)="$event.stopPropagation(); activeSubView.set('announcements')">
+            <button mat-icon-button class="oh-announce__add" aria-label="Add announcement" (click)="openAnnouncements($event)">
               <i class="bi bi-plus-lg" aria-hidden="true"></i>
             </button>
           </mat-card-content>

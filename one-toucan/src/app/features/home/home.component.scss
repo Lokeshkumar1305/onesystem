@@ -130,3 +130,15 @@
   font-size: 13.5px;
   color: var(--oh-card-accent);
 }
+
+.oh-home__bg-vector {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 320px;
+  height: 320px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.95;
+}
+

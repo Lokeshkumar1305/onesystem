@@ -1,10 +1,10 @@
-<div class="oh-home">
-  <div class="oh-home__greeting">
+<div class="oh-home" style="overflow: hidden;">
+  <div class="oh-home__greeting" style="position: relative; z-index: 1;">
     <h1 class="oh-display-h2 mb-2">{{ greeting }}, {{ userFirstName }}</h1>
     <p class="oh-caption mb-0">Choose a workspace to get started.</p>
   </div>
 
-  <div class="oh-home__grid">
+  <div class="oh-home__grid" style="position: relative; z-index: 1;">
     <button
       type="button"
       class="oh-home__card"
@@ -32,4 +32,40 @@
       </span>
     </button>
   </div>
+
+  <!-- Bottom-Right Toucan Background Vector Decoration -->
+  <svg class="oh-home__bg-vector" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Curved corner block -->
+    <path d="M120,400 C200,350 320,310 400,250 L400,400 Z" fill="rgba(15, 118, 110, 0.04)" />
+
+    <!-- Angled outline squares blending into the curve -->
+    <g stroke="rgba(15, 118, 110, 0.06)" stroke-width="1.5" fill="none">
+      <rect x="180" y="180" width="220" height="220" rx="20" transform="rotate(15 290 290)" />
+      <rect x="210" y="210" width="180" height="180" rx="16" transform="rotate(-8 300 300)" />
+    </g>
+
+    <!-- Sitting Toucan outline icon (facing right, same as reference image) -->
+    <g fill="none" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Head and back curve -->
+      <path d="M260,300 C260,280 272,265 292,265 C302,265 310,270 312,280" />
+      
+      <!-- Beak upper/lower curves (facing right) -->
+      <path d="M292,265 C315,268 340,278 348,292 C350,296 346,303 338,305 C320,310 305,308 300,305 Z" fill="rgba(15, 118, 110, 0.02)" />
+      <!-- Beak split line -->
+      <path d="M296,286 C315,290 332,294 348,292" />
+      
+      <!-- Breast/Body front -->
+      <path d="M260,300 C260,320 270,335 285,345" />
+      
+      <!-- Tail / Body back -->
+      <path d="M300,305 C305,318 312,330 315,345" />
+
+      <!-- Wing -->
+      <path d="M272,295 C285,295 292,305 290,318 C287,325 280,328 275,328 Z" fill="rgba(15, 118, 110, 0.04)" />
+
+      <!-- Eye rings -->
+      <circle cx="282" cy="278" r="7.5" />
+      <circle cx="282" cy="278" r="3.5" fill="rgba(15, 118, 110, 0.15)" stroke="none" />
+    </g>
+  </svg>
 </div>

@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CurrentUserService } from '../../core/auth/current-user.service';
 import { AnnouncementsComponent } from '../announcements/announcements.component';
 
@@ -309,6 +309,7 @@ export class OnehrDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private readonly currentUser: CurrentUserService,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly el: ElementRef
   ) {
     // Reactive effect to scroll the active holiday in the bottom list into view
@@ -331,6 +332,13 @@ export class OnehrDashboardComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/leave');
   }
 
+  openAnnouncements(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.router.navigate(['/onehr-dashboard'], { queryParams: { subview: 'announcements' } });
+  }
+
   prevHoliday(): void {
     const current = this.activeHolidayIndex();
     const total = this.onlyUpcomingHolidays().length;
@@ -349,6 +357,16 @@ export class OnehrDashboardComponent implements OnInit, OnDestroy {
     this.timerId = setInterval(() => {
       this.currentTime = new Date();
     }, 1000);
+
+    // Sync subview from route query parameters
+    this.route.queryParams.subscribe(params => {
+      const sub = params['subview'];
+      if (sub === 'announcements') {
+        this.activeSubView.set('announcements');
+      } else {
+        this.activeSubView.set('dashboard');
+      }
+    });
   }
 
   ngOnDestroy(): void {

@@ -71,4 +71,8 @@ export class SidenavComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl(item.route);
     }
   }
+
+  goToProfile(): void {
+    this.router.navigateByUrl('/profile');
+  }
 }

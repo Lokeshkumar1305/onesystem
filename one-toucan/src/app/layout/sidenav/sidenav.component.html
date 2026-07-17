@@ -23,7 +23,7 @@
     </ng-container>
   </mat-nav-list>
 
-  <div class="oh-nav__profile">
+  <div class="oh-nav__profile cursor-pointer" (click)="goToProfile()">
     <span class="oh-avatar oh-avatar--sm oh-nav__profile-avatar">{{ userInitials }}</span>
     <div class="oh-nav__profile-info">
       <p class="oh-nav__profile-name mb-0">{{ userName }}</p>

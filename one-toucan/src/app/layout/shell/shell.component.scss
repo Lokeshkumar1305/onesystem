@@ -17,6 +17,10 @@
 .oh-shell__content-wrap {
   display: flex;
   flex-direction: column;
+
+  &:has(.oh-modal-backdrop) {
+    z-index: 1050 !important;
+  }
 }
 
 .oh-shell__content {

@@ -1,0 +1,1978 @@
+<!-- Profile Feature Container -->
+<div class="oh-profile-container pb-5">
+  
+  <!-- Success Toast Alert Notification -->
+  <div class="oh-toast-alert position-fixed bottom-0 end-0 m-4 p-3 rounded-lg shadow-lg d-flex align-items-center gap-3 text-white" 
+       *ngIf="alertMessage()" 
+       style="background-color: var(--oh-primary); z-index: 9999; animation: slideUp 0.3s ease-out;">
+    <i class="bi bi-check-circle-fill fs-5"></i>
+    <span class="fw-semibold">{{ alertMessage() }}</span>
+  </div>
+
+  <!-- Profile Hero Header Banner (Geometric Wireframe Accent) -->
+  <div class="oh-profile-hero position-relative overflow-hidden mb-4 rounded-lg shadow-sm" style="border-radius: var(--oh-radius-lg);">
+    <!-- Brand-teal gradient banner with a geometric wireframe pattern -->
+    <div class="oh-profile-hero__bg">
+      <svg class="oh-profile-hero__pattern-svg" viewBox="0 0 1200 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width: 100%; height: 100%;">
+        <g stroke="rgba(255, 255, 255, 0.26)" stroke-width="1.0" fill="none">
+          <!-- Column X=1060 -->
+          <path d="M1060,40 L1090,22 L1120,40 L1090,58 Z" />
+          <path d="M1060,40 L1060,75 L1090,93 L1090,58" />
+          <path d="M1120,40 L1120,75 L1090,93" />
+          <path d="M1060,110 L1090,92 L1120,110 L1090,128 Z" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M1060,110 L1060,145 L1090,163 L1090,128" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M1120,110 L1120,145 L1090,163" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+
+          <!-- Column X=1120 -->
+          <path d="M1120,40 L1150,22 L1180,40 L1150,58 Z" />
+          <path d="M1120,40 L1120,75 L1150,93 L1150,58" />
+          <path d="M1180,40 L1180,75 L1150,93" />
+          <path d="M1120,110 L1150,92 L1180,110 L1150,128 Z" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M1120,110 L1120,145 L1150,163 L1150,128" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M1180,110 L1180,145 L1150,163" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+
+          <!-- Column X=1180 (far right edge gap cover) -->
+          <path d="M1180,75 L1210,57 L1240,75 L1210,93 Z" />
+          <path d="M1180,75 L1180,110 L1210,128 L1210,93" />
+          <path d="M1240,75 L1240,110 L1210,128" />
+          <path d="M1180,145 L1210,127 L1240,145 L1210,163 Z" />
+          <path d="M1180,145 L1180,180 L1210,198 L1210,163" />
+          <path d="M1240,145 L1240,180 L1210,198" />
+
+          <!-- Column X=1000 -->
+          <path d="M1000,75 L1030,57 L1060,75 L1030,93 Z" />
+          <path d="M1000,75 L1000,110 L1030,128 L1030,93" />
+          <path d="M1060,75 L1060,110 L1030,128" />
+          <path d="M1000,145 L1030,127 L1060,145 L1030,163 Z" />
+          <path d="M1000,145 L1000,180 L1030,198 L1030,163" />
+          <path d="M1060,145 L1060,180 L1030,198" />
+
+          <!-- Column X=940 -->
+          <path d="M940,40 L970,22 L1000,40 L970,58 Z" />
+          <path d="M940,40 L940,75 L970,93 L970,58" />
+          <path d="M1000,40 L1000,75 L970,93" />
+          <path d="M940,110 L970,92 L1000,110 L970,128 Z" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M940,110 L940,145 L970,163 L970,128" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+          <path d="M1000,110 L1000,145 L970,163" stroke="rgba(255, 255, 255, 0.55)" stroke-width="1.3" />
+
+          <!-- Column X=880 -->
+          <path d="M880,75 L910,57 L940,75 L910,93 Z" />
+          <path d="M880,75 L880,110 L910,128 L910,93" />
+          <path d="M940,75 L940,110 L910,128" />
+          <path d="M880,145 L910,127 L940,145 L910,163 Z" />
+          <path d="M880,145 L880,180 L910,198 L910,163" />
+          <path d="M940,145 L940,180 L910,198" />
+
+          <!-- Column X=820 -->
+          <path d="M820,40 L850,22 L880,40 L850,58 Z" />
+          <path d="M820,40 L820,75 L850,93 L850,58" />
+          <path d="M880,40 L880,75 L850,93" />
+          <path d="M820,110 L850,92 L880,110 L850,128 Z" />
+          <path d="M820,110 L820,145 L850,163 L850,128" />
+          <path d="M880,110 L880,145 L850,163" />
+
+          <!-- Column X=760 -->
+          <path d="M760,75 L790,57 L820,75 L790,93 Z" />
+          <path d="M760,75 L760,110 L790,128 L790,93" />
+          <path d="M820,75 L820,110 L790,128" />
+          <path d="M760,145 L790,127 L820,145 L790,163 Z" />
+          <path d="M760,145 L760,180 L790,198 L790,163" />
+          <path d="M820,145 L820,180 L790,198" />
+
+          <!-- Column X=700 -->
+          <path d="M700,40 L730,22 L760,40 L730,58 Z" />
+          <path d="M700,40 L700,75 L730,93 L730,58" />
+          <path d="M760,40 L760,75 L730,93" />
+          <path d="M700,110 L730,92 L760,110 L730,128 Z" />
+          <path d="M700,110 L700,145 L730,163 L730,128" />
+          <path d="M760,110 L760,145 L730,163" />
+
+          <!-- Column X=640 -->
+          <path d="M640,75 L670,57 L700,75 L670,93 Z" />
+          <path d="M640,75 L640,110 L670,128 L670,93" />
+          <path d="M700,75 L700,110 L670,128" />
+          <path d="M640,145 L670,127 L700,145 L670,163 Z" />
+          <path d="M640,145 L640,180 L670,198 L670,163" />
+          <path d="M700,145 L700,180 L670,198" />
+
+          <!-- Column X=580 (fading edge on the left) -->
+          <g opacity="0.45">
+            <path d="M580,40 L610,22 L640,40 L610,58 Z" />
+            <path d="M580,40 L580,75 L610,93 L610,58" />
+            <path d="M640,40 L640,75 L610,93" />
+            <path d="M580,110 L611,92 L640,110 L611,128 Z" />
+            <path d="M580,110 L580,145 L611,163 L611,128" />
+            <path d="M640,110 L640,145 L611,163" />
+          </g>
+
+          <!-- Outer background connection lines to tie the network together -->
+          <path d="M580,40 L700,40 M700,40 L820,40 M820,40 L940,40 M940,40 L1060,40 M1060,40 L1180,40 M1180,40 L1240,40" stroke-dasharray="3,3" opacity="0.3" />
+          <path d="M640,75 L760,75 M760,75 L880,75 M880,75 L1000,75 M1000,75 L1120,75 M1120,75 L1240,75" stroke-dasharray="3,3" opacity="0.3" />
+          <path d="M580,110 L700,110 M700,110 L820,110 M820,110 L940,110 M940,110 L1060,110 M1060,110 L1180,110 M1180,110 L1240,110" stroke-dasharray="3,3" opacity="0.3" />
+          <path d="M640,145 L760,145 M760,145 L880,145 M880,145 L1000,145 M1000,145 L1120,145 M1120,145 L1240,145" stroke-dasharray="3,3" opacity="0.3" />
+        </g>
+      </svg>
+    </div>
+    
+    <!-- Hero Details Row -->
+    <div class="oh-profile-hero__content d-flex align-items-end gap-4 px-4 pb-4 bg-white" style="margin-top: -60px;">
+      <!-- Profile Avatar -->
+      <div class="oh-profile-hero__avatar-wrap position-relative flex-shrink-0">
+        <div class="oh-profile-hero__avatar rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold shadow-md" 
+             style="width: 110px; height: 110px; border: 4px solid #fff; font-size: 36px; background-color: var(--oh-primary);">
+          LK
+        </div>
+        <span class="oh-profile-hero__badge position-absolute rounded-circle" 
+              style="width: 16px; height: 16px; background-color: #22c55e; border: 2.5px solid #fff; bottom: 8px; right: 8px;"
+              matTooltip="Online"></span>
+      </div>
+
+      <!-- Title / Designation Details -->
+      <div class="oh-profile-hero__text-info flex-grow-1 pb-2">
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="h3 font-weight-bold mb-0 text-dark" style="font-family: Outfit, sans-serif; font-weight: 700;">Lokesh Kanuboina</h2>
+          <span class="badge bg-success-soft text-success px-2 py-1 rounded" style="font-size: 11px;">Active</span>
+        </div>
+        <p class="text-muted mb-0 font-weight-medium" style="font-size: 14px;">Software Engineer</p>
+      </div>
+    </div>
+
+    <!-- Metadata Quick Info Strip -->
+    <div class="oh-profile-hero__info-strip border-top bg-light px-4 py-3 d-flex flex-wrap align-items-center gap-4 text-muted" style="font-size: 13px;">
+      <span class="d-flex align-items-center gap-2">
+        <i class="bi bi-envelope text-primary"></i>
+        <span>{{ workEmail() }}</span>
+      </span>
+      <span class="d-flex align-items-center gap-2">
+        <i class="bi bi-telephone text-primary"></i>
+        <span>{{ mobileNumber() }}</span>
+      </span>
+      <span class="d-flex align-items-center gap-2">
+        <i class="bi bi-geo-alt text-primary"></i>
+        <span>Hyderabad</span>
+      </span>
+      <span class="d-flex align-items-center gap-2">
+        <i class="bi bi-person-badge text-primary"></i>
+        <span>T079</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Secondary Metadata: BU / Dept / Manager Summary Card -->
+  <mat-card appearance="outlined" class="oh-panel mb-4">
+    <div class="card-body p-3">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <span class="oh-field-label">Business Unit</span>
+          <span class="oh-field-value">Technology</span>
+        </div>
+        <div class="col-12 col-md-4 border-start border-light ps-md-4">
+          <span class="oh-field-label">Department</span>
+          <span class="oh-field-value">Development and Architecture</span>
+        </div>
+        <div class="col-12 col-md-4 border-start border-light ps-md-4">
+          <span class="oh-field-label">Reporting Manager</span>
+          <div class="d-flex align-items-center gap-2 mt-1">
+            <span class="oh-avatar oh-avatar--xs d-inline-flex align-items-center justify-content-center bg-info text-white rounded-circle" style="width: 24px; height: 24px; font-size: 11px;">SM</span>
+            <span class="text-primary font-weight-medium" style="font-size: 14px;">Sarthak Mohanty</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Horizontal Profile Sub-Navigation Tabs -->
+  <div class="oh-profile-tabs-card shadow-sm bg-white mb-4 border rounded-lg overflow-hidden">
+    <div class="d-flex align-items-center px-3 gap-2 border-bottom" style="overflow-x: auto;">
+      <button type="button" 
+              class="btn py-3 px-4 border-0 oh-profile-tab position-relative text-uppercase font-weight-bold"
+              [class.oh-profile-tab--active]="activeTab() === 'about'"
+              (click)="activeTab.set('about')"
+              style="font-size: 13px; letter-spacing: 0.05em;">
+        <span>About</span>
+        <span class="oh-profile-tab-line" *ngIf="activeTab() === 'about'"></span>
+      </button>
+
+      <button type="button" 
+              class="btn py-3 px-4 border-0 oh-profile-tab position-relative text-uppercase font-weight-bold"
+              [class.oh-profile-tab--active]="activeTab() === 'profile'"
+              (click)="activeTab.set('profile')"
+              style="font-size: 13px; letter-spacing: 0.05em;">
+        <span>Profile</span>
+        <span class="oh-profile-tab-line" *ngIf="activeTab() === 'profile'"></span>
+      </button>
+
+      <button type="button" 
+              class="btn py-3 px-4 border-0 oh-profile-tab position-relative text-uppercase font-weight-bold"
+              [class.oh-profile-tab--active]="activeTab() === 'job'"
+              (click)="activeTab.set('job')"
+              style="font-size: 13px; letter-spacing: 0.05em;">
+        <span>Job</span>
+        <span class="oh-profile-tab-line" *ngIf="activeTab() === 'job'"></span>
+      </button>
+
+      <button type="button" 
+              class="btn py-3 px-4 border-0 oh-profile-tab position-relative text-uppercase font-weight-bold"
+              [class.oh-profile-tab--active]="activeTab() === 'documents'"
+              (click)="activeTab.set('documents')"
+              style="font-size: 13px; letter-spacing: 0.05em;">
+        <span>Documents</span>
+        <span class="oh-profile-tab-line" *ngIf="activeTab() === 'documents'"></span>
+      </button>
+
+      <button type="button" 
+              class="btn py-3 px-4 border-0 oh-profile-tab position-relative text-uppercase font-weight-bold"
+              [class.oh-profile-tab--active]="activeTab() === 'assets'"
+              (click)="activeTab.set('assets')"
+              style="font-size: 13px; letter-spacing: 0.05em;">
+        <span>Assets</span>
+        <span class="oh-profile-tab-line" *ngIf="activeTab() === 'assets'"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic Content Area -->
+  <div [ngSwitch]="activeTab()">
+    
+    <!-- 1. ABOUT TAB VIEW -->
+    <div *ngSwitchCase="'about'">
+      <!-- About Sub-tabs -->
+      <div class="oh-profile-subtabs mb-4">
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAboutSubTab() === 'summary'"
+                (click)="activeAboutSubTab.set('summary')">Summary</button>
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAboutSubTab() === 'timeline'"
+                (click)="activeAboutSubTab.set('timeline')">Timeline</button>
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAboutSubTab() === 'wall'"
+                (click)="activeAboutSubTab.set('wall')">Wall Activity</button>
+      </div>
+
+      <!-- ABOUT SUMMARY VIEW -->
+      <div class="row g-4" *ngIf="activeAboutSubTab() === 'summary'">
+        <!-- Left Side: Custom Questions & Readonly Profile Info -->
+        <div class="col-12 col-lg-7 d-flex flex-column gap-4">
+          <!-- Text Responses Card -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <div class="card-body p-4 d-flex flex-column gap-4">
+              <!-- Q1 -->
+              <div>
+                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">About</h4>
+                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+              </div>
+              <hr class="my-0" style="margin-inline: -24px; opacity: 0.1;" />
+              <!-- Q2 -->
+              <div>
+                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">What I love about my job?</h4>
+                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+              </div>
+              <hr class="my-0" style="margin-inline: -24px; opacity: 0.1;" />
+              <!-- Q3 -->
+              <div>
+                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">My interests and hobbies</h4>
+                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+              </div>
+            </div>
+          </mat-card>
+
+          <!-- Read-only Primary Details Card -->
+          <mat-card appearance="outlined" class="oh-panel">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Primary Details</h3>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">First Name</span>
+                  <span class="oh-field-value">{{ firstName() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Last Name</span>
+                  <span class="oh-field-value">{{ lastName() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Gender</span>
+                  <span class="oh-field-value">{{ gender() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Date of Birth</span>
+                  <span class="oh-field-value">{{ dob() | date:'dd MMM yyyy' }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Marital Status</span>
+                  <span class="oh-field-value">{{ maritalStatus() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Blood Group</span>
+                  <span class="oh-field-value">{{ bloodGroup() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Physically Handicapped</span>
+                  <span class="oh-field-value">{{ physicallyHandicapped() }}</span>
+                </div>
+                <div class="col-6 col-md-4">
+                  <span class="oh-field-label">Nationality</span>
+                  <span class="oh-field-value">{{ nationality() }}</span>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Right Side: Skills Management Card -->
+        <div class="col-12 col-lg-5">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Skills</h3>
+              <button mat-icon-button color="primary" matTooltip="Add Skill" (click)="showAddSkillForm.set(!showAddSkillForm())">
+                <i class="bi" [class.bi-x-lg]="showAddSkillForm()" [class.bi-plus-lg]="!showAddSkillForm()" aria-hidden="true"></i>
+              </button>
+            </div>
+            
+            <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center min-vh-25">
+              
+              <!-- Add Skill Input Inline -->
+              <div class="w-100 mb-3" *ngIf="showAddSkillForm()">
+                <div class="d-flex align-items-end gap-2">
+                  <div class="oh-field flex-grow-1">
+                    <label class="oh-label oh-label--tight" for="newSkillInput">Skill name</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput id="newSkillInput" placeholder="Type skill name..." [(ngModel)]="newSkillText" (keyup.enter)="addSkill()" />
+                    </mat-form-field>
+                  </div>
+                  <button mat-flat-button color="primary" class="h-auto" (click)="addSkill()">Add</button>
+                </div>
+              </div>
+
+              <!-- Skills List -->
+              <div class="w-100 d-flex flex-wrap gap-2" *ngIf="skills().length > 0; else emptySkills">
+                <span *ngFor="let s of skills()" class="badge rounded-pill bg-light text-dark px-3 py-2 border d-inline-flex align-items-center gap-2" style="font-size: 13px;">
+                  <span>{{ s }}</span>
+                  <i class="bi bi-x-circle text-danger cursor-pointer" (click)="removeSkill(s)" matTooltip="Remove"></i>
+                </span>
+              </div>
+
+              <!-- Empty State -->
+              <ng-template #emptySkills>
+                <div class="text-center py-4">
+                  <!-- Custom corporate-friendly smiley outline graphic -->
+                  <svg width="84" height="84" viewBox="0 0 100 100" fill="none" class="mb-3 text-muted mx-auto" opacity="0.6">
+                    <circle cx="50" cy="50" r="36" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
+                    <circle cx="50" cy="50" r="24" stroke="#94a3b8" stroke-width="2.5" />
+                    <circle cx="43" cy="46" r="2.5" fill="#94a3b8" />
+                    <circle cx="57" cy="46" r="2.5" fill="#94a3b8" />
+                    <path d="M 42 58 C 45 53, 55 53, 58 58" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" />
+                  </svg>
+                  <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">No skills added yet :(</h4>
+                  <p class="text-muted mb-3" style="font-size: 12.5px;">Showcase your skills to your colleagues!</p>
+                  <button mat-stroked-button color="primary" (click)="showAddSkillForm.set(true)">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Add Skills
+                  </button>
+                </div>
+              </ng-template>
+
+            </div>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- ABOUT TIMELINE VIEW -->
+      <div class="row" *ngIf="activeAboutSubTab() === 'timeline'">
+        <div class="col-12">
+          <mat-card appearance="outlined" class="oh-panel p-4">
+            <h3 class="font-weight-bold text-dark mb-4 px-2" style="font-size: 16px; font-family: Outfit, sans-serif;">Timeline</h3>
+            
+            <div class="oh-timeline-v2 mx-2">
+              
+              <!-- Year 2026 -->
+              <div class="oh-timeline-year-node">
+                <span>2026</span>
+              </div>
+
+              <!-- Item 1: Added To Project -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #f43f5e; color: #f43f5e;">
+                  <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Added To Project</div>
+                <div class="oh-timeline-item-node__date">04 May 2026</div>
+                <div class="oh-timeline-item-node__tag">Professional Services Enhancements</div>
+              </div>
+
+              <!-- Item 2: Added To Project -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #f43f5e; color: #f43f5e;">
+                  <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Added To Project</div>
+                <div class="oh-timeline-item-node__date">04 May 2026</div>
+                <div class="oh-timeline-item-node__tag">Professional Services Support & Maintenance</div>
+              </div>
+
+              <!-- Item 3: Work Anniversary -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #d97706; color: #d97706;">
+                  <i class="bi bi-gift-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Work Anniversary</div>
+                <div class="oh-timeline-item-node__date">06 Apr 2026</div>
+                <div class="oh-timeline-item-node__tag">3rd Work Anniversary</div>
+              </div>
+
+              <!-- Year 2025 -->
+              <div class="oh-timeline-year-node">
+                <span>2025</span>
+              </div>
+
+              <!-- Item 4: Work Anniversary -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #d97706; color: #d97706;">
+                  <i class="bi bi-gift-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Work Anniversary</div>
+                <div class="oh-timeline-item-node__date">06 Apr 2025</div>
+                <div class="oh-timeline-item-node__tag">2nd Work Anniversary</div>
+              </div>
+
+              <!-- Year 2024 -->
+              <div class="oh-timeline-year-node">
+                <span>2024</span>
+              </div>
+
+              <!-- Item 5: Work Anniversary -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #d97706; color: #d97706;">
+                  <i class="bi bi-gift-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Work Anniversary</div>
+                <div class="oh-timeline-item-node__date">06 Apr 2024</div>
+                <div class="oh-timeline-item-node__tag">1st Work Anniversary</div>
+              </div>
+
+              <!-- Year 2023 -->
+              <div class="oh-timeline-year-node">
+                <span>2023</span>
+              </div>
+
+              <!-- Item 6: Probation Completed -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #7c3aed; color: #7c3aed;">
+                  <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Probation Completed</div>
+                <div class="oh-timeline-item-node__date">05 Jul 2023</div>
+              </div>
+
+              <!-- Item 7: Joined TOUCAN PAYMENTS -->
+              <div class="oh-timeline-item-node">
+                <div class="oh-timeline-item-node__icon" style="border-color: #0d9488; color: #0d9488;">
+                  <i class="bi bi-door-open-fill"></i>
+                </div>
+                <div class="oh-timeline-item-node__title">Joined TOUCAN PAYMENTS</div>
+                <div class="oh-timeline-item-node__date">06 Apr 2023</div>
+              </div>
+
+            </div>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- ABOUT WALL ACTIVITY VIEW -->
+      <div class="row" *ngIf="activeAboutSubTab() === 'wall'">
+        <div class="col-12">
+          <mat-card appearance="outlined" class="oh-panel p-4 text-center py-5">
+            <i class="bi bi-chat-square-dots text-muted display-4"></i>
+            <h4 class="font-weight-bold text-dark mt-3 mb-1">No Wall Activity Yet</h4>
+            <p class="text-muted">Conversations or announcements posted on the feed will reflect here.</p>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PROFILE TAB VIEW (EDITABLE FIELDS GRID) -->
+    <div *ngSwitchCase="'profile'" class="d-flex flex-column gap-4">
+      
+      <!-- Incomplete Alert Bar banner -->
+      <div class="alert alert-danger-soft border-0 d-flex align-items-center justify-content-between p-3 rounded-lg" style="background-color: #fff1f2; border-radius: var(--oh-radius-lg);">
+        <div class="d-flex align-items-center gap-3">
+          <span class="font-weight-bold text-danger" style="font-size: 13.5px;">Incomplete profile</span>
+          <div class="progress" style="width: 120px; height: 8px; border-radius: 4px; background-color: #fecdd3;">
+            <div class="progress-bar bg-danger" role="progressbar" [style.width]="completionPercent() + '%'"></div>
+          </div>
+          <span class="text-danger font-weight-semibold" style="font-size: 13px;">{{ completionPercent() }}%</span>
+        </div>
+        <span class="text-muted" style="font-size: 12px;">* All fields marked in <span class="text-danger">red color</span> below are mandatory</span>
+      </div>
+
+      <!-- Main Profile Fields Grid -->
+      <div class="row g-4">
+        
+        <!-- CARD 1: PRIMARY DETAILS -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Primary Details</h3>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('primary')" *ngIf="!editMode()['primary']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div class="row g-3" *ngIf="!editMode()['primary']">
+                <div class="col-6">
+                  <span class="oh-field-label">First Name</span>
+                  <span class="oh-field-value">{{ firstName() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Middle Name</span>
+                  <span class="oh-field-value">{{ middleName() || '-Not Set-' }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Last Name</span>
+                  <span class="oh-field-value">{{ lastName() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Display Name</span>
+                  <span class="oh-field-value">{{ displayName() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Gender</span>
+                  <span class="oh-field-value">{{ gender() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Date of Birth</span>
+                  <span class="oh-field-value">{{ dob() | date:'dd MMM yyyy' }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Marital Status</span>
+                  <span class="oh-field-value">{{ maritalStatus() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Blood Group</span>
+                  <span class="oh-field-value">{{ bloodGroup() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Physically Handicapped</span>
+                  <span class="oh-field-value">{{ physicallyHandicapped() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Nationality</span>
+                  <span class="oh-field-value">{{ nationality() }}</span>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['primary']">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryFirstName">First Name</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryFirstName" [(ngModel)]="tempPrimary.firstName" required />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryMiddleName">Middle Name</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryMiddleName" [(ngModel)]="tempPrimary.middleName" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryLastName">Last Name</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryLastName" [(ngModel)]="tempPrimary.lastName" required />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryDisplayName">Display Name</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryDisplayName" [(ngModel)]="tempPrimary.displayName" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryGender">Gender</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <mat-select id="primaryGender" [(ngModel)]="tempPrimary.gender">
+                          <mat-option value="Male">Male</mat-option>
+                          <mat-option value="Female">Female</mat-option>
+                          <mat-option value="Other">Other</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryDob">Date of Birth</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input
+                          matInput
+                          id="primaryDob"
+                          [matDatepicker]="primaryDobPicker"
+                          placeholder="Select date"
+                          [(ngModel)]="tempPrimaryDob"
+                        />
+                        <mat-datepicker-toggle matSuffix [for]="primaryDobPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #primaryDobPicker></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryMaritalStatus">Marital Status</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <mat-select id="primaryMaritalStatus" [(ngModel)]="tempPrimary.maritalStatus">
+                          <mat-option value="Single">Single</mat-option>
+                          <mat-option value="Married">Married</mat-option>
+                          <mat-option value="Divorced">Divorced</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryBloodGroup">Blood Group</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryBloodGroup" [(ngModel)]="tempPrimary.bloodGroup" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryPhysicallyHandicapped">Physically Handicapped</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <mat-select id="primaryPhysicallyHandicapped" [(ngModel)]="tempPrimary.physicallyHandicapped">
+                          <mat-option value="No">No</mat-option>
+                          <mat-option value="Yes">Yes</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="primaryNationality">Nationality</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="primaryNationality" [(ngModel)]="tempPrimary.nationality" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <button mat-flat-button color="primary" (click)="saveSection('primary')">Save</button>
+                  <button mat-stroked-button (click)="toggleEdit('primary')">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 2: CONTACT DETAILS -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Contact Details</h3>
+                <span class="badge bg-danger-soft text-danger" style="font-size: 9px;">INCOMPLETE</span>
+              </div>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('contact')" *ngIf="!editMode()['contact']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div class="row g-3" *ngIf="!editMode()['contact']">
+                <div class="col-6">
+                  <span class="oh-field-label">Work Email</span>
+                  <span class="oh-field-value text-break">{{ workEmail() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Personal Email</span>
+                  <span class="oh-field-value text-break">{{ personalEmail() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Mobile Number</span>
+                  <span class="oh-field-value">{{ mobileNumber() }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Work Phone</span>
+                  <span class="oh-field-value">{{ workPhone() || '-Not Set-' }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Residence Phone</span>
+                  <span class="oh-field-value">{{ residencePhone() || '-Not Set-' }}</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Emergency Number</span>
+                  <span class="oh-field-value">{{ emergencyNumber() || '-Not Set-' }}</span>
+                </div>
+                <div class="col-12">
+                  <span class="oh-field-label">Emergency Contact Person Name & Relation</span>
+                  <span class="oh-field-value">{{ emergencyContactName() || '-Not Set-' }}</span>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['contact']">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactPersonalEmail">Personal Email</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactPersonalEmail" [(ngModel)]="tempContact.personalEmail" type="email" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactMobileNumber">Mobile Number</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactMobileNumber" [(ngModel)]="tempContact.mobileNumber" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactWorkPhone">Work Phone</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactWorkPhone" [(ngModel)]="tempContact.workPhone" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactResidencePhone">Residence Phone</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactResidencePhone" [(ngModel)]="tempContact.residencePhone" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactEmergencyNumber">Emergency Number</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactEmergencyNumber" [(ngModel)]="tempContact.emergencyNumber" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="contactEmergencyContactName">Contact Person & Relation</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="contactEmergencyContactName" [(ngModel)]="tempContact.emergencyContactName" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <button mat-flat-button color="primary" (click)="saveSection('contact')">Save</button>
+                  <button mat-stroked-button (click)="toggleEdit('contact')">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 3: ADDRESSES -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Addresses</h3>
+                <span class="badge bg-danger-soft text-danger" style="font-size: 9px;">INCOMPLETE</span>
+              </div>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('addresses')" *ngIf="!editMode()['addresses']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div class="row g-3" *ngIf="!editMode()['addresses']">
+                <div class="col-12 col-md-6">
+                  <span class="oh-field-label">Current Address</span>
+                  <span class="oh-field-value">{{ currentAddress() || '-Not Set-' }}</span>
+                </div>
+                <div class="col-12 col-md-6">
+                  <span class="oh-field-label">Permanent Address</span>
+                  <span class="oh-field-value">{{ permanentAddress() || '-Not Set-' }}</span>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['addresses']">
+                <div class="row g-2">
+                  <div class="col-12 col-md-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="currentAddressField">Current Address</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <textarea matInput id="currentAddressField" rows="2" [(ngModel)]="tempAddresses.currentAddress"></textarea>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="permanentAddressField">Permanent Address</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <textarea matInput id="permanentAddressField" rows="2" [(ngModel)]="tempAddresses.permanentAddress"></textarea>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <button mat-flat-button color="primary" (click)="saveSection('addresses')">Save</button>
+                  <button mat-stroked-button (click)="toggleEdit('addresses')">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 4: RELATIONS -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Relations</h3>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('relations')" *ngIf="!editMode()['relations']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div class="row g-3" *ngIf="!editMode()['relations']">
+                <div class="col-6">
+                  <span class="oh-field-label">Mother</span>
+                  <div class="oh-field-value">
+                    <div>{{ motherName() }}</div>
+                    <span class="oh-field-label mb-0" style="font-size: 9px;">Gender: Female</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Spouse</span>
+                  <span class="oh-field-value">{{ spouseName() }}</span>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['relations']">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="relationsMotherName">Mother</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="relationsMotherName" [(ngModel)]="tempRelations.motherName" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="oh-field">
+                      <label class="oh-label oh-label--tight" for="relationsSpouseName">Spouse</label>
+                      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                        <input matInput id="relationsSpouseName" [(ngModel)]="tempRelations.spouseName" />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <button mat-flat-button color="primary" (click)="saveSection('relations')">Save</button>
+                  <button mat-stroked-button (click)="toggleEdit('relations')">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 5: EXPERIENCE -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Experience</h3>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('experience')" *ngIf="!editMode()['experience']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div *ngIf="!editMode()['experience']">
+                <div *ngIf="experiences().length === 0" class="text-muted" style="font-size: 13px;">No data available.</div>
+                <div *ngFor="let exp of experiences()" class="mb-3 border-bottom pb-2">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h5 class="font-weight-bold mb-0 text-dark" style="font-size: 14px;">{{ exp.role }}</h5>
+                      <span class="text-muted" style="font-size: 12.5px;">{{ exp.company }}</span>
+                    </div>
+                    <span class="text-primary font-weight-medium" style="font-size: 12px;">{{ exp.startDate | date:'MMM yyyy' }} - {{ exp.endDate ? (exp.endDate | date:'MMM yyyy') : 'Present' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['experience']">
+                <div class="p-3 border rounded-lg bg-light">
+                  <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13.5px;">Add New Experience</h5>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="expCompany">Company</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="expCompany" [(ngModel)]="tempNewExp.company" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="expRole">Role</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="expRole" [(ngModel)]="tempNewExp.role" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="expStartDate">Start Date</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input
+                            matInput
+                            id="expStartDate"
+                            readonly
+                            [matDatepicker]="expStartPicker"
+                            placeholder="Select month"
+                            [ngModel]="tempExpStartDate"
+                            (click)="expStartPicker.open()"
+                          />
+                          <mat-datepicker-toggle matSuffix [for]="expStartPicker"></mat-datepicker-toggle>
+                          <mat-datepicker
+                            #expStartPicker
+                            startView="multi-year"
+                            (monthSelected)="chosenMonthHandler($event, expStartPicker, 'expStart')"
+                          ></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="expEndDate">End Date</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input
+                            matInput
+                            id="expEndDate"
+                            readonly
+                            [matDatepicker]="expEndPicker"
+                            placeholder="Leave blank if present"
+                            [ngModel]="tempExpEndDate"
+                            (click)="expEndPicker.open()"
+                          />
+                          <mat-datepicker-toggle matSuffix [for]="expEndPicker"></mat-datepicker-toggle>
+                          <mat-datepicker
+                            #expEndPicker
+                            startView="multi-year"
+                            (monthSelected)="chosenMonthHandler($event, expEndPicker, 'expEnd')"
+                          ></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <button mat-flat-button color="primary" class="mt-3" (click)="addNewExperience()">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Add Item
+                  </button>
+                </div>
+
+                <button mat-stroked-button class="mt-2 align-self-start" (click)="toggleEdit('experience')">Done</button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 6: EDUCATION -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Education</h3>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('education')" *ngIf="!editMode()['education']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div *ngIf="!editMode()['education']">
+                <div *ngIf="educations().length === 0" class="text-muted" style="font-size: 13px;">No data available.</div>
+                <div *ngFor="let edu of educations()" class="mb-3 border-bottom pb-2">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h5 class="font-weight-bold mb-0 text-dark" style="font-size: 14px;">{{ edu.degree }}</h5>
+                      <span class="text-muted" style="font-size: 12.5px;">{{ edu.school }}</span>
+                    </div>
+                    <span class="text-primary font-weight-medium" style="font-size: 12px;">Class of {{ edu.year }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['education']">
+                <div class="p-3 border rounded-lg bg-light">
+                  <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13.5px;">Add New Education</h5>
+                  <div class="row g-2">
+                    <div class="col-12">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="eduSchool">School / University</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="eduSchool" [(ngModel)]="tempNewEdu.school" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="eduDegree">Degree / Certificate</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="eduDegree" [(ngModel)]="tempNewEdu.degree" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="eduYear">Graduation Year</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="eduYear" [(ngModel)]="tempNewEdu.year" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                  <button mat-flat-button color="primary" class="mt-3" (click)="addNewEducation()">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Add Item
+                  </button>
+                </div>
+
+                <button mat-stroked-button class="mt-2 align-self-start" (click)="toggleEdit('education')">Done</button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 7: PROFESSIONAL SUMMARY -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Professional Summary</h3>
+                <span class="badge bg-danger-soft text-danger" style="font-size: 9px;">INCOMPLETE</span>
+              </div>
+              <button mat-stroked-button color="primary" class="oh-btn-small" (click)="toggleEdit('summary')" *ngIf="!editMode()['summary']">
+                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                Edit
+              </button>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- Read-only View -->
+              <div class="oh-field-value" *ngIf="!editMode()['summary']">
+                {{ professionalSummaryText() || 'Not Set' }}
+              </div>
+
+              <!-- Edit View Form -->
+              <div class="d-flex flex-column gap-3" *ngIf="editMode()['summary']">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight" for="professionalSummaryField">Summary details</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <textarea matInput id="professionalSummaryField" rows="3" [(ngModel)]="tempSummary"></textarea>
+                  </mat-form-field>
+                </div>
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <button mat-flat-button color="primary" (click)="saveSection('summary')">Save</button>
+                  <button mat-stroked-button (click)="toggleEdit('summary')">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- CARD 8: IDENTITY INFORMATION -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Identity Information</h3>
+            </div>
+            
+            <div class="card-body p-4 d-flex flex-column gap-4">
+              <!-- Photo ID Panel -->
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="font-weight-bold text-dark mb-0" style="font-size: 14px;">Photo ID</h4>
+                  <button mat-stroked-button color="primary" class="oh-btn-small">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Add details
+                  </button>
+                </div>
+                <div class="p-3 border rounded-lg bg-light">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-dark font-weight-semibold" style="font-size: 13px;">🇮🇳 Pan Card</span>
+                    <span class="badge bg-success-soft text-success px-2 py-0.5 rounded d-flex align-items-center gap-1" style="font-size: 10px;">
+                      <i class="bi bi-patch-check-fill"></i> Verified
+                    </span>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <span class="oh-field-label" style="font-size: 9px;">PAN Number</span>
+                      <span class="oh-field-value">XXXXXXXX58J</span>
+                    </div>
+                    <div class="col-6">
+                      <span class="oh-field-label" style="font-size: 9px;">Name on Card</span>
+                      <span class="oh-field-value">Lokesh Kumar Kanuboina</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Address Proof Panel -->
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="font-weight-bold text-dark mb-0" style="font-size: 14px;">Address Proof</h4>
+                  <button mat-stroked-button color="primary" class="oh-btn-small">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                    Add details
+                  </button>
+                </div>
+                <div class="p-3 border rounded-lg border-dashed text-center text-muted" style="font-size: 12.5px;">
+                  No address proof documents added.
+                </div>
+              </div>
+
+              <!-- Payroll Info Panel -->
+              <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <h4 class="font-weight-bold text-dark mb-0" style="font-size: 14px;">Payroll Documents</h4>
+                </div>
+                <div class="p-3 border rounded-lg bg-light">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="text-dark font-weight-semibold" style="font-size: 13px;">🇮🇳 Pan Card</span>
+                    <span class="badge bg-success-soft text-success px-2 py-0.5 rounded d-flex align-items-center gap-1" style="font-size: 10px;">
+                      <i class="bi bi-patch-check-fill"></i> Verified
+                    </span>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <span class="oh-field-label" style="font-size: 9px;">PAN Number</span>
+                      <span class="oh-field-value">XXXXXXXX58J</span>
+                    </div>
+                    <div class="col-6">
+                      <span class="oh-field-label" style="font-size: 9px;">Name on Card</span>
+                      <span class="oh-field-value">Lokesh Kumar Kanuboina</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </mat-card>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 3. JOB TAB VIEW (METADATA PANELS) -->
+    <div *ngSwitchCase="'job'" class="d-flex flex-column gap-4">
+      <div class="row g-4">
+        
+        <!-- Job Details Card -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Job Details</h3>
+            </div>
+            
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-6">
+                  <span class="oh-field-label">Employee Number</span>
+                  <span class="oh-field-value">T079</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Date of Joining</span>
+                  <span class="oh-field-value">06 Apr 2023</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Job Title - Primary</span>
+                  <span class="oh-field-value">Software Engineer</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Job Title - Secondary</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">In Probation?</span>
+                  <div class="oh-field-value">
+                    <div>No</div>
+                    <span class="text-muted" style="font-size: 10px;">06 Apr 2023 - 05 Jul 2023 · Standard Policy</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Notice Period</span>
+                  <span class="oh-field-value">Confirmed Employee Notice Period (3 Months)</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Worker Type</span>
+                  <span class="oh-field-value">Permanent</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Time Type</span>
+                  <span class="oh-field-value">Full Time</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Contract Status</span>
+                  <span class="oh-field-value">Not Applicable</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Pay Band</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Pay Grade</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Organization Card -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Organization</h3>
+            </div>
+            
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-6">
+                  <span class="oh-field-label">Business Unit</span>
+                  <span class="oh-field-value">Technology</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Department</span>
+                  <span class="oh-field-value">Development and Architecture</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Location</span>
+                  <span class="oh-field-value">Hyderabad</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Cost Center</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-12">
+                  <span class="oh-field-label">Legal Entity</span>
+                  <span class="oh-field-value">Toucan Payments (India) Private Ltd</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Reports To</span>
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="oh-avatar oh-avatar--xs bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px;">SM</span>
+                    <span class="text-primary font-weight-medium" style="font-size: 13px;">Sarthak Mohanty</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">L2 Manager</span>
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="oh-avatar oh-avatar--xs bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px;">PR</span>
+                    <span class="text-primary font-weight-medium" style="font-size: 13px;">Prootham Reddy Toogata</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Direct Reports</span>
+                  <span class="oh-field-value">0 Employees</span>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Employee Time Card -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Employee Time</h3>
+            </div>
+            
+            <div class="card-body p-4">
+              <div class="row g-3 mb-4">
+                <div class="col-6">
+                  <span class="oh-field-label">Shift</span>
+                  <span class="oh-field-value">General Shift</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Weekly Off Policy</span>
+                  <span class="oh-field-value">Standard Weekly Off Policy</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Leave Plan</span>
+                  <span class="oh-field-value">Standard Leave Plan</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Holiday Calendar</span>
+                  <span class="oh-field-value">Hyderabad Holiday Policy</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Attendance Number</span>
+                  <span class="oh-field-value">T079</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Payroll Time Source</span>
+                  <span class="oh-field-value">Attendance</span>
+                </div>
+              </div>
+
+              <hr class="my-0 mb-4" style="margin-inline: -24px; opacity: 0.1;" />
+
+              <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                  <h5 class="font-weight-bold text-dark mb-0" style="font-size: 13.5px;">Disable attendance tracking</h5>
+                  <p class="text-muted mb-0" style="font-size: 12px;">Toggle to temporarily pause standard logs capture.</p>
+                </div>
+                <mat-slide-toggle color="accent" [(ngModel)]="disableAttendanceTracking"></mat-slide-toggle>
+              </div>
+
+              <hr class="my-0 mb-4" style="margin-inline: -24px; opacity: 0.1;" />
+
+              <div class="row g-3">
+                <div class="col-6">
+                  <span class="oh-field-label">Time Tracking Policy</span>
+                  <span class="oh-field-value">Standard Attendance Capture Policy</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Penalisation Policy</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Weekly Off Rule</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Allowance Policy</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Overtime</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+              </div>
+
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Other Details Card -->
+        <div class="col-12 col-md-6">
+          <mat-card appearance="outlined" class="oh-panel h-100">
+            <div class="card-header border-bottom bg-transparent py-3 px-4">
+              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Other</h3>
+            </div>
+            
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-6">
+                  <span class="oh-field-label">Expense Policy</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Timesheet Policy</span>
+                  <span class="oh-field-value">Time Tracking Policy</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Loan Policy</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+                <div class="col-6">
+                  <span class="oh-field-label">Air Ticket Policy</span>
+                  <span class="oh-field-value text-muted">Not Set</span>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. DOCUMENTS TAB VIEW (HIGHLY DYNAMIC AND INTERACTIVE SIDEBAR CABINET) -->
+    <div *ngSwitchCase="'documents'">
+      <div class="row g-4">
+        
+        <!-- Left Sidebar: Documents folders and search -->
+        <div class="col-12 col-md-3 d-flex flex-column gap-3">
+          <h3 class="font-weight-bold text-dark mb-0 px-1" style="font-size: 16px; font-family: Outfit, sans-serif;">My Documents</h3>
+          
+          <!-- Search box -->
+          <div class="oh-field">
+            <label class="oh-label oh-label--tight" for="docSearchInput">Search documents</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+              <i matPrefix class="bi bi-search text-muted me-2" aria-hidden="true"></i>
+              <input matInput id="docSearchInput" placeholder="Search" [ngModel]="docSearchQuery()" (ngModelChange)="docSearchQuery.set($event)" />
+            </mat-form-field>
+          </div>
+
+          <!-- ACTIONS navigation link list -->
+          <div class="mt-2">
+            <span class="oh-field-label px-1">Actions</span>
+            <div class="d-flex flex-column gap-1">
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.bg-danger-soft]="selectedDocFolder() === 'pending'"
+                      [class.oh-profile-folder--pending-active]="selectedDocFolder() === 'pending'"
+                      [class.text-danger]="selectedDocFolder() === 'pending'"
+                      [class.text-dark]="selectedDocFolder() !== 'pending'"
+                      (click)="selectedDocFolder.set('pending')"
+                      style="font-size: 13px; font-weight: 600; background-color: var(--oh-card-bg);">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 14px;"></i>
+                  <span>Upload pending</span>
+                </span>
+                <span class="badge rounded bg-danger text-white px-1.5 py-0.5" style="font-size: 10px;">{{ pendingDocsCount() }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- FOLDERS list -->
+          <div class="mt-2">
+            <span class="oh-field-label px-1">Folders</span>
+            <div class="d-flex flex-column gap-1">
+              <!-- Folder: Educational Details -->
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.oh-profile-folder--active]="selectedDocFolder() === 'education'"
+                      [class.text-dark]="selectedDocFolder() !== 'education'"
+                      (click)="selectedDocFolder.set('education')"
+                      style="font-size: 13px; font-weight: 500;">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-mortarboard text-muted" style="font-size: 15px;"></i>
+                  <span>Educational Details</span>
+                </span>
+                <span class="text-muted" style="font-size: 11px;">1 document</span>
+              </button>
+
+              <!-- Folder: Previous Experience -->
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.oh-profile-folder--active]="selectedDocFolder() === 'experience'"
+                      [class.text-dark]="selectedDocFolder() !== 'experience'"
+                      (click)="selectedDocFolder.set('experience')"
+                      style="font-size: 13px; font-weight: 500;">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-briefcase text-muted" style="font-size: 15px;"></i>
+                  <span>Previous Experience</span>
+                </span>
+                <span class="text-muted" style="font-size: 11px;">1 document</span>
+              </button>
+
+              <!-- Folder: Identity -->
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.oh-profile-folder--active]="selectedDocFolder() === 'identity'"
+                      [class.text-dark]="selectedDocFolder() !== 'identity'"
+                      (click)="selectedDocFolder.set('identity')"
+                      style="font-size: 13px; font-weight: 500;">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-person-bounding-box text-muted" style="font-size: 14px;"></i>
+                  <span>Identity</span>
+                </span>
+                <span class="text-muted" style="font-size: 11px;">5 documents</span>
+              </button>
+
+              <!-- Folder: Insurance Cards -->
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.oh-profile-folder--active]="selectedDocFolder() === 'insurance'"
+                      [class.text-dark]="selectedDocFolder() !== 'insurance'"
+                      (click)="selectedDocFolder.set('insurance')"
+                      style="font-size: 13px; font-weight: 500;">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-shield-check text-muted" style="font-size: 15px;"></i>
+                  <span>Insurance Cards</span>
+                </span>
+                <span class="text-muted" style="font-size: 11px;">2 documents</span>
+              </button>
+
+              <!-- Folder: Signatures -->
+              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                      [class.oh-profile-folder--active]="selectedDocFolder() === 'signatures'"
+                      [class.text-dark]="selectedDocFolder() !== 'signatures'"
+                      (click)="selectedDocFolder.set('signatures')"
+                      style="font-size: 13px; font-weight: 500;">
+                <span class="d-flex align-items-center gap-2">
+                  <i class="bi bi-pencil-square text-muted" style="font-size: 15px;"></i>
+                  <span>Signatures</span>
+                </span>
+                <span class="text-muted" style="font-size: 11px;">{{ signaturesList().length }} signatures</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Column: Main document lists -->
+        <div class="col-12 col-md-6 col-xl-6 d-flex flex-column gap-3">
+          
+          <!-- Section title -->
+          <div>
+            <h3 class="font-weight-bold text-dark mb-1" style="font-size: 16px;">
+              <span *ngIf="selectedDocFolder() === 'pending'">Documents pending for upload</span>
+              <span *ngIf="selectedDocFolder() === 'education'">Educational Details</span>
+              <span *ngIf="selectedDocFolder() === 'experience'">Previous Experience</span>
+              <span *ngIf="selectedDocFolder() === 'identity'">Identity Documents</span>
+              <span *ngIf="selectedDocFolder() === 'insurance'">Insurance Cards</span>
+              <span *ngIf="selectedDocFolder() === 'signatures'">Signatures</span>
+            </h3>
+            <p class="text-muted mb-0 d-flex align-items-center gap-2" style="font-size: 12.5px;">
+              <span *ngIf="selectedDocFolder() !== 'signatures'">{{ getFilteredDocs(selectedDocFolder()).length }} documents</span>
+              <span *ngIf="selectedDocFolder() === 'signatures'">{{ signaturesList().length }} signatures</span>
+              <span *ngIf="selectedDocFolder() !== 'pending' && selectedDocFolder() !== 'signatures'" class="d-inline-flex align-items-center gap-1">
+                &middot; <i class="bi bi-lock-fill text-muted"></i> Restricted access
+              </span>
+            </p>
+            <p class="text-muted mt-2" style="font-size: 12.5px; line-height: 1.5;">
+              <span *ngIf="selectedDocFolder() === 'pending'">List of all the documents that need to be uploaded or verified.</span>
+              <span *ngIf="selectedDocFolder() === 'education'">This section contains details about your educational documents.</span>
+              <span *ngIf="selectedDocFolder() === 'experience'">Previous experience documents are required to know necessary details about an employee's previous work experience.</span>
+              <span *ngIf="selectedDocFolder() === 'identity'">Identity documents are documents that are issued by the governing authorities of a country / state and are used to verify the identity of a person.</span>
+              <span *ngIf="selectedDocFolder() === 'insurance'">View and reference your medical, life, and corporate insurance cards for policy claims.</span>
+              <span *ngIf="selectedDocFolder() === 'signatures'">Signatures can be used to digitally sign documents.</span>
+            </p>
+          </div>
+
+          <hr class="my-1" style="opacity: 0.1;" />
+
+          <!-- Dynamic document cabinet lists -->
+          <div class="d-flex flex-column gap-3">
+            
+            <!-- Standard Signatures Content Section -->
+            <div *ngIf="selectedDocFolder() === 'signatures'" class="d-flex flex-column gap-3">
+              <!-- Header Card -->
+              <div class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary-soft text-primary" style="width: 38px; height: 38px; background-color: var(--oh-primary-soft);">
+                    <i class="bi bi-pencil-fill" style="font-size: 16px; color: var(--oh-primary);"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-dark font-weight-bold mb-0" style="font-size: 14px;">Signatures</h4>
+                    <p class="text-muted mb-0" style="font-size: 12px;">Signatures can be used to digitally sign documents.</p>
+                  </div>
+                </div>
+                <button mat-button color="primary" type="button" class="oh-btn-small" (click)="openAddSignature()">
+                  <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                  Add Signature
+                </button>
+              </div>
+
+              <!-- Green Alert Banner if empty -->
+              <div *ngIf="signaturesList().length === 0" class="p-3 border rounded-md" style="background-color: #f0fdf4; border-color: #bbf7d0; color: #15803d; font-size: 13.5px; font-weight: 500;">
+                There are no signatures.
+              </div>
+
+              <!-- Signatures List if exists -->
+              <div *ngFor="let sig of signaturesList()" class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 36px; height: 36px;">
+                    <i class="bi bi-pen-fill" style="font-size: 16px;"></i>
+                  </div>
+                  <div>
+                    <h5 class="text-dark font-weight-semibold mb-0" style="font-size: 13.5px;">{{ sig.name }}</h5>
+                    <span class="text-muted" style="font-size: 11.5px;">{{ sig.designation }} &middot; {{ sig.fileName }}</span>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <button mat-stroked-button class="oh-btn-small"><i class="bi bi-eye me-1"></i> View file</button>
+                  <button mat-icon-button color="warn" (click)="deleteSignature(sig.id)" matTooltip="Delete">
+                    <i class="bi bi-trash" style="font-size: 18px;" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Standard Document cabinets list (excluding signatures) -->
+            <ng-container *ngIf="selectedDocFolder() !== 'signatures'">
+              <div *ngIf="getFilteredDocs(selectedDocFolder()).length === 0" 
+                   class="p-4 border rounded-lg bg-light text-center text-muted" 
+                   style="font-size: 13px;">
+                No documents available or pending in this folder.
+              </div>
+
+              <!-- Documents items loop -->
+              <div *ngFor="let doc of getFilteredDocs(selectedDocFolder())" class="border rounded-lg bg-white overflow-hidden shadow-sm" style="border: 1px solid var(--oh-border);">
+                
+                <!-- Document Header Item Row -->
+                <div class="p-3 d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-3">
+                    <!-- Red/Pink Document Icon wrapper -->
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 36px; height: 36px; background-color: #fff1f2; color: #f43f5e;">
+                      <i class="bi bi-file-earmark-pdf-fill" style="font-size: 16px;"></i>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="text-dark font-weight-semibold" style="font-size: 13.5px;">{{ doc.name }}</span>
+                        <span *ngIf="doc.mandatory && doc.status === 'pending'" class="badge bg-warning-soft text-warning px-1.5 py-0.5 rounded" style="font-size: 9px; font-weight: 700;">Mandatory</span>
+                        <span *ngIf="doc.status === 'verified'" class="badge bg-success-soft text-success px-1.5 py-0.5 rounded" style="font-size: 9px; font-weight: 700;">Verified</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Side action button -->
+                  <div class="d-flex align-items-center gap-2">
+                    <button mat-stroked-button color="primary" class="oh-btn-small"
+                            *ngIf="doc.status === 'pending' && activeDocAddForm() !== doc.id"
+                            (click)="openAddDocForm(doc.id)">
+                      <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                      Add details
+                    </button>
+                    <button mat-stroked-button class="oh-btn-small" *ngIf="doc.status === 'verified' && doc.id.startsWith('ins_')">
+                      <i class="bi bi-eye me-1"></i> View file
+                    </button>
+                    <button mat-icon-button class="text-muted" *ngIf="doc.status === 'verified'">
+                      <i class="bi bi-three-dots-vertical" style="font-size: 18px;" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Inline verification / add details form expansion -->
+                <div class="px-4 pb-4 pt-1 border-top bg-light" *ngIf="activeDocAddForm() === doc.id" style="animation: slideDown 0.25s ease-out;">
+                  <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13px;">Configure {{ doc.name }} Details</h5>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="docNumberField">Document Number / ID</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="docNumberField" [(ngModel)]="tempDocForm.docNumber" placeholder="e.g. XXXXXXXX58J" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="docHolderNameField">Name on Document</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="docHolderNameField" [(ngModel)]="tempDocForm.holderName" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="docDobField">Date of Birth</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input
+                            matInput
+                            id="docDobField"
+                            [matDatepicker]="docDobPicker"
+                            placeholder="Select date"
+                            [(ngModel)]="tempDocDob"
+                          />
+                          <mat-datepicker-toggle matSuffix [for]="docDobPicker"></mat-datepicker-toggle>
+                          <mat-datepicker #docDobPicker></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <div class="col-6" *ngIf="doc.id === 'pan' || doc.id === 'aadhaar'">
+                      <div class="oh-field">
+                        <label class="oh-label oh-label--tight" for="docParentNameField">Parent / Guardian Name</label>
+                        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                          <input matInput id="docParentNameField" [(ngModel)]="tempDocForm.parentName" />
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Form Actions -->
+                  <div class="d-flex align-items-center gap-2 mt-3">
+                    <button mat-flat-button color="primary" class="oh-btn-small h-auto" (click)="saveDocumentDetails(doc.id)">Save details</button>
+                    <button mat-stroked-button class="oh-btn-small h-auto" (click)="activeDocAddForm.set(null)">Cancel</button>
+                  </div>
+                </div>
+
+                <!-- Inline document details rendering (If verified & expanded) -->
+                <div class="p-3 border-top bg-light" *ngIf="doc.status === 'verified' && !doc.id.startsWith('ins_')">
+                  <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                      <span class="oh-field-label" style="font-size: 9px;">Document Number</span>
+                      <span class="oh-field-value d-inline-flex align-items-center gap-1">
+                        <span>{{ doc.docNumber }}</span>
+                        <i class="bi bi-info-circle-fill text-muted" style="font-size: 11px;" matTooltip="Masked for security"></i>
+                      </span>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <span class="oh-field-label" style="font-size: 9px;">Name</span>
+                      <span class="oh-field-value">{{ doc.holderName }}</span>
+                    </div>
+                    <div class="col-6 col-md-3">
+                      <span class="oh-field-label" style="font-size: 9px;">Date of Birth</span>
+                      <span class="oh-field-value">{{ doc.dob }}</span>
+                    </div>
+                    <div class="col-6 col-md-3" *ngIf="doc.parentName">
+                      <span class="oh-field-label" style="font-size: 9px;">Parent's Name</span>
+                      <span class="oh-field-value">{{ doc.parentName }}</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Watermark clipboard illustration outline -->
+        <div class="col-12 col-md-3 col-xl-3 d-none d-md-flex align-items-center justify-content-center border-start ps-4" style="opacity: 0.85;">
+          <div class="text-center py-4">
+            <!-- Outline clipboard wireframe watermark -->
+            <svg width="180" height="220" viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Clipboard board outline -->
+              <rect x="35" y="45" width="130" height="180" rx="12" stroke="#e2e8f0" stroke-width="2.5" />
+              
+              <!-- Clip at top -->
+              <path d="M 80 45 L 80 32 C 80 28, 120 28, 120 32 L 120 45" stroke="#cbd5e1" stroke-width="2.5" stroke-linejoin="round" />
+              <rect x="75" y="40" width="50" height="10" rx="3" fill="#edf2f7" stroke="#cbd5e1" stroke-width="2" />
+              
+              <!-- Paper lines -->
+              <line x1="55" y1="75" x2="145" y2="75" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+              <line x1="55" y1="95" x2="125" y2="95" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+              
+              <line x1="55" y1="120" x2="145" y2="120" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+              <line x1="55" y1="140" x2="115" y2="140" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+              
+              <line x1="55" y1="165" x2="145" y2="165" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+              
+              <!-- Checkboxes wireframes -->
+              <rect x="55" y="185" width="10" height="10" rx="2" stroke="#cbd5e1" stroke-width="2" />
+              <line x1="72" y1="190" x2="145" y2="190" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
+
+              <!-- Pencil outline on left -->
+              <g transform="translate(-15, 20)">
+                <rect x="25" y="60" width="8" height="100" rx="2" stroke="#e2e8f0" stroke-width="2" transform="rotate(-15, 25, 60)" />
+                <path d="M 33 55 L 43 51 L 40 60 Z" fill="#edf2f7" stroke="#cbd5e1" stroke-width="1.8" />
+              </g>
+
+              <!-- Floating outline bubbles/shapes -->
+              <!-- Warning bubble top-left -->
+              <circle cx="20" cy="80" r="10" stroke="#e2e8f0" stroke-width="2" />
+              <path d="M 20 76 L 20 80 M 20 84 L 20 84.5" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
+
+              <!-- Speech bubble top-right -->
+              <path d="M 175 60 C 182 60, 185 64, 185 68 C 185 72, 182 76, 175 76 L 170 76 L 166 80 L 168 76" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round" />
+              <circle cx="172" cy="68" r="1" fill="#cbd5e1" />
+              <circle cx="176" cy="68" r="1" fill="#cbd5e1" />
+
+              <!-- Checkmark circle bottom-left -->
+              <circle cx="25" cy="225" r="10" stroke="#e2e8f0" stroke-width="2" />
+              <path d="M 21 225 L 24 228 L 29 222" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+              <!-- Clock bottom-right -->
+              <circle cx="175" cy="210" r="10" stroke="#e2e8f0" stroke-width="2" />
+              <path d="M 175 204 L 175 210 L 180 210" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="text-muted mt-2" style="font-size: 11px;">Verification Secure Pipeline</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5. ASSETS TAB VIEW -->
+    <div *ngSwitchCase="'assets'">
+      <!-- Sub-navigation tabs: Assigned assets | Asset requests | Asset damage charges -->
+      <div class="oh-profile-subtabs mb-4">
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'assigned'"
+                (click)="activeAssetsSubTab.set('assigned')">
+          Assigned assets
+        </button>
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'requests'"
+                (click)="activeAssetsSubTab.set('requests')">
+          Asset requests
+        </button>
+        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'damage'"
+                (click)="activeAssetsSubTab.set('damage')">
+          Asset damage charges
+        </button>
+      </div>
+
+      <!-- SWITCH subview activeAssetsSubTab() -->
+      <div [ngSwitch]="activeAssetsSubTab()">
+        
+        <!-- Assigned Assets View -->
+        <div *ngSwitchCase="'assigned'">
+          <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Assigned Assets</h3>
+          <p class="text-muted mb-4" style="font-size: 12.5px;">Assets that are currently assigned to you.</p>
+
+          <mat-card appearance="outlined" class="oh-panel p-5 text-center bg-white border d-flex flex-column align-items-center justify-content-center" style="border: 1px solid var(--oh-border);">
+            <!-- Outlined robot / device face icon -->
+            <svg width="72" height="72" viewBox="0 0 100 100" fill="none" class="mb-3 text-muted mx-auto" opacity="0.6">
+              <!-- Robot box face -->
+              <rect x="25" y="35" width="50" height="38" rx="8" stroke="#94a3b8" stroke-width="2.2" />
+              <!-- Ears -->
+              <rect x="21" y="47" width="4" height="14" rx="2" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
+              <rect x="75" y="47" width="4" height="14" rx="2" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
+              <!-- Antenna -->
+              <line x1="50" y1="35" x2="50" y2="25" stroke="#94a3b8" stroke-width="2.2" />
+              <circle cx="50" cy="22" r="3.5" stroke="#94a3b8" stroke-width="2.2" />
+              <!-- Eyes -->
+              <circle cx="41" cy="50" r="3" fill="#94a3b8" />
+              <circle cx="59" cy="50" r="3" fill="#94a3b8" />
+              <!-- Mouth line -->
+              <line x1="38" y1="62" x2="62" y2="62" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" />
+              <!-- Checkmarks / highlights -->
+              <circle cx="34" cy="62" r="1" fill="#94a3b8" />
+              <circle cx="66" cy="62" r="1" fill="#94a3b8" />
+            </svg>
+            <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">No Assets are present yet</h4>
+            <p class="text-muted mb-0" style="font-size: 12.5px;">Your assets will be shown here once they have been assigned to you</p>
+          </mat-card>
+        </div>
+
+        <!-- Asset Requests View -->
+        <div *ngSwitchCase="'requests'">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Requests</h3>
+              <p class="text-muted mb-0" style="font-size: 12.5px;">View or request company devices and inventory items.</p>
+            </div>
+            <button mat-flat-button color="primary" class="oh-btn-small h-auto py-1.5" (click)="showAddAssetRequestForm.set(!showAddAssetRequestForm())">
+              <i class="bi" [class.bi-x-lg]="showAddAssetRequestForm()" [class.bi-plus-lg]="!showAddAssetRequestForm()" aria-hidden="true"></i>
+              {{ showAddAssetRequestForm() ? 'Close Form' : 'Request Asset' }}
+            </button>
+          </div>
+
+          <!-- Add Asset Request Inline Block Form -->
+          <div class="border rounded-lg bg-light p-4 mb-4" *ngIf="showAddAssetRequestForm()" style="animation: slideDown 0.25s ease-out;">
+            <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13.5px;">Request New Device / Asset</h5>
+            <div class="row g-3">
+              <div class="col-6">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight" for="assetNameField">Asset Name</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="assetNameField" placeholder="e.g. MacBook Pro M3" [(ngModel)]="tempAssetRequest.assetName" />
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight" for="assetCategoryField">Asset Category</label>
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <mat-select id="assetCategoryField" [(ngModel)]="tempAssetRequest.assetType">
+                      <mat-option value="Laptop">Laptop / Computer</mat-option>
+                      <mat-option value="Mobile">Mobile Phone</mat-option>
+                      <mat-option value="Monitor">External Monitor</mat-option>
+                      <mat-option value="Peripheral">Keyboard / Mouse / Peripherals</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="oh-field">
+                  <label class="oh-label oh-label--tight" for="assetJustificationField">Reason / Justification</label>
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <textarea matInput id="assetJustificationField" rows="2" placeholder="Explain why this asset is required..." [(ngModel)]="tempAssetRequest.justification"></textarea>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-3">
+              <button mat-flat-button color="primary" [disabled]="!tempAssetRequest.assetName.trim()" (click)="addAssetRequestSubmit()">Submit Request</button>
+              <button mat-stroked-button (click)="showAddAssetRequestForm.set(false)">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Asset Requests List table/cards -->
+          <div *ngIf="assetRequestsList().length > 0; else emptyRequests" class="d-flex flex-column gap-2 mt-4">
+            <div *ngFor="let req of assetRequestsList()" class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
+              <div>
+                <h5 class="text-dark font-weight-bold mb-1" style="font-size: 13.5px;">{{ req.assetName }}</h5>
+                <p class="text-muted mb-0" style="font-size: 12px;">Category: {{ req.assetType }} &middot; Requested on {{ req.requestDate | date:'dd MMM yyyy' }}</p>
+                <p class="text-muted mt-1 mb-0" style="font-size: 12px; font-style: italic;">"{{ req.justification }}"</p>
+              </div>
+              <span class="badge bg-warning-soft text-warning px-2.5 py-1 rounded" style="font-size: 11px;">PENDING</span>
+            </div>
+          </div>
+
+          <ng-template #emptyRequests>
+            <div class="p-5 border rounded-lg bg-white text-center text-muted" style="border: 1px solid var(--oh-border); font-size: 13px;">
+              No asset requests found.
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Asset Damage Charges View -->
+        <div *ngSwitchCase="'damage'">
+          <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Damage Charges</h3>
+          <p class="text-muted mb-4" style="font-size: 12.5px;">View and resolve any damage charges related to assigned company assets.</p>
+
+          <div class="p-5 border rounded-lg bg-white text-center text-muted" style="border: 1px solid var(--oh-border); font-size: 13px;">
+            No damage charges reported.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Signature Popup Overlay (Same like recruitment popup) -->
+<div class="oh-modal-backdrop" *ngIf="showAddSignatureDrawer()" (click)="showAddSignatureDrawer.set(false)" style="z-index: 1100;">
+  <div class="oh-modal-content" (click)="$event.stopPropagation()">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold" style="font-size: 16px; font-family: Outfit, sans-serif;">Add Signature</h3>
+      <button type="button" class="btn-close" (click)="showAddSignatureDrawer.set(false)" aria-label="Close"></button>
+    </div>
+    
+    <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1 overflow-auto">
+      <!-- Name -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Name</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput placeholder="Enter Name" [(ngModel)]="tempSignatureForm.name" />
+        </mat-form-field>
+      </div>
+      
+      <!-- Designation -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Designation</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput placeholder="Enter Designation" [(ngModel)]="tempSignatureForm.designation" />
+        </mat-form-field>
+      </div>
+
+      <!-- File Attachment Field -->
+      <div class="oh-field mt-2">
+        <div class="oh-attach-box p-4 border rounded text-center cursor-pointer" 
+             (click)="sigFileInput.click()"
+             style="background-color: #fafafa; border-style: dashed; border-color: var(--oh-border); border-radius: var(--oh-radius-lg);">
+          <i class="bi bi-paperclip fs-3 text-muted d-block mb-1"></i>
+          <span class="text-danger font-weight-semibold" style="font-size: 13px;">
+            {{ tempSignatureForm.fileName || 'Attach Signature' }}
+          </span>
+          <i class="bi bi-info-circle-fill text-muted ms-1" style="font-size: 11px;" matTooltip="Click to browse transparent PNG image files"></i>
+          <input type="file" #sigFileInput class="d-none" (change)="onSignatureFileSelected($event)" accept="image/*" />
+        </div>
+      </div>
+    </div>
+    
+    <div class="oh-drawer-footer d-flex gap-2 justify-content-end">
+      <button mat-button type="button" (click)="showAddSignatureDrawer.set(false)">Cancel</button>
+      <button mat-flat-button color="primary" type="button" 
+              [disabled]="!tempSignatureForm.name.trim()" 
+              (click)="addSignatureSubmit()">
+        Add
+      </button>
+    </div>
+  </div>
+</div>

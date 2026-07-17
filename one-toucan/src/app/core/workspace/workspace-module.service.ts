@@ -132,6 +132,9 @@ export class WorkspaceModuleService {
   /** Finds which module owns a given route path, or null (e.g. on /home). */
   moduleForPath(url: string): WorkspaceModule | null {
     const path = url.split('?')[0].split('#')[0];
+    if (path === '/profile' || path.startsWith('/profile/')) {
+      return this.modules.find(m => m.id === 'onehr') ?? null;
+    }
     for (const module of this.modules) {
       for (const group of module.groups) {
         for (const item of group.items) {

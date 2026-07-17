@@ -20,7 +20,7 @@ export class ShellComponent implements OnInit {
   pageSubtitle = '';
 
   constructor(
-    private readonly router: Router,
+    public readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly workspaceModules: WorkspaceModuleService
   ) {}
@@ -37,13 +37,32 @@ export class ShellComponent implements OnInit {
   get activeModuleTabs(): { label: string; route: string }[] {
     const mod = this.workspaceModules.activeModule();
     if (!mod) return [];
-    
-    const currentUrl = this.router.url.split('?')[0].split('#')[0];
-    
+
+    if (mod.id === 'onehr') {
+      const currentUrlPath = this.router.url.split('?')[0].split('#')[0];
+      if (currentUrlPath === '/profile') {
+        return [
+          { label: 'Dashboard', route: '/onehr-dashboard' },
+          { label: 'Profile', route: '/profile' }
+        ];
+      }
+      if (this.router.url.includes('subview=announcements')) {
+        return [
+          { label: 'Dashboard', route: '/onehr-dashboard' },
+          { label: 'Announcements', route: '/onehr-dashboard?subview=announcements' }
+        ];
+      }
+      return [
+        { label: 'Dashboard', route: '/onehr-dashboard' }
+      ];
+    }
+
+    const currentUrlPath = this.router.url.split('?')[0].split('#')[0];
+
     // Find the group that contains the current active route
-    const activeGroup = mod.groups.find(group => 
-      group.items.some(item => 
-        item.route && (currentUrl === item.route || currentUrl.startsWith(item.route + '/'))
+    const activeGroup = mod.groups.find(group =>
+      group.items.some(item =>
+        item.route && (currentUrlPath === item.route || currentUrlPath.startsWith(item.route + '/'))
       )
     );
 
@@ -71,8 +90,15 @@ export class ShellComponent implements OnInit {
   }
 
   isTabActive(tab: { label: string; route: string }): boolean {
-    const currentUrl = this.router.url.split('?')[0].split('#')[0];
-    return currentUrl === tab.route || currentUrl.startsWith(tab.route + '/');
+    const currentUrl = this.router.url;
+    if (tab.route.includes('subview=')) {
+      return currentUrl.includes(tab.route);
+    }
+    if (tab.route === '/onehr-dashboard') {
+      return currentUrl === '/onehr-dashboard' || currentUrl === '/onehr-dashboard/';
+    }
+    const currentUrlPath = this.router.url.split('?')[0].split('#')[0];
+    return currentUrlPath === tab.route || currentUrlPath.startsWith(tab.route + '/');
   }
 
   navigateToTab(tab: { label: string; route: string }): void {
@@ -96,7 +122,14 @@ export class ShellComponent implements OnInit {
       active = active.firstChild;
     }
     const data = active?.snapshot.data ?? {};
-    this.pageTitle = data['title'] ?? '';
-    this.pageSubtitle = data['subtitle'] ?? '';
+
+    const currentUrl = this.router.url;
+    if (currentUrl.includes('subview=announcements')) {
+      this.pageTitle = 'Announcements';
+      this.pageSubtitle = 'Publish and manage company announcements';
+    } else {
+      this.pageTitle = data['title'] ?? '';
+      this.pageSubtitle = data['subtitle'] ?? '';
+    }
   }
 }

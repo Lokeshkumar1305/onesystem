@@ -145,6 +145,11 @@
   gap: var(--oh-3);
   padding: var(--oh-4);
   border-top: 1px solid var(--oh-border);
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--oh-gray-50);
+  }
 }
 
 .oh-nav__profile .oh-avatar {

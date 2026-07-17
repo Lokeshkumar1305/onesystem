@@ -10,17 +10,19 @@
     <div class="oh-sub-header shadow-sm bg-white" *ngIf="pageTitle">
 
       <!-- Horizontal Tabs Row -->
-      <div class="px-4 d-flex align-items-center gap-4 oh-sub-tabs" style="overflow-x: auto;">
-        <button 
-          *ngFor="let tab of activeModuleTabs"
-          type="button"
-          class="btn p-0 border-0 oh-sub-tab d-flex flex-column align-items-center position-relative text-uppercase"
-          [class.oh-sub-tab--active]="isTabActive(tab)"
-          (click)="navigateToTab(tab)"
-        >
-          <span class="oh-sub-tab-text">{{ tab.label }}</span>
-          <span class="oh-sub-tab-arrow" *ngIf="isTabActive(tab)"></span>
-        </button>
+      <div class="px-4 d-flex align-items-center gap-3 oh-sub-tabs" style="overflow-x: auto;">
+        <ng-container *ngFor="let tab of activeModuleTabs; let isLast = last">
+          <button 
+            type="button"
+            class="btn p-0 border-0 oh-sub-tab d-flex flex-column align-items-center position-relative text-uppercase"
+            [class.oh-sub-tab--active]="isTabActive(tab)"
+            (click)="navigateToTab(tab)"
+          >
+            <span class="oh-sub-tab-text">{{ tab.label }}</span>
+            <span class="oh-sub-tab-arrow" *ngIf="isTabActive(tab)"></span>
+          </button>
+          <i *ngIf="!isLast" class="bi bi-chevron-right" style="font-size: 9px; color: var(--oh-gray-300); margin-top: -2px;"></i>
+        </ng-container>
       </div>
     </div>
 

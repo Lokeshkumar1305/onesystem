@@ -91,6 +91,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/bugs/bugs.component').then(m => m.BugsComponent),
         data: { title: 'Bugs', subtitle: 'Defect tracking & triage' }
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile.component').then(m => m.ProfileComponent),
+        data: { title: 'Profile', subtitle: 'Manage your personal & professional information' }
       }
     ]
   },
