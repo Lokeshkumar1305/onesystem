@@ -33,39 +33,49 @@
     </button>
   </div>
 
-  <!-- Bottom-Right Toucan Background Vector Decoration -->
-  <svg class="oh-home__bg-vector" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <!-- Curved corner block -->
-    <path d="M120,400 C200,350 320,310 400,250 L400,400 Z" fill="rgba(15, 118, 110, 0.04)" />
+  <!-- Bottom-Right Background Vector Decoration -->
+  <div class="oh-home__bg-decoration" aria-hidden="true">
+    <!-- Curved background shape (reduced height) -->
+    <svg class="oh-home__bg-curve" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M80,300 L600,300 L600,40 C520,70 400,140 260,200 C160,250 100,280 80,300 Z" fill="#eef0f8" />
+    </svg>
 
-    <!-- Angled outline squares blending into the curve -->
-    <g stroke="rgba(15, 118, 110, 0.06)" stroke-width="1.5" fill="none">
-      <rect x="180" y="180" width="220" height="220" rx="20" transform="rotate(15 290 290)" />
-      <rect x="210" y="210" width="180" height="180" rx="16" transform="rotate(-8 300 300)" />
-    </g>
+    <!-- Single tilted square outline -->
+    <svg class="oh-home__bg-square" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="170" height="170" rx="10" transform="rotate(-18 95 95)"
+            fill="none" stroke="rgba(190, 195, 220, 0.5)" stroke-width="1.2" />
+    </svg>
 
-    <!-- Sitting Toucan outline icon (facing right, same as reference image) -->
-    <g fill="none" stroke="rgba(15, 118, 110, 0.12)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <!-- Head and back curve -->
-      <path d="M260,300 C260,280 272,265 292,265 C302,265 310,270 312,280" />
-      
-      <!-- Beak upper/lower curves (facing right) -->
-      <path d="M292,265 C315,268 340,278 348,292 C350,296 346,303 338,305 C320,310 305,308 300,305 Z" fill="rgba(15, 118, 110, 0.02)" />
-      <!-- Beak split line -->
-      <path d="M296,286 C315,290 332,294 348,292" />
-      
-      <!-- Breast/Body front -->
-      <path d="M260,300 C260,320 270,335 285,345" />
-      
-      <!-- Tail / Body back -->
-      <path d="M300,305 C305,318 312,330 315,345" />
+    <!-- Toucan bird vector matching reference image -->
+    <svg class="oh-home__bg-bird" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+      <!-- Translucent body, head & beak fill -->
+      <g fill="rgba(215, 225, 248, 0.7)" stroke="none">
+        <!-- Body silhouette -->
+        <path d="M70,75 C60,85 55,105 58,135 C60,160 55,185 45,210 C55,200 70,180 80,150 C90,125 92,95 85,75 Z" />
+        <!-- Head -->
+        <circle cx="75" cy="55" r="25" />
+        <!-- Curved Toucan Beak -->
+        <path d="M75,32 C105,25 145,30 165,48 C172,55 170,68 158,78 C140,88 110,88 85,75 Z" />
+      </g>
 
-      <!-- Wing -->
-      <path d="M272,295 C285,295 292,305 290,318 C287,325 280,328 275,328 Z" fill="rgba(15, 118, 110, 0.04)" />
+      <!-- Signature white accent ribbon running along lower beak curve and neck -->
+      <path d="M160,56 C145,74 118,78 92,72 C80,68 76,82 72,110 C68,140 62,175 48,205"
+            fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M160,56 C145,74 118,78 92,72 C80,68 76,82 72,110 C68,140 62,175 48,205"
+            fill="none" stroke="rgba(185, 202, 238, 0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 
-      <!-- Eye rings -->
-      <circle cx="282" cy="278" r="7.5" />
-      <circle cx="282" cy="278" r="3.5" fill="rgba(15, 118, 110, 0.15)" stroke="none" />
-    </g>
-  </svg>
+      <!-- Outer contour curve of upper beak -->
+      <path d="M75,32 C105,25 145,30 165,48 C170,54 166,64 158,74"
+            fill="none" stroke="rgba(205, 218, 245, 0.85)" stroke-width="2" stroke-linecap="round" />
+
+      <!-- Eye: Large white ring with pupil and highlight reflection -->
+      <circle cx="78" cy="52" r="10" fill="#ffffff" />
+      <circle cx="78" cy="52" r="5" fill="rgba(165, 182, 222, 0.9)" />
+      <circle cx="80" cy="50" r="1.8" fill="#ffffff" />
+
+      <!-- Tail feathers pointing down-left -->
+      <path d="M48,205 L38,230 M53,205 L45,225"
+            stroke="rgba(200, 215, 245, 0.85)" stroke-width="3" stroke-linecap="round" />
+    </svg>
+  </div>
 </div>

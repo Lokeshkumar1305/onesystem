@@ -28,6 +28,7 @@ export interface DocumentDetails {
   name: string;
   status: 'pending' | 'verified';
   mandatory: boolean;
+  category?: 'identity' | 'education' | 'experience' | 'insurance';
   docNumber?: string;
   holderName?: string;
   dob?: string;
@@ -41,6 +42,16 @@ export interface SignatureDetails {
   designation: string;
   fileName: string;
   status: 'active' | 'pending';
+}
+
+export interface AssignedAssetItem {
+  id: string;
+  assetName: string;
+  assetCode: string;
+  category: string;
+  serialNumber: string;
+  assignedDate: string;
+  status: 'active' | 'under_maintenance';
 }
 
 export interface AssetRequestItem {
@@ -75,12 +86,50 @@ export class ProfileComponent {
   activeTab = signal<'about' | 'profile' | 'job' | 'documents' | 'assets'>('about');
   activeAboutSubTab = signal<'summary' | 'timeline' | 'wall'>('summary');
 
-  // Documents Sidebar Signal
-  selectedDocFolder = signal<'pending' | 'education' | 'experience' | 'identity' | 'insurance' | 'signatures'>('pending');
+  // Documents Sidebar Signal — Defaults to 'all' so all employee documents populate immediately
+  selectedDocFolder = signal<'all' | 'pending' | 'education' | 'experience' | 'identity' | 'insurance' | 'signatures'>('all');
   docSearchQuery = signal<string>('');
 
   // Assets sub-tabs signal
   activeAssetsSubTab = signal<'assigned' | 'requests' | 'damage'>('assigned');
+  assignedAssetsList = signal<AssignedAssetItem[]>([
+    {
+      id: 'ast_1',
+      assetName: 'MacBook Pro 16" (M3 Max, 36GB RAM, 1TB SSD)',
+      assetCode: 'AST-MBP-2024-0042',
+      category: 'Laptop / Workstation',
+      serialNumber: 'C02G4089MD6R',
+      assignedDate: '15 Jan 2024',
+      status: 'active'
+    },
+    {
+      id: 'ast_2',
+      assetName: 'Dell UltraSharp 27" 4K USB-C Hub Monitor (U2723QE)',
+      assetCode: 'AST-MON-2024-0118',
+      category: 'External Display',
+      serialNumber: 'CN-0TY481-74261',
+      assignedDate: '15 Jan 2024',
+      status: 'active'
+    },
+    {
+      id: 'ast_3',
+      assetName: 'Apple Magic Keyboard with Touch ID & Magic Trackpad',
+      assetCode: 'AST-ACC-2024-0302',
+      category: 'Peripherals',
+      serialNumber: 'MK-9940218-A',
+      assignedDate: '16 Jan 2024',
+      status: 'active'
+    },
+    {
+      id: 'ast_4',
+      assetName: 'Jabra Evolve2 75 Wireless ANC Headset',
+      assetCode: 'AST-AUD-2024-0091',
+      category: 'Audio Device',
+      serialNumber: 'JB-7740291-B',
+      assignedDate: '20 Feb 2024',
+      status: 'active'
+    }
+  ]);
   assetRequestsList = signal<AssetRequestItem[]>([]);
   showAddAssetRequestForm = signal<boolean>(false);
   tempAssetRequest = {
@@ -91,7 +140,15 @@ export class ProfileComponent {
 
   // Signatures Drawer Signal
   showAddSignatureDrawer = signal<boolean>(false);
-  signaturesList = signal<SignatureDetails[]>([]);
+  signaturesList = signal<SignatureDetails[]>([
+    {
+      id: 'sig_primary',
+      name: 'Primary E-Signature',
+      designation: 'CTO · Admin',
+      fileName: 'lokesh_kanuboina_signature.png',
+      status: 'active'
+    }
+  ]);
   tempSignatureForm = {
     name: '',
     designation: '',
@@ -137,6 +194,103 @@ export class ProfileComponent {
 
   professionalSummaryText = signal<string>('');
 
+  // Bio & Hobbies responses signals
+  bioAbout = signal<string>('Full-stack Software Engineer with 5+ years of experience crafting modern enterprise web applications using Angular, TypeScript, and Node.js.');
+  bioLoveAboutJob = signal<string>('Solving complex architectural challenges, building intuitive UI/UX design systems, and collaborating with cross-functional teams to deliver impactful software products.');
+  bioHobbies = signal<string>('Open-source coding, competitive tech blogging, photography, and playing badminton.');
+
+  editingBioSection = signal<'about' | 'love' | 'hobbies' | null>(null);
+  tempBioInput = '';
+
+  // Skills List Signal
+  skills = signal<string[]>([
+    'Angular 19 & Signals',
+    'TypeScript',
+    'Node.js & Express',
+    'RxJS Architecture',
+    'HTML5 & SCSS',
+    'RESTful APIs',
+    'Git & Version Control',
+    'UI/UX Design Systems'
+  ]);
+  showAddSkillForm = signal<boolean>(false);
+  newSkillText = '';
+
+  startEditBio(section: 'about' | 'love' | 'hobbies'): void {
+    this.editingBioSection.set(section);
+    if (section === 'about') this.tempBioInput = this.bioAbout();
+    if (section === 'love') this.tempBioInput = this.bioLoveAboutJob();
+    if (section === 'hobbies') this.tempBioInput = this.bioHobbies();
+  }
+
+  saveBio(section: 'about' | 'love' | 'hobbies'): void {
+    if (section === 'about') this.bioAbout.set(this.tempBioInput);
+    if (section === 'love') this.bioLoveAboutJob.set(this.tempBioInput);
+    if (section === 'hobbies') this.bioHobbies.set(this.tempBioInput);
+    this.editingBioSection.set(null);
+    this.triggerAlert('Updated response successfully!');
+  }
+
+  // Languages List Signal
+  languagesSpoken = signal<{ name: string; proficiency: string }[]>([
+    { name: 'English', proficiency: 'Professional Fluent' },
+    { name: 'Telugu', proficiency: 'Native / Mother Tongue' },
+    { name: 'Hindi', proficiency: 'Conversational' }
+  ]);
+
+  // Color palette for language rows — cycles for N languages
+  langColorPalette: { bg: string; text: string; border: string }[] = [
+    { bg: '#e0f2fe', text: '#0369a1', border: '#7dd3fc' },   // Sky Blue
+    { bg: '#fce7f3', text: '#be185d', border: '#f9a8d4' },   // Rose Pink
+    { bg: '#dcfce7', text: '#15803d', border: '#86efac' },   // Emerald Green
+    { bg: '#fef3c7', text: '#b45309', border: '#fcd34d' },   // Amber
+    { bg: '#f3e8ff', text: '#7e22ce', border: '#d8b4fe' },   // Purple
+    { bg: '#e0e7ff', text: '#4338ca', border: '#a5b4fc' },   // Indigo
+    { bg: '#ccfbf1', text: '#0f766e', border: '#5eead4' },   // Teal
+    { bg: '#fee2e2', text: '#b91c1c', border: '#fca5a5' },   // Red
+  ];
+
+  getLangColor(index: number): { bg: string; text: string; border: string } {
+    return this.langColorPalette[index % this.langColorPalette.length];
+  }
+
+  showAddLanguageForm = signal<boolean>(false);
+  newLanguageName = '';
+  newLanguageProficiency = 'Conversational';
+
+  addSkill(): void {
+    const skill = this.newSkillText.trim();
+    if (skill && !this.skills().includes(skill)) {
+      this.skills.set([...this.skills(), skill]);
+      this.newSkillText = '';
+      this.triggerAlert(`Added skill "${skill}"`);
+    }
+  }
+
+  removeSkill(skillToRemove: string): void {
+    this.skills.set(this.skills().filter(s => s !== skillToRemove));
+    this.triggerAlert(`Removed skill "${skillToRemove}"`);
+  }
+
+  addLanguage(): void {
+    const lang = this.newLanguageName.trim();
+    if (lang && !this.languagesSpoken().some(l => l.name.toLowerCase() === lang.toLowerCase())) {
+      this.languagesSpoken.set([...this.languagesSpoken(), {
+        name: lang,
+        proficiency: this.newLanguageProficiency
+      }]);
+      this.newLanguageName = '';
+      this.newLanguageProficiency = 'Conversational';
+      this.showAddLanguageForm.set(false);
+      this.triggerAlert(`Added language "${lang}"`);
+    }
+  }
+
+  removeLanguage(langToRemove: string): void {
+    this.languagesSpoken.set(this.languagesSpoken().filter(l => l.name !== langToRemove));
+    this.triggerAlert(`Removed language "${langToRemove}"`);
+  }
+
   // Experience and Education lists
   experiences = signal<ExperienceItem[]>([]);
   educations = signal<EducationItem[]>([]);
@@ -147,60 +301,101 @@ export class ProfileComponent {
       id: 'aadhaar',
       name: 'Aadhaar Card',
       status: 'pending',
-      mandatory: true
+      mandatory: true,
+      category: 'identity'
     },
     {
       id: 'pan',
-      name: 'Pan Card',
+      name: 'PAN Card',
       status: 'verified',
       mandatory: false,
+      category: 'identity',
       docNumber: 'XXXXXXXX58J',
       holderName: 'Lokesh Kumar Kanuboina',
       dob: '1999-05-13',
-      parentName: 'Lokesh Kumar Kanuboina'
+      parentName: 'Ramana Kanuboina'
     },
     {
       id: 'voter',
-      name: 'Voter Id Card',
+      name: 'Voter ID Card',
       status: 'pending',
-      mandatory: true
+      mandatory: true,
+      category: 'identity'
     },
     {
       id: 'license',
       name: 'Driving License',
       status: 'pending',
-      mandatory: true
+      mandatory: true,
+      category: 'identity'
     },
     {
       id: 'passport',
       name: 'Passport',
       status: 'pending',
-      mandatory: true
+      mandatory: true,
+      category: 'identity'
     },
     {
-      id: 'edu_docs',
-      name: 'Educational Documents',
-      status: 'pending',
-      mandatory: true
+      id: 'edu_degree',
+      name: 'Graduation Degree Certificate (B.Tech)',
+      status: 'verified',
+      mandatory: true,
+      category: 'education',
+      docNumber: 'REG-2017-CS-0492',
+      holderName: 'Lokesh Kumar Kanuboina',
+      dob: '1999-05-13',
+      parentName: 'JNTU Kakinada'
     },
     {
-      id: 'prev_exp',
-      name: 'Previous Experience',
-      status: 'pending',
-      mandatory: true
+      id: 'edu_12th',
+      name: '12th / Higher Secondary Certificate',
+      status: 'verified',
+      mandatory: true,
+      category: 'education',
+      docNumber: 'HSC-2017-884920',
+      holderName: 'Lokesh Kumar Kanuboina',
+      dob: '1999-05-13'
+    },
+    {
+      id: 'exp_relieving',
+      name: 'Relieving & Experience Letter',
+      status: 'verified',
+      mandatory: true,
+      category: 'experience',
+      docNumber: 'EXP-TOUCAN-2024-089',
+      holderName: 'Lokesh Kumar Kanuboina',
+      dob: '1999-05-13',
+      parentName: 'TechSolutions Ltd'
+    },
+    {
+      id: 'exp_payslip',
+      name: 'Last 3 Months Pay Slips',
+      status: 'verified',
+      mandatory: true,
+      category: 'experience',
+      docNumber: 'PAY-2024-Q2',
+      holderName: 'Lokesh Kumar Kanuboina',
+      dob: '1999-05-13'
     },
     {
       id: 'ins_2025',
-      name: 'Insurance 2025-26',
+      name: 'Group Health Insurance Policy 2025-26',
       status: 'verified',
       mandatory: false,
+      category: 'insurance',
+      docNumber: 'GMI-8849-2025',
+      holderName: 'Lokesh Kumar Kanuboina',
       fileName: 'insurance_policy_2025.pdf'
     },
     {
       id: 'ins_2026',
-      name: 'Insurance 2026-27',
+      name: 'Group Health Insurance Policy 2026-27',
       status: 'verified',
       mandatory: false,
+      category: 'insurance',
+      docNumber: 'GMI-8849-2026',
+      holderName: 'Lokesh Kumar Kanuboina',
       fileName: 'insurance_policy_2026.pdf'
     }
   ]);
@@ -289,15 +484,31 @@ export class ProfileComponent {
     return Math.round((filledFields / totalFields) * 100);
   });
 
-  // Dynamic filter for documents pending count
+  // Dynamic filter for documents pending count and summary stats
   pendingDocsCount = computed(() => {
     return this.documentsList().filter(d => d.status === 'pending').length;
   });
+  verifiedDocsCount = computed(() => {
+    return this.documentsList().filter(d => d.status === 'verified').length;
+  });
+  totalDocsCount = computed(() => {
+    return this.documentsList().length;
+  });
 
-  // Skills state
-  skills = signal<string[]>([]);
-  showAddSkillForm = signal<boolean>(false);
-  newSkillText = signal<string>('');
+  // Modal & Preview state for Documents tab
+  previewDocumentModal = signal<DocumentDetails | null>(null);
+  showAddCustomDocModal = signal<boolean>(false);
+  tempCustomDoc = {
+    name: '',
+    category: 'identity' as 'identity' | 'education' | 'experience' | 'insurance',
+    docNumber: '',
+    holderName: '',
+    dob: '',
+    parentName: '',
+    fileName: '',
+    mandatory: false
+  };
+  tempCustomDocDob: Date | null = null;
 
   // Sidenav toggle simulation for JOB tab
   disableAttendanceTracking = signal<boolean>(false);
@@ -391,22 +602,6 @@ export class ProfileComponent {
     this.triggerAlert(`Successfully updated ${section.replace(/^\w/, c => c.toUpperCase())} Details!`);
   }
 
-  // Skills management
-  addSkill(): void {
-    const text = this.newSkillText().trim();
-    if (text && !this.skills().includes(text)) {
-      this.skills.set([...this.skills(), text]);
-      this.newSkillText.set('');
-      this.showAddSkillForm.set(false);
-      this.triggerAlert(`Skill "${text}" added!`);
-    }
-  }
-
-  removeSkill(skill: string): void {
-    this.skills.set(this.skills().filter(s => s !== skill));
-    this.triggerAlert(`Skill "${skill}" removed.`);
-  }
-
   // Education/Experience add handlers
   addNewExperience(): void {
     if (this.tempNewExp.company.trim() && this.tempNewExp.role.trim()) {
@@ -477,29 +672,38 @@ export class ProfileComponent {
 
   // Documents management
   openAddDocForm(docId: string): void {
+    const existing = this.documentsList().find(d => d.id === docId);
     this.tempDocForm = {
-      docNumber: '',
-      holderName: this.displayName(),
-      dob: this.dob(),
-      parentName: '',
-      fileName: ''
+      docNumber: existing?.docNumber || '',
+      holderName: existing?.holderName || this.displayName(),
+      dob: existing?.dob || this.dob(),
+      parentName: existing?.parentName || '',
+      fileName: existing?.fileName || ''
     };
-    this.tempDocDob = this.dateStringToDate(this.dob());
+    this.tempDocDob = this.dateStringToDate(existing?.dob || this.dob());
     this.activeDocAddForm.set(docId);
+  }
+
+  onDocFileSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (file) {
+      this.tempDocForm.fileName = file.name;
+    }
   }
 
   saveDocumentDetails(docId: string): void {
     const dobString = this.dateToDateString(this.tempDocDob);
+    const existing = this.documentsList().find(d => d.id === docId);
     const list = this.documentsList().map(doc => {
       if (doc.id === docId) {
         return {
           ...doc,
           status: 'verified' as const,
-          docNumber: this.tempDocForm.docNumber || 'XXXXXXXX99X',
-          holderName: this.tempDocForm.holderName,
-          dob: dobString,
-          parentName: this.tempDocForm.parentName,
-          fileName: this.tempDocForm.fileName || `${docId}_uploaded.pdf`
+          docNumber: this.tempDocForm.docNumber || doc.docNumber || 'XXXXXXXX99X',
+          holderName: this.tempDocForm.holderName || doc.holderName || this.displayName(),
+          dob: dobString || doc.dob || this.dob(),
+          parentName: this.tempDocForm.parentName !== undefined ? this.tempDocForm.parentName : doc.parentName,
+          fileName: this.tempDocForm.fileName || doc.fileName || `${doc.id}_uploaded.pdf`
         };
       }
       return doc;
@@ -507,7 +711,64 @@ export class ProfileComponent {
 
     this.documentsList.set(list);
     this.activeDocAddForm.set(null);
-    this.triggerAlert(`Successfully uploaded and verified ${docId.toUpperCase()} details!`);
+    this.triggerAlert(`Successfully updated and verified ${existing?.name || docId.toUpperCase()} details!`);
+  }
+
+  openAddCustomDoc(): void {
+    this.tempCustomDoc = {
+      name: '',
+      category: 'identity',
+      docNumber: '',
+      holderName: this.displayName(),
+      dob: this.dob(),
+      parentName: '',
+      fileName: '',
+      mandatory: false
+    };
+    this.tempCustomDocDob = this.dateStringToDate(this.dob());
+    this.showAddCustomDocModal.set(true);
+  }
+
+  onCustomDocFileSelected(event: any): void {
+    const file = event.target?.files?.[0];
+    if (file) {
+      this.tempCustomDoc.fileName = file.name;
+    }
+  }
+
+  addCustomDocSubmit(): void {
+    if (this.tempCustomDoc.name.trim()) {
+      const dobString = this.dateToDateString(this.tempCustomDocDob);
+      const newDoc: DocumentDetails = {
+        id: 'custom_' + Date.now(),
+        name: this.tempCustomDoc.name.trim(),
+        category: this.tempCustomDoc.category,
+        status: 'verified',
+        mandatory: this.tempCustomDoc.mandatory,
+        docNumber: this.tempCustomDoc.docNumber || 'DOC-' + Math.floor(10000 + Math.random() * 90000),
+        holderName: this.tempCustomDoc.holderName || this.displayName(),
+        dob: dobString || this.dob(),
+        parentName: this.tempCustomDoc.parentName,
+        fileName: this.tempCustomDoc.fileName || `${this.tempCustomDoc.name.toLowerCase().replace(/\s+/g, '_')}.pdf`
+      };
+      this.documentsList.set([...this.documentsList(), newDoc]);
+      this.showAddCustomDocModal.set(false);
+      this.triggerAlert(`Document "${newDoc.name}" uploaded & saved successfully!`);
+    }
+  }
+
+  deleteDocument(docId: string): void {
+    const doc = this.documentsList().find(d => d.id === docId);
+    this.documentsList.set(this.documentsList().filter(d => d.id !== docId));
+    this.triggerAlert(`Deleted document "${doc?.name || docId}".`);
+  }
+
+  openPreviewDocument(doc: DocumentDetails): void {
+    this.previewDocumentModal.set(doc);
+  }
+
+  closePreviewDocument(): void {
+    this.previewDocumentModal.set(null);
   }
 
   getFilteredDocs(category: string): DocumentDetails[] {
@@ -515,23 +776,25 @@ export class ProfileComponent {
     let docs = this.documentsList();
 
     // First filter by category
-    if (category === 'pending') {
+    if (category === 'all') {
+      docs = docs;
+    } else if (category === 'pending') {
       docs = docs.filter(d => d.status === 'pending');
     } else if (category === 'education') {
-      docs = docs.filter(d => d.id === 'edu_docs');
+      docs = docs.filter(d => d.category === 'education' || d.id.startsWith('edu_'));
     } else if (category === 'experience') {
-      docs = docs.filter(d => d.id === 'prev_exp');
+      docs = docs.filter(d => d.category === 'experience' || d.id.startsWith('exp_'));
     } else if (category === 'identity') {
-      docs = docs.filter(d => ['aadhaar', 'pan', 'voter', 'license', 'passport'].includes(d.id));
+      docs = docs.filter(d => d.category === 'identity' || ['aadhaar', 'pan', 'voter', 'license', 'passport'].includes(d.id));
     } else if (category === 'insurance') {
-      docs = docs.filter(d => d.id.startsWith('ins_'));
+      docs = docs.filter(d => d.category === 'insurance' || d.id.startsWith('ins_'));
     } else if (category === 'signatures') {
       docs = [];
     }
 
     // Apply search filter if query exists
     if (search) {
-      docs = docs.filter(d => d.name.toLowerCase().includes(search));
+      docs = docs.filter(d => d.name.toLowerCase().includes(search) || (d.docNumber && d.docNumber.toLowerCase().includes(search)));
     }
 
     return docs;
@@ -590,5 +853,16 @@ export class ProfileComponent {
       this.showAddAssetRequestForm.set(false);
       this.triggerAlert('Requested asset successfully!');
     }
+  }
+
+  // Asset preview methods
+  previewAssetModal = signal<AssignedAssetItem | null>(null);
+
+  openPreviewAsset(asset: AssignedAssetItem): void {
+    this.previewAssetModal.set(asset);
+  }
+
+  closePreviewAsset(): void {
+    this.previewAssetModal.set(null);
   }
 }

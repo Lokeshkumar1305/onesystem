@@ -223,3 +223,66 @@
     transition: transform 0.15s ease;
   }
 }
+
+// User Profile Card Dropdown Menu styles
+::ng-deep .oh-profile-menu {
+  border-radius: var(--oh-radius-xl) !important;
+  border: 1px solid var(--oh-border) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+  overflow: hidden !important;
+  min-width: 270px !important;
+  background: var(--oh-surface) !important;
+
+  .mat-mdc-menu-content {
+    padding: 0 !important;
+  }
+
+  .oh-profile-card__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e6f7f3;
+    color: #0f766e;
+    font-family: var(--oh-font-ui);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .oh-profile-card__name {
+    font-family: var(--oh-font-ui);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--oh-gray-900);
+    line-height: 1.2;
+  }
+
+  .oh-profile-card__handle {
+    font-family: var(--oh-font-ui);
+    font-size: 13px;
+    color: var(--oh-gray-500);
+  }
+
+  .oh-profile-card__label {
+    font-family: var(--oh-font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--oh-gray-800);
+  }
+
+  .oh-profile-card__item {
+    min-height: 44px !important;
+
+    &:hover {
+      background: var(--oh-surface-sunken) !important;
+    }
+  }
+
+  .oh-profile-card__toggle-row {
+    cursor: default;
+
+    .mdc-switch {
+      margin-left: auto;
+    }
+  }
+}
+

@@ -173,7 +173,7 @@
         <div class="col-12 col-md-4 border-start border-light ps-md-4">
           <span class="oh-field-label">Reporting Manager</span>
           <div class="d-flex align-items-center gap-2 mt-1">
-            <span class="oh-avatar oh-avatar--xs d-inline-flex align-items-center justify-content-center bg-info text-white rounded-circle" style="width: 24px; height: 24px; font-size: 11px;">SM</span>
+            <span class="oh-avatar oh-avatar--xs d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 24px; height: 24px; font-size: 11px; background-color: #e0f2fe; color: #0284c7; font-weight: 700;">SM</span>
             <span class="text-primary font-weight-medium" style="font-size: 14px;">Sarthak Mohanty</span>
           </div>
         </div>
@@ -248,131 +248,336 @@
 
       <!-- ABOUT SUMMARY VIEW -->
       <div class="row g-4" *ngIf="activeAboutSubTab() === 'summary'">
-        <!-- Left Side: Custom Questions & Readonly Profile Info -->
+        
+        <!-- Left Column (7 cols): Bio Highlights & Primary Info -->
         <div class="col-12 col-lg-7 d-flex flex-column gap-4">
-          <!-- Text Responses Card -->
-          <mat-card appearance="outlined" class="oh-panel">
-            <div class="card-body p-4 d-flex flex-column gap-4">
-              <!-- Q1 -->
-              <div>
-                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">About</h4>
-                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+          
+          <!-- Interactive Bio & Response Card -->
+          <mat-card appearance="outlined" class="oh-card-bleed shadow-sm border rounded-lg bg-white d-flex flex-column overflow-hidden">
+            <!-- Full-bleed Card Header -->
+            <div class="px-4 py-3 border-bottom d-flex align-items-center justify-content-between bg-white">
+              <div class="d-flex align-items-center gap-2">
+                <div class="oh-icon-badge oh-icon-badge--blue rounded-circle">
+                  <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 16px; font-family: Outfit, sans-serif;">Professional Bio & Highlights</h3>
               </div>
-              <hr class="my-0" style="margin-inline: -24px; opacity: 0.1;" />
-              <!-- Q2 -->
-              <div>
-                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">What I love about my job?</h4>
-                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+              <span class="badge bg-primary-soft text-primary px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight: 600;">Executive Summary</span>
+            </div>
+
+            <!-- Q1: About -->
+            <div class="p-4">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 14px;">
+                  <div class="oh-icon-badge oh-icon-badge--sm oh-icon-badge--teal rounded-circle">
+                    <i class="bi bi-file-earmark-person-fill"></i>
+                  </div>
+                  <span>About</span>
+                </h4>
+                <button type="button" class="btn btn-sm btn-light text-primary font-weight-semibold px-2.5 py-1 rounded d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" (click)="startEditBio('about')">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
               </div>
-              <hr class="my-0" style="margin-inline: -24px; opacity: 0.1;" />
-              <!-- Q3 -->
-              <div>
-                <h4 class="font-weight-bold text-dark mb-2" style="font-size: 15px;">My interests and hobbies</h4>
-                <button mat-stroked-button color="primary" class="oh-btn-small">Add your response</button>
+              
+              <div *ngIf="editingBioSection() !== 'about'; else editAboutForm">
+                <p class="text-muted mb-0 lh-base" style="font-size: 13px;" *ngIf="bioAbout(); else emptyAbout">
+                  {{ bioAbout() }}
+                </p>
+                <ng-template #emptyAbout>
+                  <button mat-stroked-button color="primary" class="oh-btn-small mt-1" (click)="startEditBio('about')">Add your response</button>
+                </ng-template>
               </div>
+              <ng-template #editAboutForm>
+                <div class="mt-2">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <textarea matInput rows="3" [(ngModel)]="tempBioInput" placeholder="Write a brief intro about your background..."></textarea>
+                  </mat-form-field>
+                  <div class="d-flex align-items-center gap-2 mt-2">
+                    <button mat-flat-button color="primary" class="oh-btn-small" (click)="saveBio('about')">Save</button>
+                    <button mat-stroked-button class="oh-btn-small" (click)="editingBioSection.set(null)">Cancel</button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Full-bleed Divider Line -->
+            <div class="border-top w-100"></div>
+
+            <!-- Q2: What I love about my job -->
+            <div class="p-4">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 14px;">
+                  <div class="oh-icon-badge oh-icon-badge--sm oh-icon-badge--rose rounded-circle">
+                    <i class="bi bi-heart-fill"></i>
+                  </div>
+                  <span>What I love about my job?</span>
+                </h4>
+                <button type="button" class="btn btn-sm btn-light text-primary font-weight-semibold px-2.5 py-1 rounded d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" (click)="startEditBio('love')">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+              </div>
+
+              <div *ngIf="editingBioSection() !== 'love'; else editLoveForm">
+                <p class="text-muted mb-0 lh-base" style="font-size: 13px;" *ngIf="bioLoveAboutJob(); else emptyLove">
+                  {{ bioLoveAboutJob() }}
+                </p>
+                <ng-template #emptyLove>
+                  <button mat-stroked-button color="primary" class="oh-btn-small mt-1" (click)="startEditBio('love')">Add your response</button>
+                </ng-template>
+              </div>
+              <ng-template #editLoveForm>
+                <div class="mt-2">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <textarea matInput rows="3" [(ngModel)]="tempBioInput" placeholder="Share what drives your passion at work..."></textarea>
+                  </mat-form-field>
+                  <div class="d-flex align-items-center gap-2 mt-2">
+                    <button mat-flat-button color="primary" class="oh-btn-small" (click)="saveBio('love')">Save</button>
+                    <button mat-stroked-button class="oh-btn-small" (click)="editingBioSection.set(null)">Cancel</button>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Full-bleed Divider Line -->
+            <div class="border-top w-100"></div>
+
+            <!-- Q3: My interests and hobbies -->
+            <div class="p-4">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <h4 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 14px;">
+                  <div class="oh-icon-badge oh-icon-badge--sm oh-icon-badge--amber rounded-circle">
+                    <i class="bi bi-palette-fill"></i>
+                  </div>
+                  <span>My interests & hobbies</span>
+                </h4>
+                <button type="button" class="btn btn-sm btn-light text-primary font-weight-semibold px-2.5 py-1 rounded d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" (click)="startEditBio('hobbies')">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+              </div>
+
+              <div *ngIf="editingBioSection() !== 'hobbies'; else editHobbiesForm">
+                <p class="text-muted mb-0 lh-base" style="font-size: 13px;" *ngIf="bioHobbies(); else emptyHobbies">
+                  {{ bioHobbies() }}
+                </p>
+                <ng-template #emptyHobbies>
+                  <button mat-stroked-button color="primary" class="oh-btn-small mt-1" (click)="startEditBio('hobbies')">Add your response</button>
+                </ng-template>
+              </div>
+              <ng-template #editHobbiesForm>
+                <div class="mt-2">
+                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                    <textarea matInput rows="3" [(ngModel)]="tempBioInput" placeholder="List your favorite activities, hobbies, or passions..."></textarea>
+                  </mat-form-field>
+                  <div class="d-flex align-items-center gap-2 mt-2">
+                    <button mat-flat-button color="primary" class="oh-btn-small" (click)="saveBio('hobbies')">Save</button>
+                    <button mat-stroked-button class="oh-btn-small" (click)="editingBioSection.set(null)">Cancel</button>
+                  </div>
+                </div>
+              </ng-template>
             </div>
           </mat-card>
 
-          <!-- Read-only Primary Details Card -->
-          <mat-card appearance="outlined" class="oh-panel">
-            <div class="card-header border-bottom bg-transparent py-3 px-4">
-              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Primary Details</h3>
+          <!-- Primary & Personal Details Card -->
+          <mat-card appearance="outlined" class="oh-card-bleed shadow-sm border rounded-lg bg-white overflow-hidden">
+            <!-- Full-bleed Card Header -->
+            <div class="px-4 py-3 border-bottom d-flex align-items-center justify-content-between bg-white">
+              <div class="d-flex align-items-center gap-2">
+                <div class="oh-icon-badge oh-icon-badge--indigo rounded-circle">
+                  <i class="bi bi-card-heading"></i>
+                </div>
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 16px; font-family: Outfit, sans-serif;">Personal & Primary Details</h3>
+              </div>
+              <span class="badge bg-success-soft text-success px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight: 600;">Verified HR Records</span>
             </div>
-            <div class="card-body p-4">
+
+            <div class="p-4">
               <div class="row g-3">
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">First Name</span>
-                  <span class="oh-field-value">{{ firstName() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">First Name</span>
+                    <span class="font-weight-bold text-dark d-block" style="font-size: 13px;">{{ firstName() }}</span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Last Name</span>
-                  <span class="oh-field-value">{{ lastName() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Last Name</span>
+                    <span class="font-weight-bold text-dark d-block" style="font-size: 13px;">{{ lastName() }}</span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Gender</span>
-                  <span class="oh-field-value">{{ gender() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Gender</span>
+                    <span class="font-weight-bold text-dark d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                      <i class="bi bi-gender-male text-primary"></i> {{ gender() }}
+                    </span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Date of Birth</span>
-                  <span class="oh-field-value">{{ dob() | date:'dd MMM yyyy' }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Date of Birth</span>
+                    <span class="font-weight-bold text-dark d-block" style="font-size: 13px;">{{ dob() | date:'dd MMM yyyy' }}</span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Marital Status</span>
-                  <span class="oh-field-value">{{ maritalStatus() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Marital Status</span>
+                    <span class="font-weight-bold text-dark d-block" style="font-size: 13px;">{{ maritalStatus() }}</span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Blood Group</span>
-                  <span class="oh-field-value">{{ bloodGroup() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Blood Group</span>
+                    <span class="font-weight-bold text-danger d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                      <i class="bi bi-droplet-fill"></i> {{ bloodGroup() }}
+                    </span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Physically Handicapped</span>
-                  <span class="oh-field-value">{{ physicallyHandicapped() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Physically Handicapped</span>
+                    <span class="font-weight-bold text-dark d-block" style="font-size: 13px;">{{ physicallyHandicapped() }}</span>
+                  </div>
                 </div>
                 <div class="col-6 col-md-4">
-                  <span class="oh-field-label">Nationality</span>
-                  <span class="oh-field-value">{{ nationality() }}</span>
+                  <div class="p-3 px-3.5 rounded bg-light border" style="border-color: #e2e8f0 !important;">
+                    <span class="text-muted d-block mb-1" style="font-size: 10.5px; font-weight: 700; text-transform: uppercase;">Nationality</span>
+                    <span class="font-weight-bold text-dark d-inline-flex align-items-center gap-1" style="font-size: 13px;">
+                      <i class="bi bi-globe2 text-primary"></i> {{ nationality() }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </mat-card>
+
         </div>
 
-        <!-- Right Side: Skills Management Card -->
-        <div class="col-12 col-lg-5">
-          <mat-card appearance="outlined" class="oh-panel h-100">
-            <div class="card-header border-bottom bg-transparent py-3 px-4 d-flex align-items-center justify-content-between">
-              <h3 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">Skills</h3>
-              <button mat-icon-button color="primary" matTooltip="Add Skill" (click)="showAddSkillForm.set(!showAddSkillForm())">
-                <i class="bi" [class.bi-x-lg]="showAddSkillForm()" [class.bi-plus-lg]="!showAddSkillForm()" aria-hidden="true"></i>
-              </button>
+        <!-- Right Column (5 cols): Skills & Strengths Management Card -->
+        <div class="col-12 col-lg-5 d-flex flex-column gap-4">
+          
+          <!-- Skills Card -->
+          <mat-card appearance="outlined" class="oh-card-bleed shadow-sm border rounded-lg bg-white overflow-hidden d-flex flex-column">
+            <!-- Full-bleed Card Header -->
+            <div class="px-4 py-3 border-bottom d-flex align-items-center justify-content-between bg-white">
+              <div class="d-flex align-items-center gap-2">
+                <div class="oh-icon-badge oh-icon-badge--emerald rounded-circle">
+                  <i class="bi bi-stars"></i>
+                </div>
+                <h3 class="font-weight-bold text-dark mb-0" style="font-size: 16px; font-family: Outfit, sans-serif;">Skills & Expertise</h3>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary-soft text-primary px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight: 600;">{{ skills().length }} Skills</span>
+                <button type="button" class="btn btn-sm btn-light text-primary font-weight-semibold p-1 px-2 rounded" (click)="showAddSkillForm.set(!showAddSkillForm())" matTooltip="Add New Skill">
+                  <i class="bi" [class.bi-x-lg]="showAddSkillForm()" [class.bi-plus-lg]="!showAddSkillForm()"></i>
+                </button>
+              </div>
             </div>
-            
-            <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center min-vh-25">
-              
+
+            <!-- Skills Content Body -->
+            <div class="p-4">
               <!-- Add Skill Input Inline -->
-              <div class="w-100 mb-3" *ngIf="showAddSkillForm()">
-                <div class="d-flex align-items-end gap-2">
-                  <div class="oh-field flex-grow-1">
-                    <label class="oh-label oh-label--tight" for="newSkillInput">Skill name</label>
-                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                      <input matInput id="newSkillInput" placeholder="Type skill name..." [(ngModel)]="newSkillText" (keyup.enter)="addSkill()" />
-                    </mat-form-field>
-                  </div>
-                  <button mat-flat-button color="primary" class="h-auto" (click)="addSkill()">Add</button>
+              <div class="mb-3 p-3 rounded bg-light border" *ngIf="showAddSkillForm()" style="animation: slideDown 0.2s ease-out;">
+                <label class="oh-label oh-label--tight mb-1" for="newSkillInput">Add Skill Name</label>
+                <div class="d-flex align-items-center gap-2">
+                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                    <input matInput id="newSkillInput" placeholder="e.g. Angular 19, TypeScript, Docker..." [(ngModel)]="newSkillText" (keyup.enter)="addSkill()" />
+                  </mat-form-field>
+                  <button mat-flat-button color="primary" class="oh-skill-add-btn flex-shrink-0" (click)="addSkill()">Add</button>
                 </div>
               </div>
 
-              <!-- Skills List -->
-              <div class="w-100 d-flex flex-wrap gap-2" *ngIf="skills().length > 0; else emptySkills">
-                <span *ngFor="let s of skills()" class="badge rounded-pill bg-light text-dark px-3 py-2 border d-inline-flex align-items-center gap-2" style="font-size: 13px;">
+              <!-- Skills List Grid / Pills -->
+              <div class="d-flex flex-wrap gap-2" *ngIf="skills().length > 0; else emptySkills">
+                <span *ngFor="let s of skills()" class="badge rounded-pill bg-light text-dark px-3 py-2 border d-inline-flex align-items-center gap-2 shadow-xs" style="font-size: 12.5px; font-weight: 600; border-color: #cbd5e1 !important;">
+                  <i class="bi bi-check-circle-fill text-success" style="font-size: 12px;"></i>
                   <span>{{ s }}</span>
-                  <i class="bi bi-x-circle text-danger cursor-pointer" (click)="removeSkill(s)" matTooltip="Remove"></i>
+                  <i class="bi bi-x text-muted hover-danger cursor-pointer ms-1" (click)="removeSkill(s)" matTooltip="Remove Skill" style="font-size: 14px;"></i>
                 </span>
               </div>
 
-              <!-- Empty State -->
               <ng-template #emptySkills>
                 <div class="text-center py-4">
-                  <!-- Custom corporate-friendly smiley outline graphic -->
-                  <svg width="84" height="84" viewBox="0 0 100 100" fill="none" class="mb-3 text-muted mx-auto" opacity="0.6">
-                    <circle cx="50" cy="50" r="36" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4" />
-                    <circle cx="50" cy="50" r="24" stroke="#94a3b8" stroke-width="2.5" />
-                    <circle cx="43" cy="46" r="2.5" fill="#94a3b8" />
-                    <circle cx="57" cy="46" r="2.5" fill="#94a3b8" />
-                    <path d="M 42 58 C 45 53, 55 53, 58 58" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" />
-                  </svg>
-                  <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">No skills added yet :(</h4>
-                  <p class="text-muted mb-3" style="font-size: 12.5px;">Showcase your skills to your colleagues!</p>
-                  <button mat-stroked-button color="primary" (click)="showAddSkillForm.set(true)">
-                    <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                    Add Skills
+                  <i class="bi bi-stars text-muted mb-2 d-block" style="font-size: 32px;"></i>
+                  <p class="text-muted mb-2" style="font-size: 13px;">No skills added yet.</p>
+                  <button mat-stroked-button color="primary" class="oh-btn-small" (click)="showAddSkillForm.set(true)">
+                    <i class="bi bi-plus-lg me-1"></i> Add Skills
                   </button>
                 </div>
               </ng-template>
+            </div>
 
+            <!-- Full-bleed Divider Line -->
+            <div class="border-top w-100"></div>
+
+            <!-- Language Proficiency Sub-block -->
+            <div class="p-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2" style="font-size: 14px;">
+                  <div class="oh-icon-badge oh-icon-badge--sm oh-icon-badge--violet rounded-circle">
+                    <i class="bi bi-translate"></i>
+                  </div>
+                  <span>Languages Spoken</span>
+                </h4>
+                <button type="button" class="btn btn-sm btn-light text-primary font-weight-semibold p-1 px-2.5 rounded d-inline-flex align-items-center gap-1" style="font-size: 11.5px;" (click)="showAddLanguageForm.set(!showAddLanguageForm())" matTooltip="Add New Language">
+                  <i class="bi" [class.bi-x-lg]="showAddLanguageForm()" [class.bi-plus-lg]="!showAddLanguageForm()"></i>
+                  <span>{{ showAddLanguageForm() ? 'Close' : 'Add' }}</span>
+                </button>
+              </div>
+
+              <!-- Add Language Inline Form -->
+              <div class="mb-3 p-3 rounded bg-light border" *ngIf="showAddLanguageForm()" style="animation: slideDown 0.2s ease-out;">
+                <div class="row g-2">
+                  <div class="col-12 col-sm-6">
+                    <label class="oh-label oh-label--tight mb-1" for="newLangInput">Language</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput id="newLangInput" placeholder="e.g. Spanish, German..." [(ngModel)]="newLanguageName" (keyup.enter)="addLanguage()" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <label class="oh-label oh-label--tight mb-1" for="newLangProf">Proficiency</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <mat-select id="newLangProf" [(ngModel)]="newLanguageProficiency">
+                        <mat-option value="Native / Mother Tongue">Native / Mother Tongue</mat-option>
+                        <mat-option value="Professional Fluent">Professional Fluent</mat-option>
+                        <mat-option value="Conversational">Conversational</mat-option>
+                        <mat-option value="Basic">Basic</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                    <button mat-stroked-button class="oh-btn-small" (click)="showAddLanguageForm.set(false)">Cancel</button>
+                    <button mat-flat-button color="primary" class="oh-btn-small" (click)="addLanguage()">Save Language</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Languages List -->
+              <div class="d-flex flex-column gap-3" *ngIf="languagesSpoken().length > 0; else emptyLangs">
+                <div *ngFor="let lang of languagesSpoken(); let i = index"
+                     class="d-flex align-items-center justify-content-between p-3 rounded bg-white border">
+                  <span class="font-weight-semibold text-dark" style="font-size: 13px;">{{ lang.name }}</span>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge px-2.5 py-1 rounded" style="font-size: 11px; font-weight: 600; border-radius: 4px !important;"
+                          [style.background-color]="getLangColor(i).border + '44'"
+                          [style.color]="getLangColor(i).text">{{ lang.proficiency }}</span>
+                    <i class="bi bi-x hover-danger cursor-pointer ms-1 text-muted" (click)="removeLanguage(lang.name)" matTooltip="Remove Language" style="font-size: 16px;"></i>
+                  </div>
+                </div>
+              </div>
+
+              <ng-template #emptyLangs>
+                <div class="text-center py-3">
+                  <p class="text-muted mb-2" style="font-size: 12.5px;">No languages added yet.</p>
+                  <button mat-stroked-button color="primary" class="oh-btn-small" (click)="showAddLanguageForm.set(true)">
+                    <i class="bi bi-plus-lg me-1"></i> Add Languages
+                  </button>
+                </div>
+              </ng-template>
             </div>
           </mat-card>
+
         </div>
+
       </div>
 
       <!-- ABOUT TIMELINE VIEW -->
@@ -1287,14 +1492,14 @@
                 <div class="col-6">
                   <span class="oh-field-label">Reports To</span>
                   <div class="d-flex align-items-center gap-2 mt-1">
-                    <span class="oh-avatar oh-avatar--xs bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px;">SM</span>
+                    <span class="oh-avatar oh-avatar--xs rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px; background-color: #e0f2fe; color: #0284c7; font-weight: 700;">SM</span>
                     <span class="text-primary font-weight-medium" style="font-size: 13px;">Sarthak Mohanty</span>
                   </div>
                 </div>
                 <div class="col-6">
                   <span class="oh-field-label">L2 Manager</span>
                   <div class="d-flex align-items-center gap-2 mt-1">
-                    <span class="oh-avatar oh-avatar--xs bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px;">PR</span>
+                    <span class="oh-avatar oh-avatar--xs rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 11px; background-color: #fef3c7; color: #d97706; font-weight: 700;">PR</span>
                     <span class="text-primary font-weight-medium" style="font-size: 13px;">Prootham Reddy Toogata</span>
                   </div>
                 </div>
@@ -1414,244 +1619,386 @@
       </div>
     </div>
 
-    <!-- 4. DOCUMENTS TAB VIEW (HIGHLY DYNAMIC AND INTERACTIVE SIDEBAR CABINET) -->
+    <!-- 4. DOCUMENTS TAB VIEW (REDESIGNED HIGHLY DYNAMIC DOCUMENT VAULT) -->
     <div *ngSwitchCase="'documents'">
-      <div class="row g-4">
-        
-        <!-- Left Sidebar: Documents folders and search -->
-        <div class="col-12 col-md-3 d-flex flex-column gap-3">
-          <h3 class="font-weight-bold text-dark mb-0 px-1" style="font-size: 16px; font-family: Outfit, sans-serif;">My Documents</h3>
-          
-          <!-- Search box -->
-          <div class="oh-field">
-            <label class="oh-label oh-label--tight" for="docSearchInput">Search documents</label>
-            <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-              <i matPrefix class="bi bi-search text-muted me-2" aria-hidden="true"></i>
-              <input matInput id="docSearchInput" placeholder="Search" [ngModel]="docSearchQuery()" (ngModelChange)="docSearchQuery.set($event)" />
-            </mat-form-field>
+      
+      <!-- Top Summary Header Banner -->
+      <div class="oh-doc-stats-banner mb-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-shield-check text-primary" style="font-size: 22px; line-height: 1;"></i>
           </div>
-
-          <!-- ACTIONS navigation link list -->
-          <div class="mt-2">
-            <span class="oh-field-label px-1">Actions</span>
-            <div class="d-flex flex-column gap-1">
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.bg-danger-soft]="selectedDocFolder() === 'pending'"
-                      [class.oh-profile-folder--pending-active]="selectedDocFolder() === 'pending'"
-                      [class.text-danger]="selectedDocFolder() === 'pending'"
-                      [class.text-dark]="selectedDocFolder() !== 'pending'"
-                      (click)="selectedDocFolder.set('pending')"
-                      style="font-size: 13px; font-weight: 600; background-color: var(--oh-card-bg);">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 14px;"></i>
-                  <span>Upload pending</span>
-                </span>
-                <span class="badge rounded bg-danger text-white px-1.5 py-0.5" style="font-size: 10px;">{{ pendingDocsCount() }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- FOLDERS list -->
-          <div class="mt-2">
-            <span class="oh-field-label px-1">Folders</span>
-            <div class="d-flex flex-column gap-1">
-              <!-- Folder: Educational Details -->
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.oh-profile-folder--active]="selectedDocFolder() === 'education'"
-                      [class.text-dark]="selectedDocFolder() !== 'education'"
-                      (click)="selectedDocFolder.set('education')"
-                      style="font-size: 13px; font-weight: 500;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-mortarboard text-muted" style="font-size: 15px;"></i>
-                  <span>Educational Details</span>
-                </span>
-                <span class="text-muted" style="font-size: 11px;">1 document</span>
-              </button>
-
-              <!-- Folder: Previous Experience -->
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.oh-profile-folder--active]="selectedDocFolder() === 'experience'"
-                      [class.text-dark]="selectedDocFolder() !== 'experience'"
-                      (click)="selectedDocFolder.set('experience')"
-                      style="font-size: 13px; font-weight: 500;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-briefcase text-muted" style="font-size: 15px;"></i>
-                  <span>Previous Experience</span>
-                </span>
-                <span class="text-muted" style="font-size: 11px;">1 document</span>
-              </button>
-
-              <!-- Folder: Identity -->
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.oh-profile-folder--active]="selectedDocFolder() === 'identity'"
-                      [class.text-dark]="selectedDocFolder() !== 'identity'"
-                      (click)="selectedDocFolder.set('identity')"
-                      style="font-size: 13px; font-weight: 500;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-person-bounding-box text-muted" style="font-size: 14px;"></i>
-                  <span>Identity</span>
-                </span>
-                <span class="text-muted" style="font-size: 11px;">5 documents</span>
-              </button>
-
-              <!-- Folder: Insurance Cards -->
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.oh-profile-folder--active]="selectedDocFolder() === 'insurance'"
-                      [class.text-dark]="selectedDocFolder() !== 'insurance'"
-                      (click)="selectedDocFolder.set('insurance')"
-                      style="font-size: 13px; font-weight: 500;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-shield-check text-muted" style="font-size: 15px;"></i>
-                  <span>Insurance Cards</span>
-                </span>
-                <span class="text-muted" style="font-size: 11px;">2 documents</span>
-              </button>
-
-              <!-- Folder: Signatures -->
-              <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
-                      [class.oh-profile-folder--active]="selectedDocFolder() === 'signatures'"
-                      [class.text-dark]="selectedDocFolder() !== 'signatures'"
-                      (click)="selectedDocFolder.set('signatures')"
-                      style="font-size: 13px; font-weight: 500;">
-                <span class="d-flex align-items-center gap-2">
-                  <i class="bi bi-pencil-square text-muted" style="font-size: 15px;"></i>
-                  <span>Signatures</span>
-                </span>
-                <span class="text-muted" style="font-size: 11px;">{{ signaturesList().length }} signatures</span>
-              </button>
-            </div>
+          <div>
+            <h3 class="text-white font-weight-bold mb-1" style="font-size: 17px; font-family: Outfit, sans-serif;">Document Vault & Verification</h3>
+            <p class="text-light opacity-75 mb-0" style="font-size: 12.5px;">Manage, verify, and upload official employee credentials and identity records.</p>
           </div>
         </div>
 
-        <!-- Center Column: Main document lists -->
-        <div class="col-12 col-md-6 col-xl-6 d-flex flex-column gap-3">
+        <div class="d-flex align-items-center flex-wrap gap-2.5">
+          <!-- Stat Chip: Total -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(56, 189, 248, 0.2); color: #38bdf8;">
+              <i class="bi bi-folder-fill"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ totalDocsCount() }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Total Docs</span>
+            </div>
+          </div>
+          <!-- Stat Chip: Verified -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(74, 222, 128, 0.2); color: #4ade80;">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ verifiedDocsCount() }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Verified</span>
+            </div>
+          </div>
+          <!-- Stat Chip: Pending -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(251, 191, 36, 0.2); color: #fbbf24;">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ pendingDocsCount() }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Pending</span>
+            </div>
+          </div>
+          <!-- Primary Action: Add Custom Document -->
+          <button type="button" class="btn btn-light text-primary font-weight-semibold ms-md-2 px-3 shadow-sm d-inline-flex align-items-center gap-2" style="height: 36px; border-radius: 6px;" (click)="openAddCustomDoc()">
+            <i class="bi bi-cloud-upload-fill text-primary" style="font-size: 15px; line-height: 1;"></i>
+            <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;">Add Document</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Layout: 3 : 9 Ratio -->
+      <div class="row g-4">
+        
+        <!-- Left Sidebar: Folders and Search wrapped in mat-card -->
+        <div class="col-12 col-lg-3">
+          <mat-card class="shadow-sm border p-3 rounded-lg d-flex flex-column gap-3 bg-white">
+            
+            <!-- Search Box -->
+            <div class="oh-field">
+              <label class="oh-label oh-label--tight" for="docSearchInput">Search documents</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <i matPrefix class="bi bi-search text-muted me-2" aria-hidden="true"></i>
+                <input matInput id="docSearchInput" placeholder="Search by name or number..." [ngModel]="docSearchQuery()" (ngModelChange)="docSearchQuery.set($event)" />
+                <button *ngIf="docSearchQuery()" matSuffix mat-icon-button (click)="docSearchQuery.set('')" class="text-muted" style="width: 28px; height: 28px;">
+                  <i class="bi bi-x" style="font-size: 18px;"></i>
+                </button>
+              </mat-form-field>
+            </div>
+
+            <!-- ACTIONS section -->
+            <div>
+              <span class="oh-field-label px-1">Actions</span>
+              <div class="d-flex flex-column gap-1">
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.bg-danger-soft]="selectedDocFolder() === 'pending'"
+                        [class.oh-profile-folder--pending-active]="selectedDocFolder() === 'pending'"
+                        [class.text-danger]="selectedDocFolder() === 'pending'"
+                        [class.text-dark]="selectedDocFolder() !== 'pending'"
+                        (click)="selectedDocFolder.set('pending')"
+                        style="font-size: 13px; font-weight: 600; background-color: var(--oh-card-bg);">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 14px;"></i>
+                    <span>Upload pending</span>
+                  </span>
+                  <span class="badge rounded bg-danger text-white px-2 py-0.5" style="font-size: 10.5px;">{{ pendingDocsCount() }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- FOLDERS list -->
+            <div>
+              <span class="oh-field-label px-1">Folders</span>
+              <div class="d-flex flex-column gap-1">
+                
+                <!-- All Documents -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'all'"
+                        [class.text-dark]="selectedDocFolder() !== 'all'"
+                        (click)="selectedDocFolder.set('all')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-folder2-open" style="font-size: 15px;"></i>
+                    <span>All Documents</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ documentsList().length }}</span>
+                </button>
+
+                <!-- Identity -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'identity'"
+                        [class.text-dark]="selectedDocFolder() !== 'identity'"
+                        (click)="selectedDocFolder.set('identity')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-bounding-box" style="font-size: 14px;"></i>
+                    <span>Identity</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ getFilteredDocs('identity').length }}</span>
+                </button>
+
+                <!-- Educational Details -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'education'"
+                        [class.text-dark]="selectedDocFolder() !== 'education'"
+                        (click)="selectedDocFolder.set('education')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-mortarboard" style="font-size: 15px;"></i>
+                    <span>Educational Details</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ getFilteredDocs('education').length }}</span>
+                </button>
+
+                <!-- Previous Experience -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'experience'"
+                        [class.text-dark]="selectedDocFolder() !== 'experience'"
+                        (click)="selectedDocFolder.set('experience')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-briefcase" style="font-size: 15px;"></i>
+                    <span>Previous Experience</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ getFilteredDocs('experience').length }}</span>
+                </button>
+
+                <!-- Insurance Cards -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'insurance'"
+                        [class.text-dark]="selectedDocFolder() !== 'insurance'"
+                        (click)="selectedDocFolder.set('insurance')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check" style="font-size: 15px;"></i>
+                    <span>Insurance Cards</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ getFilteredDocs('insurance').length }}</span>
+                </button>
+
+                <!-- Signatures -->
+                <button type="button" class="btn btn-block text-start border-0 py-2 px-3 d-flex align-items-center justify-content-between rounded-md oh-profile-folder"
+                        [class.oh-profile-folder--active]="selectedDocFolder() === 'signatures'"
+                        [class.text-dark]="selectedDocFolder() !== 'signatures'"
+                        (click)="selectedDocFolder.set('signatures')"
+                        style="font-size: 13px; font-weight: 500;">
+                  <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square" style="font-size: 15px;"></i>
+                    <span>Signatures</span>
+                  </span>
+                  <span class="badge rounded-pill bg-light text-muted px-2" style="font-size: 11px;">{{ signaturesList().length }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Security Badge Card -->
+            <div class="mt-2 p-3 border rounded-lg bg-light d-flex align-items-center gap-3">
+              <i class="bi bi-shield-lock text-success" style="font-size: 24px;"></i>
+              <div>
+                <h6 class="font-weight-bold text-dark mb-0" style="font-size: 12px;">256-Bit Encrypted Vault</h6>
+                <p class="text-muted mb-0" style="font-size: 11px;">Restricted access & secure storage</p>
+              </div>
+            </div>
+
+          </mat-card>
+        </div>
+
+        <!-- Right Content Area: col-12 col-lg-9 wrapped in mat-card -->
+        <div class="col-12 col-lg-9">
+          <mat-card class="shadow-sm border p-4 rounded-lg d-flex flex-column gap-3 bg-white">
           
-          <!-- Section title -->
-          <div>
-            <h3 class="font-weight-bold text-dark mb-1" style="font-size: 16px;">
-              <span *ngIf="selectedDocFolder() === 'pending'">Documents pending for upload</span>
-              <span *ngIf="selectedDocFolder() === 'education'">Educational Details</span>
-              <span *ngIf="selectedDocFolder() === 'experience'">Previous Experience</span>
-              <span *ngIf="selectedDocFolder() === 'identity'">Identity Documents</span>
-              <span *ngIf="selectedDocFolder() === 'insurance'">Insurance Cards</span>
-              <span *ngIf="selectedDocFolder() === 'signatures'">Signatures</span>
-            </h3>
-            <p class="text-muted mb-0 d-flex align-items-center gap-2" style="font-size: 12.5px;">
-              <span *ngIf="selectedDocFolder() !== 'signatures'">{{ getFilteredDocs(selectedDocFolder()).length }} documents</span>
-              <span *ngIf="selectedDocFolder() === 'signatures'">{{ signaturesList().length }} signatures</span>
-              <span *ngIf="selectedDocFolder() !== 'pending' && selectedDocFolder() !== 'signatures'" class="d-inline-flex align-items-center gap-1">
-                &middot; <i class="bi bi-lock-fill text-muted"></i> Restricted access
-              </span>
-            </p>
-            <p class="text-muted mt-2" style="font-size: 12.5px; line-height: 1.5;">
-              <span *ngIf="selectedDocFolder() === 'pending'">List of all the documents that need to be uploaded or verified.</span>
-              <span *ngIf="selectedDocFolder() === 'education'">This section contains details about your educational documents.</span>
-              <span *ngIf="selectedDocFolder() === 'experience'">Previous experience documents are required to know necessary details about an employee's previous work experience.</span>
-              <span *ngIf="selectedDocFolder() === 'identity'">Identity documents are documents that are issued by the governing authorities of a country / state and are used to verify the identity of a person.</span>
-              <span *ngIf="selectedDocFolder() === 'insurance'">View and reference your medical, life, and corporate insurance cards for policy claims.</span>
-              <span *ngIf="selectedDocFolder() === 'signatures'">Signatures can be used to digitally sign documents.</span>
-            </p>
+          <!-- Folder Header Bar -->
+          <div class="d-flex align-items-center justify-content-between pb-2 border-bottom">
+            <div>
+              <h3 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2" style="font-size: 17px;">
+                <span *ngIf="selectedDocFolder() === 'all'">All Documents</span>
+                <span *ngIf="selectedDocFolder() === 'pending'">Documents Pending Upload</span>
+                <span *ngIf="selectedDocFolder() === 'education'">Educational Details</span>
+                <span *ngIf="selectedDocFolder() === 'experience'">Previous Experience</span>
+                <span *ngIf="selectedDocFolder() === 'identity'">Identity Documents</span>
+                <span *ngIf="selectedDocFolder() === 'insurance'">Insurance Cards</span>
+                <span *ngIf="selectedDocFolder() === 'signatures'">Signatures</span>
+                <span class="badge bg-light text-dark border px-2 py-0.5 rounded-pill" style="font-size: 11px;">
+                  <span *ngIf="selectedDocFolder() !== 'signatures'">{{ getFilteredDocs(selectedDocFolder()).length }}</span>
+                  <span *ngIf="selectedDocFolder() === 'signatures'">{{ signaturesList().length }}</span>
+                </span>
+              </h3>
+              <p class="text-muted mb-0" style="font-size: 12.5px;">
+                <span *ngIf="selectedDocFolder() === 'all'">Complete repository of all verified and pending employee credentials.</span>
+                <span *ngIf="selectedDocFolder() === 'pending'">List of required employee documents that need verification or upload.</span>
+                <span *ngIf="selectedDocFolder() === 'education'">Degrees, certificates, and academic credentials.</span>
+                <span *ngIf="selectedDocFolder() === 'experience'">Experience letters, relieving documents, and past pay slips.</span>
+                <span *ngIf="selectedDocFolder() === 'identity'">Government-issued identification cards and passport details.</span>
+                <span *ngIf="selectedDocFolder() === 'insurance'">Medical, life, and corporate health insurance policy cards.</span>
+                <span *ngIf="selectedDocFolder() === 'signatures'">E-signatures used for digital document sign-offs.</span>
+              </p>
+            </div>
           </div>
 
-          <hr class="my-1" style="opacity: 0.1;" />
-
-          <!-- Dynamic document cabinet lists -->
+          <!-- Document Content List -->
           <div class="d-flex flex-column gap-3">
             
-            <!-- Standard Signatures Content Section -->
+            <!-- Signatures View -->
             <div *ngIf="selectedDocFolder() === 'signatures'" class="d-flex flex-column gap-3">
               <!-- Header Card -->
               <div class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
                 <div class="d-flex align-items-center gap-3">
-                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary-soft text-primary" style="width: 38px; height: 38px; background-color: var(--oh-primary-soft);">
-                    <i class="bi bi-pencil-fill" style="font-size: 16px; color: var(--oh-primary);"></i>
+                  <div class="oh-doc-icon oh-doc-icon--signature">
+                    <i class="bi bi-pen-fill"></i>
                   </div>
                   <div>
-                    <h4 class="text-dark font-weight-bold mb-0" style="font-size: 14px;">Signatures</h4>
-                    <p class="text-muted mb-0" style="font-size: 12px;">Signatures can be used to digitally sign documents.</p>
+                    <h4 class="text-dark font-weight-bold mb-0" style="font-size: 14px;">Digital Signatures</h4>
+                    <p class="text-muted mb-0" style="font-size: 12px;">Signatures can be used to digitally sign documents across the system.</p>
                   </div>
                 </div>
-                <button mat-button color="primary" type="button" class="oh-btn-small" (click)="openAddSignature()">
-                  <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <button mat-flat-button color="primary" type="button" class="oh-btn-small" (click)="openAddSignature()">
+                  <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
                   Add Signature
                 </button>
               </div>
 
-              <!-- Green Alert Banner if empty -->
-              <div *ngIf="signaturesList().length === 0" class="p-3 border rounded-md" style="background-color: #f0fdf4; border-color: #bbf7d0; color: #15803d; font-size: 13.5px; font-weight: 500;">
-                There are no signatures.
+              <!-- Empty Signatures State -->
+              <div *ngIf="signaturesList().length === 0" class="p-4 border rounded-lg bg-light text-center text-muted" style="font-size: 13px;">
+                No signatures uploaded yet. Click "Add Signature" to upload one.
               </div>
 
-              <!-- Signatures List if exists -->
-              <div *ngFor="let sig of signaturesList()" class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
+              <!-- Signatures Item List -->
+              <div *ngFor="let sig of signaturesList()" class="oh-doc-card p-3 d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-3">
-                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 36px; height: 36px;">
+                  <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
                     <i class="bi bi-pen-fill" style="font-size: 16px;"></i>
                   </div>
                   <div>
-                    <h5 class="text-dark font-weight-semibold mb-0" style="font-size: 13.5px;">{{ sig.name }}</h5>
-                    <span class="text-muted" style="font-size: 11.5px;">{{ sig.designation }} &middot; {{ sig.fileName }}</span>
+                    <h5 class="text-dark font-weight-bold mb-0" style="font-size: 14px;">{{ sig.name }}</h5>
+                    <span class="text-muted" style="font-size: 12px;">{{ sig.designation }} &middot; {{ sig.fileName }}</span>
                   </div>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                  <button mat-stroked-button class="oh-btn-small"><i class="bi bi-eye me-1"></i> View file</button>
-                  <button mat-icon-button color="warn" (click)="deleteSignature(sig.id)" matTooltip="Delete">
+                  <button mat-stroked-button class="oh-btn-small" (click)="triggerAlert('Viewing signature file ' + sig.fileName)"><i class="bi bi-eye me-1"></i> View File</button>
+                  <button mat-icon-button color="warn" (click)="deleteSignature(sig.id)" matTooltip="Delete Signature">
                     <i class="bi bi-trash" style="font-size: 18px;" aria-hidden="true"></i>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Standard Document cabinets list (excluding signatures) -->
+            <!-- Standard Documents Cabinets View -->
             <ng-container *ngIf="selectedDocFolder() !== 'signatures'">
+              
+              <!-- Empty State -->
               <div *ngIf="getFilteredDocs(selectedDocFolder()).length === 0" 
-                   class="p-4 border rounded-lg bg-light text-center text-muted" 
-                   style="font-size: 13px;">
-                No documents available or pending in this folder.
+                   class="p-5 border rounded-lg bg-white text-center text-muted shadow-sm" 
+                   style="font-size: 13.5px;">
+                <i class="bi bi-folder-x text-muted d-block mb-2" style="font-size: 32px;"></i>
+                No documents found in this folder matching your filter.
               </div>
 
-              <!-- Documents items loop -->
-              <div *ngFor="let doc of getFilteredDocs(selectedDocFolder())" class="border rounded-lg bg-white overflow-hidden shadow-sm" style="border: 1px solid var(--oh-border);">
+              <!-- Documents Cards Loop -->
+              <div *ngFor="let doc of getFilteredDocs(selectedDocFolder())" class="oh-doc-card overflow-hidden shadow-sm">
                 
-                <!-- Document Header Item Row -->
-                <div class="p-3 d-flex align-items-center justify-content-between">
+                <!-- Main Header Row -->
+                <div class="p-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3">
+                  
                   <div class="d-flex align-items-center gap-3">
-                    <!-- Red/Pink Document Icon wrapper -->
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" 
-                         style="width: 36px; height: 36px; background-color: #fff1f2; color: #f43f5e;">
-                      <i class="bi bi-file-earmark-pdf-fill" style="font-size: 16px;"></i>
+                    <!-- Icon based on doc category -->
+                    <div class="oh-doc-icon" [ngClass]="{
+                      'oh-doc-icon--identity': doc.category === 'identity' || ['aadhaar', 'pan', 'voter', 'license', 'passport'].includes(doc.id),
+                      'oh-doc-icon--education': doc.category === 'education' || doc.id.startsWith('edu_'),
+                      'oh-doc-icon--experience': doc.category === 'experience' || doc.id.startsWith('exp_'),
+                      'oh-doc-icon--insurance': doc.category === 'insurance' || doc.id.startsWith('ins_')
+                    }">
+                      <i class="bi" [ngClass]="{
+                        'bi-person-vcard-fill': doc.category === 'identity' || ['aadhaar', 'pan', 'voter', 'license', 'passport'].includes(doc.id),
+                        'bi-mortarboard-fill': doc.category === 'education' || doc.id.startsWith('edu_'),
+                        'bi-briefcase-fill': doc.category === 'experience' || doc.id.startsWith('exp_'),
+                        'bi-shield-plus': doc.category === 'insurance' || doc.id.startsWith('ins_')
+                      }"></i>
                     </div>
+
                     <div>
-                      <div class="d-flex align-items-center gap-2">
-                        <span class="text-dark font-weight-semibold" style="font-size: 13.5px;">{{ doc.name }}</span>
-                        <span *ngIf="doc.mandatory && doc.status === 'pending'" class="badge bg-warning-soft text-warning px-1.5 py-0.5 rounded" style="font-size: 9px; font-weight: 700;">Mandatory</span>
-                        <span *ngIf="doc.status === 'verified'" class="badge bg-success-soft text-success px-1.5 py-0.5 rounded" style="font-size: 9px; font-weight: 700;">Verified</span>
+                      <div class="d-flex align-items-center flex-wrap gap-2">
+                        <span class="text-dark font-weight-bold" style="font-size: 14px;">{{ doc.name }}</span>
+                        <!-- Status Pills -->
+                        <span *ngIf="doc.status === 'verified'" class="badge bg-success-soft text-success px-2 py-0.5 rounded-pill d-inline-flex align-items-center gap-1" style="font-size: 10px; font-weight: 700;">
+                          <i class="bi bi-check-circle-fill" style="font-size: 11px;"></i> Verified
+                        </span>
+                        <span *ngIf="doc.status === 'pending'" class="badge bg-warning-soft text-warning px-2 py-0.5 rounded-pill d-inline-flex align-items-center gap-1" style="font-size: 10px; font-weight: 700;">
+                          <i class="bi bi-exclamation-triangle-fill" style="font-size: 10px;"></i> Pending Upload
+                        </span>
+                        <span *ngIf="doc.mandatory && doc.status === 'pending'" class="badge bg-danger-soft text-danger px-1.5 py-0.5 rounded" style="font-size: 9.5px; font-weight: 700;">Mandatory</span>
                       </div>
+                      
+                      <!-- Subtitle info -->
+                      <p class="text-muted mb-0 mt-0.5" style="font-size: 12px;">
+                        <span *ngIf="doc.fileName"><i class="bi bi-paperclip me-1"></i>{{ doc.fileName }}</span>
+                        <span *ngIf="!doc.fileName && doc.status === 'pending'">Upload required for HR compliance</span>
+                      </p>
                     </div>
                   </div>
 
-                  <!-- Right Side action button -->
-                  <div class="d-flex align-items-center gap-2">
-                    <button mat-stroked-button color="primary" class="oh-btn-small"
+                  <!-- Right Action Buttons -->
+                  <div class="d-flex align-items-center gap-2 align-self-end align-self-sm-center">
+                    <!-- Action: Add / Upload for Pending -->
+                    <button mat-flat-button color="primary" class="oh-btn-small"
                             *ngIf="doc.status === 'pending' && activeDocAddForm() !== doc.id"
                             (click)="openAddDocForm(doc.id)">
-                      <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                      Add details
+                      <i class="bi bi-cloud-upload me-1" aria-hidden="true"></i>
+                      Upload & Add Details
                     </button>
-                    <button mat-stroked-button class="oh-btn-small" *ngIf="doc.status === 'verified' && doc.id.startsWith('ins_')">
-                      <i class="bi bi-eye me-1"></i> View file
+                    
+                    <!-- Action: View File for Verified -->
+                    <button mat-stroked-button color="primary" class="oh-btn-small" 
+                            *ngIf="doc.status === 'verified'"
+                            (click)="openPreviewDocument(doc)">
+                      <i class="bi bi-eye me-1"></i> View File
                     </button>
-                    <button mat-icon-button class="text-muted" *ngIf="doc.status === 'verified'">
-                      <i class="bi bi-three-dots-vertical" style="font-size: 18px;" aria-hidden="true"></i>
+
+                    <!-- Action: Edit for Verified -->
+                    <button mat-stroked-button class="oh-btn-small" 
+                            *ngIf="doc.status === 'verified' && activeDocAddForm() !== doc.id"
+                            (click)="openAddDocForm(doc.id)">
+                      <i class="bi bi-pencil me-1"></i> Edit
+                    </button>
+
+                    <!-- Delete button for custom docs -->
+                    <button mat-icon-button color="warn" *ngIf="doc.id.startsWith('custom_')" (click)="deleteDocument(doc.id)" matTooltip="Delete Document">
+                      <i class="bi bi-trash" style="font-size: 16px;"></i>
                     </button>
                   </div>
                 </div>
 
-                <!-- Inline verification / add details form expansion -->
-                <div class="px-4 pb-4 pt-1 border-top bg-light" *ngIf="activeDocAddForm() === doc.id" style="animation: slideDown 0.25s ease-out;">
-                  <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13px;">Configure {{ doc.name }} Details</h5>
-                  <div class="row g-2">
-                    <div class="col-6">
+                <!-- Form Expansion (when adding / editing details) -->
+                <div class="p-4 border-top bg-light" *ngIf="activeDocAddForm() === doc.id" style="animation: slideDown 0.25s ease-out;">
+                  <h5 class="font-weight-bold text-dark mb-3 d-flex align-items-center justify-content-between" style="font-size: 13.5px;">
+                    <span>Configure & Upload {{ doc.name }} Details</span>
+                    <button type="button" class="btn-close" (click)="activeDocAddForm.set(null)" aria-label="Close"></button>
+                  </h5>
+                  
+                  <div class="row g-3">
+                    
+                    <!-- File Upload Dropzone Field -->
+                    <div class="col-12">
+                      <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Document File Attachment</label>
+                      <div class="oh-upload-zone" [class.oh-upload-zone--has-file]="tempDocForm.fileName" (click)="docFileInput.click()">
+                        <i class="bi" [ngClass]="tempDocForm.fileName ? 'bi-file-earmark-check-fill text-success' : 'bi-cloud-arrow-up text-primary'" style="font-size: 28px;"></i>
+                        <div class="mt-1">
+                          <span class="font-weight-bold" [class.text-success]="tempDocForm.fileName" [class.text-primary]="!tempDocForm.fileName" style="font-size: 13px;">
+                            {{ tempDocForm.fileName || 'Click or drag file to browse & upload' }}
+                          </span>
+                        </div>
+                        <span class="text-muted d-block mt-0.5" style="font-size: 11px;">Supported formats: PDF, JPG, PNG (Max 10MB)</span>
+                        <input type="file" #docFileInput class="d-none" (change)="onDocFileSelected($event)" accept=".pdf,.png,.jpg,.jpeg" />
+                      </div>
+                    </div>
+
+                    <!-- Document Number -->
+                    <div class="col-12 col-md-6">
                       <div class="oh-field">
                         <label class="oh-label oh-label--tight" for="docNumberField">Document Number / ID</label>
                         <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
@@ -1659,7 +2006,9 @@
                         </mat-form-field>
                       </div>
                     </div>
-                    <div class="col-6">
+
+                    <!-- Holder Name -->
+                    <div class="col-12 col-md-6">
                       <div class="oh-field">
                         <label class="oh-label oh-label--tight" for="docHolderNameField">Name on Document</label>
                         <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
@@ -1667,9 +2016,11 @@
                         </mat-form-field>
                       </div>
                     </div>
-                    <div class="col-6">
+
+                    <!-- Date of Birth -->
+                    <div class="col-12 col-md-6">
                       <div class="oh-field">
-                        <label class="oh-label oh-label--tight" for="docDobField">Date of Birth</label>
+                        <label class="oh-label oh-label--tight" for="docDobField">Date of Birth / Issue Date</label>
                         <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
                           <input
                             matInput
@@ -1683,43 +2034,47 @@
                         </mat-form-field>
                       </div>
                     </div>
-                    <div class="col-6" *ngIf="doc.id === 'pan' || doc.id === 'aadhaar'">
+
+                    <!-- Parent / Institution Name -->
+                    <div class="col-12 col-md-6">
                       <div class="oh-field">
-                        <label class="oh-label oh-label--tight" for="docParentNameField">Parent / Guardian Name</label>
+                        <label class="oh-label oh-label--tight" for="docParentNameField">Parent / Board / Issuer Name</label>
                         <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                          <input matInput id="docParentNameField" [(ngModel)]="tempDocForm.parentName" />
+                          <input matInput id="docParentNameField" [(ngModel)]="tempDocForm.parentName" placeholder="e.g. Father's Name or Issuing Authority" />
                         </mat-form-field>
                       </div>
                     </div>
                   </div>
 
-                  <!-- Form Actions -->
-                  <div class="d-flex align-items-center gap-2 mt-3">
-                    <button mat-flat-button color="primary" class="oh-btn-small h-auto" (click)="saveDocumentDetails(doc.id)">Save details</button>
+                  <!-- Form Action Buttons -->
+                  <div class="d-flex align-items-center gap-2 mt-3 pt-2 border-top">
+                    <button mat-flat-button color="primary" class="oh-btn-small h-auto" (click)="saveDocumentDetails(doc.id)">
+                      <i class="bi bi-check-lg me-1"></i> Save & Verify
+                    </button>
                     <button mat-stroked-button class="oh-btn-small h-auto" (click)="activeDocAddForm.set(null)">Cancel</button>
                   </div>
                 </div>
 
-                <!-- Inline document details rendering (If verified & expanded) -->
-                <div class="p-3 border-top bg-light" *ngIf="doc.status === 'verified' && !doc.id.startsWith('ins_')">
-                  <div class="row g-2">
+                <!-- Verified Metadata Row (When Verified and Form Closed) -->
+                <div class="p-3 border-top bg-light" *ngIf="doc.status === 'verified' && activeDocAddForm() !== doc.id">
+                  <div class="row g-3">
                     <div class="col-6 col-md-3">
-                      <span class="oh-field-label" style="font-size: 9px;">Document Number</span>
+                      <span class="oh-field-label">Document Number</span>
                       <span class="oh-field-value d-inline-flex align-items-center gap-1">
-                        <span>{{ doc.docNumber }}</span>
-                        <i class="bi bi-info-circle-fill text-muted" style="font-size: 11px;" matTooltip="Masked for security"></i>
+                        <span>{{ doc.docNumber || 'Not Specified' }}</span>
+                        <i class="bi bi-lock-fill text-muted ms-1" style="font-size: 11px;" matTooltip="Secure & verified"></i>
                       </span>
                     </div>
                     <div class="col-6 col-md-3">
-                      <span class="oh-field-label" style="font-size: 9px;">Name</span>
-                      <span class="oh-field-value">{{ doc.holderName }}</span>
+                      <span class="oh-field-label">Name on Card</span>
+                      <span class="oh-field-value">{{ doc.holderName || displayName() }}</span>
                     </div>
                     <div class="col-6 col-md-3">
-                      <span class="oh-field-label" style="font-size: 9px;">Date of Birth</span>
-                      <span class="oh-field-value">{{ doc.dob }}</span>
+                      <span class="oh-field-label">Date of Birth / Issue</span>
+                      <span class="oh-field-value">{{ doc.dob || '1999-05-13' }}</span>
                     </div>
                     <div class="col-6 col-md-3" *ngIf="doc.parentName">
-                      <span class="oh-field-label" style="font-size: 9px;">Parent's Name</span>
+                      <span class="oh-field-label">Parent / Authority</span>
                       <span class="oh-field-value">{{ doc.parentName }}</span>
                     </div>
                   </div>
@@ -1727,202 +2082,425 @@
 
               </div>
             </ng-container>
+
           </div>
 
-        </div>
-
-        <!-- Right Column: Watermark clipboard illustration outline -->
-        <div class="col-12 col-md-3 col-xl-3 d-none d-md-flex align-items-center justify-content-center border-start ps-4" style="opacity: 0.85;">
-          <div class="text-center py-4">
-            <!-- Outline clipboard wireframe watermark -->
-            <svg width="180" height="220" viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Clipboard board outline -->
-              <rect x="35" y="45" width="130" height="180" rx="12" stroke="#e2e8f0" stroke-width="2.5" />
-              
-              <!-- Clip at top -->
-              <path d="M 80 45 L 80 32 C 80 28, 120 28, 120 32 L 120 45" stroke="#cbd5e1" stroke-width="2.5" stroke-linejoin="round" />
-              <rect x="75" y="40" width="50" height="10" rx="3" fill="#edf2f7" stroke="#cbd5e1" stroke-width="2" />
-              
-              <!-- Paper lines -->
-              <line x1="55" y1="75" x2="145" y2="75" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-              <line x1="55" y1="95" x2="125" y2="95" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-              
-              <line x1="55" y1="120" x2="145" y2="120" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-              <line x1="55" y1="140" x2="115" y2="140" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-              
-              <line x1="55" y1="165" x2="145" y2="165" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-              
-              <!-- Checkboxes wireframes -->
-              <rect x="55" y="185" width="10" height="10" rx="2" stroke="#cbd5e1" stroke-width="2" />
-              <line x1="72" y1="190" x2="145" y2="190" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" />
-
-              <!-- Pencil outline on left -->
-              <g transform="translate(-15, 20)">
-                <rect x="25" y="60" width="8" height="100" rx="2" stroke="#e2e8f0" stroke-width="2" transform="rotate(-15, 25, 60)" />
-                <path d="M 33 55 L 43 51 L 40 60 Z" fill="#edf2f7" stroke="#cbd5e1" stroke-width="1.8" />
-              </g>
-
-              <!-- Floating outline bubbles/shapes -->
-              <!-- Warning bubble top-left -->
-              <circle cx="20" cy="80" r="10" stroke="#e2e8f0" stroke-width="2" />
-              <path d="M 20 76 L 20 80 M 20 84 L 20 84.5" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" />
-
-              <!-- Speech bubble top-right -->
-              <path d="M 175 60 C 182 60, 185 64, 185 68 C 185 72, 182 76, 175 76 L 170 76 L 166 80 L 168 76" stroke="#cbd5e1" stroke-width="2" stroke-linejoin="round" />
-              <circle cx="172" cy="68" r="1" fill="#cbd5e1" />
-              <circle cx="176" cy="68" r="1" fill="#cbd5e1" />
-
-              <!-- Checkmark circle bottom-left -->
-              <circle cx="25" cy="225" r="10" stroke="#e2e8f0" stroke-width="2" />
-              <path d="M 21 225 L 24 228 L 29 222" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-
-              <!-- Clock bottom-right -->
-              <circle cx="175" cy="210" r="10" stroke="#e2e8f0" stroke-width="2" />
-              <path d="M 175 204 L 175 210 L 180 210" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <p class="text-muted mt-2" style="font-size: 11px;">Verification Secure Pipeline</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 5. ASSETS TAB VIEW -->
-    <div *ngSwitchCase="'assets'">
-      <!-- Sub-navigation tabs: Assigned assets | Asset requests | Asset damage charges -->
-      <div class="oh-profile-subtabs mb-4">
-        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'assigned'"
-                (click)="activeAssetsSubTab.set('assigned')">
-          Assigned assets
-        </button>
-        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'requests'"
-                (click)="activeAssetsSubTab.set('requests')">
-          Asset requests
-        </button>
-        <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'damage'"
-                (click)="activeAssetsSubTab.set('damage')">
-          Asset damage charges
-        </button>
-      </div>
-
-      <!-- SWITCH subview activeAssetsSubTab() -->
-      <div [ngSwitch]="activeAssetsSubTab()">
-        
-        <!-- Assigned Assets View -->
-        <div *ngSwitchCase="'assigned'">
-          <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Assigned Assets</h3>
-          <p class="text-muted mb-4" style="font-size: 12.5px;">Assets that are currently assigned to you.</p>
-
-          <mat-card appearance="outlined" class="oh-panel p-5 text-center bg-white border d-flex flex-column align-items-center justify-content-center" style="border: 1px solid var(--oh-border);">
-            <!-- Outlined robot / device face icon -->
-            <svg width="72" height="72" viewBox="0 0 100 100" fill="none" class="mb-3 text-muted mx-auto" opacity="0.6">
-              <!-- Robot box face -->
-              <rect x="25" y="35" width="50" height="38" rx="8" stroke="#94a3b8" stroke-width="2.2" />
-              <!-- Ears -->
-              <rect x="21" y="47" width="4" height="14" rx="2" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
-              <rect x="75" y="47" width="4" height="14" rx="2" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5" />
-              <!-- Antenna -->
-              <line x1="50" y1="35" x2="50" y2="25" stroke="#94a3b8" stroke-width="2.2" />
-              <circle cx="50" cy="22" r="3.5" stroke="#94a3b8" stroke-width="2.2" />
-              <!-- Eyes -->
-              <circle cx="41" cy="50" r="3" fill="#94a3b8" />
-              <circle cx="59" cy="50" r="3" fill="#94a3b8" />
-              <!-- Mouth line -->
-              <line x1="38" y1="62" x2="62" y2="62" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" />
-              <!-- Checkmarks / highlights -->
-              <circle cx="34" cy="62" r="1" fill="#94a3b8" />
-              <circle cx="66" cy="62" r="1" fill="#94a3b8" />
-            </svg>
-            <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">No Assets are present yet</h4>
-            <p class="text-muted mb-0" style="font-size: 12.5px;">Your assets will be shown here once they have been assigned to you</p>
           </mat-card>
         </div>
 
-        <!-- Asset Requests View -->
-        <div *ngSwitchCase="'requests'">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <div>
-              <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Requests</h3>
-              <p class="text-muted mb-0" style="font-size: 12.5px;">View or request company devices and inventory items.</p>
-            </div>
-            <button mat-flat-button color="primary" class="oh-btn-small h-auto py-1.5" (click)="showAddAssetRequestForm.set(!showAddAssetRequestForm())">
-              <i class="bi" [class.bi-x-lg]="showAddAssetRequestForm()" [class.bi-plus-lg]="!showAddAssetRequestForm()" aria-hidden="true"></i>
-              {{ showAddAssetRequestForm() ? 'Close Form' : 'Request Asset' }}
-            </button>
-          </div>
-
-          <!-- Add Asset Request Inline Block Form -->
-          <div class="border rounded-lg bg-light p-4 mb-4" *ngIf="showAddAssetRequestForm()" style="animation: slideDown 0.25s ease-out;">
-            <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13.5px;">Request New Device / Asset</h5>
-            <div class="row g-3">
-              <div class="col-6">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight" for="assetNameField">Asset Name</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="assetNameField" placeholder="e.g. MacBook Pro M3" [(ngModel)]="tempAssetRequest.assetName" />
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="col-6">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight" for="assetCategoryField">Asset Category</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <mat-select id="assetCategoryField" [(ngModel)]="tempAssetRequest.assetType">
-                      <mat-option value="Laptop">Laptop / Computer</mat-option>
-                      <mat-option value="Mobile">Mobile Phone</mat-option>
-                      <mat-option value="Monitor">External Monitor</mat-option>
-                      <mat-option value="Peripheral">Keyboard / Mouse / Peripherals</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight" for="assetJustificationField">Reason / Justification</label>
-                  <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-                    <textarea matInput id="assetJustificationField" rows="2" placeholder="Explain why this asset is required..." [(ngModel)]="tempAssetRequest.justification"></textarea>
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-            <div class="d-flex align-items-center gap-2 mt-3">
-              <button mat-flat-button color="primary" [disabled]="!tempAssetRequest.assetName.trim()" (click)="addAssetRequestSubmit()">Submit Request</button>
-              <button mat-stroked-button (click)="showAddAssetRequestForm.set(false)">Cancel</button>
-            </div>
-          </div>
-
-          <!-- Asset Requests List table/cards -->
-          <div *ngIf="assetRequestsList().length > 0; else emptyRequests" class="d-flex flex-column gap-2 mt-4">
-            <div *ngFor="let req of assetRequestsList()" class="border rounded-lg bg-white p-3 d-flex align-items-center justify-content-between" style="border: 1px solid var(--oh-border);">
-              <div>
-                <h5 class="text-dark font-weight-bold mb-1" style="font-size: 13.5px;">{{ req.assetName }}</h5>
-                <p class="text-muted mb-0" style="font-size: 12px;">Category: {{ req.assetType }} &middot; Requested on {{ req.requestDate | date:'dd MMM yyyy' }}</p>
-                <p class="text-muted mt-1 mb-0" style="font-size: 12px; font-style: italic;">"{{ req.justification }}"</p>
-              </div>
-              <span class="badge bg-warning-soft text-warning px-2.5 py-1 rounded" style="font-size: 11px;">PENDING</span>
-            </div>
-          </div>
-
-          <ng-template #emptyRequests>
-            <div class="p-5 border rounded-lg bg-white text-center text-muted" style="border: 1px solid var(--oh-border); font-size: 13px;">
-              No asset requests found.
-            </div>
-          </ng-template>
-        </div>
-
-        <!-- Asset Damage Charges View -->
-        <div *ngSwitchCase="'damage'">
-          <h3 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Damage Charges</h3>
-          <p class="text-muted mb-4" style="font-size: 12.5px;">View and resolve any damage charges related to assigned company assets.</p>
-
-          <div class="p-5 border rounded-lg bg-white text-center text-muted" style="border: 1px solid var(--oh-border); font-size: 13px;">
-            No damage charges reported.
-          </div>
-        </div>
-
       </div>
     </div>
 
+    <!-- 5. ASSETS TAB VIEW (REDESIGNED ASSET MANAGEMENT & INVENTORY) -->
+    <div *ngSwitchCase="'assets'">
+      
+      <!-- Top Summary Header Banner -->
+      <div class="oh-doc-stats-banner mb-4 d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px; flex-shrink: 0;">
+            <i class="bi bi-laptop text-primary" style="font-size: 22px; line-height: 1;"></i>
+          </div>
+          <div>
+            <h3 class="text-white font-weight-bold mb-1" style="font-size: 17px; font-family: Outfit, sans-serif;">Asset Management & Inventory</h3>
+            <p class="text-light opacity-75 mb-0" style="font-size: 12.5px;">Track assigned hardware devices, request new equipment, and report maintenance issues.</p>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center flex-wrap gap-2.5">
+          <!-- Stat Chip: Assigned -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(56, 189, 248, 0.2); color: #38bdf8;">
+              <i class="bi bi-cpu-fill"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ assignedAssetsList().length }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Assigned</span>
+            </div>
+          </div>
+          <!-- Stat Chip: Active -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(74, 222, 128, 0.2); color: #4ade80;">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ assignedAssetsList().length }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Active</span>
+            </div>
+          </div>
+          <!-- Stat Chip: Requests -->
+          <div class="oh-doc-stat-chip">
+            <div class="oh-stat-icon-wrap" style="background-color: rgba(251, 191, 36, 0.2); color: #fbbf24;">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="d-flex flex-column justify-content-center lh-1">
+              <span class="text-white font-weight-bold" style="font-size: 14px;">{{ assetRequestsList().length }}</span>
+              <span class="text-white-50" style="font-size: 10px; font-weight: 500; margin-top: 2px;">Requests</span>
+            </div>
+          </div>
+          <!-- Action: Request Asset -->
+          <button type="button" class="btn btn-light text-primary font-weight-semibold ms-md-2 px-3 shadow-sm d-inline-flex align-items-center gap-2" style="height: 36px; border-radius: 6px;" (click)="activeAssetsSubTab.set('requests'); showAddAssetRequestForm.set(true)">
+            <i class="bi bi-plus-circle-fill text-primary" style="font-size: 15px; line-height: 1;"></i>
+            <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;">Request Asset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Container wrapped in mat-card -->
+      <mat-card class="shadow-sm border p-4 rounded-lg bg-white d-flex flex-column gap-3">
+        
+        <!-- Sub-navigation tabs -->
+        <div class="oh-profile-subtabs mb-3">
+          <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'assigned'"
+                  (click)="activeAssetsSubTab.set('assigned')">
+            <i class="bi bi-laptop me-1.5"></i> Assigned Assets ({{ assignedAssetsList().length }})
+          </button>
+          <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'requests'"
+                  (click)="activeAssetsSubTab.set('requests')">
+            <i class="bi bi-file-earmark-plus me-1.5"></i> Asset Requests ({{ assetRequestsList().length }})
+          </button>
+          <button type="button" class="oh-profile-subtab" [class.oh-profile-subtab--active]="activeAssetsSubTab() === 'damage'"
+                  (click)="activeAssetsSubTab.set('damage')">
+            <i class="bi bi-tools me-1.5"></i> Maintenance & Damage Charges
+          </button>
+        </div>
+
+        <!-- SWITCH subview activeAssetsSubTab() -->
+        <div [ngSwitch]="activeAssetsSubTab()">
+          
+          <!-- Assigned Assets View -->
+          <div *ngSwitchCase="'assigned'">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Hardware & Equipment Assigned</h4>
+                <p class="text-muted mb-0" style="font-size: 12.5px;">List of IT hardware, workstations, and peripherals assigned to your employee account.</p>
+              </div>
+            </div>
+
+            <!-- Assets Grid Cards -->
+            <div *ngIf="assignedAssetsList().length > 0; else emptyAssigned" class="row g-3">
+              <div *ngFor="let asset of assignedAssetsList()" class="col-12 col-md-6 col-xl-6">
+                <div class="oh-asset-card p-4 d-flex flex-column justify-content-between h-100">
+                  <div>
+                    <!-- Top header row -->
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="oh-asset-icon" [ngClass]="{
+                          'oh-asset-icon--laptop': asset.category.includes('Laptop') || asset.category.includes('Workstation'),
+                          'oh-asset-icon--display': asset.category.includes('Display') || asset.category.includes('Monitor'),
+                          'oh-asset-icon--peripherals': asset.category.includes('Peripherals') || asset.category.includes('Keyboard'),
+                          'oh-asset-icon--audio': asset.category.includes('Audio') || asset.category.includes('Headset')
+                        }">
+                          <i class="bi" [ngClass]="{
+                            'bi-laptop': asset.category.includes('Laptop') || asset.category.includes('Workstation'),
+                            'bi-display': asset.category.includes('Display') || asset.category.includes('Monitor'),
+                            'bi-keyboard': asset.category.includes('Peripherals') || asset.category.includes('Keyboard'),
+                            'bi-headset': asset.category.includes('Audio') || asset.category.includes('Headset')
+                          }"></i>
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                          <h5 class="text-dark font-weight-bold mb-0.5" style="font-size: 14px; line-height: 1.3;">{{ asset.assetName }}</h5>
+                          <span class="text-muted" style="font-size: 11.5px; line-height: 1;">{{ asset.category }}</span>
+                        </div>
+                      </div>
+                      <span class="badge bg-success-soft text-success px-2.5 py-1 rounded-pill d-inline-flex align-items-center gap-1.5" style="font-size: 10px; font-weight: 700; flex-shrink: 0;">
+                        <span class="rounded-circle bg-success" style="width: 6px; height: 6px; display: inline-block;"></span> Active
+                      </span>
+                    </div>
+
+                    <!-- Asset details grid -->
+                    <div class="p-3 rounded bg-light border text-dark mb-3" style="font-size: 12px; border-color: #e2e8f0 !important;">
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <span class="text-muted d-block mb-0.5" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Asset Code</span>
+                          <span class="font-weight-semibold text-dark d-block" style="font-size: 12.5px;">{{ asset.assetCode }}</span>
+                        </div>
+                        <div class="col-6">
+                          <span class="text-muted d-block mb-0.5" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Serial Number</span>
+                          <span class="font-weight-semibold text-dark d-block" style="font-size: 12.5px;">{{ asset.serialNumber }}</span>
+                        </div>
+                        <div class="col-6">
+                          <span class="text-muted d-block mb-0.5" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Assigned Date</span>
+                          <span class="font-weight-semibold text-dark d-block" style="font-size: 12.5px;">{{ asset.assignedDate }}</span>
+                        </div>
+                        <div class="col-6">
+                          <span class="text-muted d-block mb-0.5" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;">Compliance</span>
+                          <span class="text-success font-weight-semibold d-inline-flex align-items-center gap-1" style="font-size: 12.5px;">
+                            <i class="bi bi-shield-check" style="font-size: 13px; line-height: 1;"></i> Verified
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Card Action Footer -->
+                  <div class="oh-asset-card__footer">
+                    <button mat-stroked-button color="primary" class="oh-btn-small" (click)="openPreviewAsset(asset)">
+                      <i class="bi bi-info-circle me-1" style="font-size: 13px; line-height: 1;"></i> Details
+                    </button>
+                    <button mat-stroked-button class="oh-btn-small text-muted" (click)="triggerAlert('Issue reporting requested for ' + asset.assetName)">
+                      <i class="bi bi-flag me-1" style="font-size: 13px; line-height: 1;"></i> Report Issue
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #emptyAssigned>
+              <div class="p-5 border rounded-lg bg-light text-center text-muted" style="font-size: 13px;">
+                <i class="bi bi-laptop-fill d-block mb-2 text-muted" style="font-size: 32px;"></i>
+                No assets are currently assigned to your account.
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Asset Requests View -->
+          <div *ngSwitchCase="'requests'">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Requests</h4>
+                <p class="text-muted mb-0" style="font-size: 12.5px;">Submit new asset requisitions or track existing requests.</p>
+              </div>
+              <button mat-flat-button color="primary" class="oh-btn-small" (click)="showAddAssetRequestForm.set(!showAddAssetRequestForm())">
+                <i class="bi me-1" [class.bi-x-lg]="showAddAssetRequestForm()" [class.bi-plus-lg]="!showAddAssetRequestForm()" aria-hidden="true"></i>
+                {{ showAddAssetRequestForm() ? 'Close Form' : 'Request New Asset' }}
+              </button>
+            </div>
+
+            <!-- Form -->
+            <div class="border rounded-lg bg-light p-4 mb-4" *ngIf="showAddAssetRequestForm()" style="animation: slideDown 0.25s ease-out;">
+              <h5 class="font-weight-bold text-dark mb-3" style="font-size: 13.5px;">Request New Device / Equipment</h5>
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label oh-label--tight" for="assetNameField">Asset Name / Model</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput id="assetNameField" placeholder="e.g. MacBook Pro M3 or Dell Monitor" [(ngModel)]="tempAssetRequest.assetName" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label oh-label--tight" for="assetCategoryField">Category</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <mat-select id="assetCategoryField" [(ngModel)]="tempAssetRequest.assetType">
+                        <mat-option value="Laptop">Laptop / Computer</mat-option>
+                        <mat-option value="Mobile">Mobile Phone</mat-option>
+                        <mat-option value="Monitor">External Monitor</mat-option>
+                        <mat-option value="Peripheral">Keyboard / Mouse / Peripherals</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="oh-field">
+                    <label class="oh-label oh-label--tight" for="assetJustificationField">Reason / Business Justification</label>
+                    <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                      <textarea matInput id="assetJustificationField" rows="2" placeholder="Explain why this equipment is required..." [(ngModel)]="tempAssetRequest.justification"></textarea>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 mt-3 pt-2 border-top">
+                <button mat-flat-button color="primary" class="oh-btn-small" [disabled]="!tempAssetRequest.assetName.trim()" (click)="addAssetRequestSubmit()">
+                  <i class="bi bi-send me-1"></i> Submit Requisition
+                </button>
+                <button mat-stroked-button class="oh-btn-small" (click)="showAddAssetRequestForm.set(false)">Cancel</button>
+              </div>
+            </div>
+
+            <!-- Asset Requests List -->
+            <div *ngIf="assetRequestsList().length > 0; else emptyRequests" class="d-flex flex-column gap-3">
+              <div *ngFor="let req of assetRequestsList()" class="oh-asset-card p-3.5 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="oh-asset-icon oh-asset-icon--laptop">
+                    <i class="bi bi-clock-history"></i>
+                  </div>
+                  <div>
+                    <h5 class="text-dark font-weight-bold mb-1" style="font-size: 14px;">{{ req.assetName }}</h5>
+                    <p class="text-muted mb-0" style="font-size: 12px;">Category: <strong>{{ req.assetType }}</strong> &middot; Requested on {{ req.requestDate | date:'dd MMM yyyy' }}</p>
+                    <p class="text-muted mt-1 mb-0" style="font-size: 12px; font-style: italic;">"{{ req.justification }}"</p>
+                  </div>
+                </div>
+                <span class="badge bg-warning-soft text-warning px-3 py-1 rounded-pill" style="font-size: 11px; font-weight: 700;">PENDING APPROVAL</span>
+              </div>
+            </div>
+
+            <ng-template #emptyRequests>
+              <div class="p-5 border rounded-lg bg-light text-center text-muted" style="font-size: 13px;">
+                <i class="bi bi-inbox d-block mb-2 text-muted" style="font-size: 32px;"></i>
+                No active asset requisitions found. Click "Request New Asset" to submit a request.
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Damage View -->
+          <div *ngSwitchCase="'damage'">
+            <h4 class="font-weight-bold text-dark mb-1" style="font-size: 15px;">Asset Damage & Maintenance Charges</h4>
+            <p class="text-muted mb-4" style="font-size: 12.5px;">View and resolve any damage charges or repair maintenance logged for assigned equipment.</p>
+
+            <div class="p-5 border rounded-lg bg-light text-center text-muted" style="font-size: 13px;">
+              <i class="bi bi-shield-check text-success d-block mb-2" style="font-size: 32px;"></i>
+              No damage or maintenance charges reported on your profile.
+            </div>
+          </div>
+
+        </div>
+
+      </mat-card>
+    </div>
+
+  </div>
+</div>
+
+<!-- Document Preview Modal Dialog -->
+<div class="oh-preview-overlay" *ngIf="previewDocumentModal()" (click)="closePreviewDocument()">
+  <div class="oh-preview-dialog" (click)="$event.stopPropagation()">
+    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-file-earmark-pdf-fill text-danger fs-4"></i>
+        <div>
+          <h4 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">{{ previewDocumentModal()?.name }}</h4>
+          <span class="badge bg-success-soft text-success px-2 py-0.5 rounded-pill" style="font-size: 10px;">Verified Document</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close" (click)="closePreviewDocument()" aria-label="Close"></button>
+    </div>
+
+    <div class="p-4">
+      <div class="oh-preview-mockup mb-3">
+        <div class="oh-preview-mockup__stamp">VERIFIED</div>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-weight: 700; font-size: 18px;">
+            {{ displayName().charAt(0) }}
+          </div>
+          <div>
+            <h5 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">{{ previewDocumentModal()?.holderName || displayName() }}</h5>
+            <p class="text-muted mb-0" style="font-size: 12px;">Document ID: <strong>{{ previewDocumentModal()?.docNumber }}</strong></p>
+          </div>
+        </div>
+
+        <div class="row g-2 pt-2 border-top" style="font-size: 12px;">
+          <div class="col-6">
+            <span class="text-muted d-block">File Name:</span>
+            <span class="font-weight-semibold text-dark">{{ previewDocumentModal()?.fileName || 'document_scan.pdf' }}</span>
+          </div>
+          <div class="col-6">
+            <span class="text-muted d-block">Date of Birth / Issue:</span>
+            <span class="font-weight-semibold text-dark">{{ previewDocumentModal()?.dob || '1999-05-13' }}</span>
+          </div>
+          <div class="col-12 mt-2" *ngIf="previewDocumentModal()?.parentName">
+            <span class="text-muted d-block">Issuing Authority / Parent:</span>
+            <span class="font-weight-semibold text-dark">{{ previewDocumentModal()?.parentName }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 border rounded-lg bg-light text-center">
+        <i class="bi bi-file-earmark-check text-success d-block mb-1" style="font-size: 24px;"></i>
+        <p class="text-muted mb-0" style="font-size: 12px;">This document has passed automated HR verification and encrypted vault storage.</p>
+      </div>
+    </div>
+
+    <div class="p-3 border-top bg-light d-flex align-items-center justify-content-between">
+      <button mat-button (click)="closePreviewDocument()">Close</button>
+      <button mat-flat-button color="primary" (click)="triggerAlert('Downloading ' + previewDocumentModal()?.fileName); closePreviewDocument()">
+        <i class="bi bi-download me-1"></i> Download File
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Custom Document Drawer Modal -->
+<div class="oh-modal-backdrop" *ngIf="showAddCustomDocModal()" (click)="showAddCustomDocModal.set(false)" style="z-index: 1100;">
+  <div class="oh-modal-content" (click)="$event.stopPropagation()">
+    <div class="oh-drawer-header d-flex align-items-center justify-content-between">
+      <h3 class="oh-heading-h3 mb-0 font-weight-bold" style="font-size: 16px; font-family: Outfit, sans-serif;">Add New Document</h3>
+      <button type="button" class="btn-close" (click)="showAddCustomDocModal.set(false)" aria-label="Close"></button>
+    </div>
+    
+    <div class="oh-drawer-body d-flex flex-column gap-3 flex-grow-1 overflow-auto">
+      
+      <!-- Document Name -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Document Title</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput placeholder="e.g. Passport Scan, Offer Letter" [(ngModel)]="tempCustomDoc.name" />
+        </mat-form-field>
+      </div>
+
+      <!-- Folder Category -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Folder Category</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="tempCustomDoc.category">
+            <mat-option value="identity">Identity Documents</mat-option>
+            <mat-option value="education">Educational Details</mat-option>
+            <mat-option value="experience">Previous Experience</mat-option>
+            <mat-option value="insurance">Insurance Cards</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- File Attachment Zone -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Upload File</label>
+        <div class="oh-upload-zone" [class.oh-upload-zone--has-file]="tempCustomDoc.fileName" (click)="customDocFileInput.click()">
+          <i class="bi" [ngClass]="tempCustomDoc.fileName ? 'bi-file-earmark-check-fill text-success' : 'bi-cloud-arrow-up text-primary'" style="font-size: 26px;"></i>
+          <span class="d-block mt-1 font-weight-bold" [class.text-success]="tempCustomDoc.fileName" [class.text-primary]="!tempCustomDoc.fileName" style="font-size: 12.5px;">
+            {{ tempCustomDoc.fileName || 'Attach document file (PDF, JPG, PNG)' }}
+          </span>
+          <input type="file" #customDocFileInput class="d-none" (change)="onCustomDocFileSelected($event)" accept=".pdf,.png,.jpg,.jpeg" />
+        </div>
+      </div>
+
+      <!-- Document Number -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Document Number / ID</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput placeholder="Enter ID number" [(ngModel)]="tempCustomDoc.docNumber" />
+        </mat-form-field>
+      </div>
+
+      <!-- Holder Name -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Name on Document</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput [(ngModel)]="tempCustomDoc.holderName" />
+        </mat-form-field>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Date of Birth / Issue Date</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input
+            matInput
+            [matDatepicker]="customDocDobPicker"
+            placeholder="Select date"
+            [(ngModel)]="tempCustomDocDob"
+          />
+          <mat-datepicker-toggle matSuffix [for]="customDocDobPicker"></mat-datepicker-toggle>
+          <mat-datepicker #customDocDobPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <!-- Parent / Issuing Authority -->
+      <div class="oh-field">
+        <label class="oh-label oh-label--tight mb-1" style="font-size: 12px; font-weight: 600;">Issuing Authority / Parent Name</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput placeholder="e.g. Passport Office / Board" [(ngModel)]="tempCustomDoc.parentName" />
+        </mat-form-field>
+      </div>
+    </div>
+    
+    <div class="oh-drawer-footer d-flex gap-2 justify-content-end">
+      <button mat-button type="button" (click)="showAddCustomDocModal.set(false)">Cancel</button>
+      <button mat-flat-button color="primary" type="button" 
+              [disabled]="!tempCustomDoc.name.trim()" 
+              (click)="addCustomDocSubmit()">
+        Upload Document
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1972,6 +2550,68 @@
               [disabled]="!tempSignatureForm.name.trim()" 
               (click)="addSignatureSubmit()">
         Add
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Asset Preview Modal Dialog -->
+<div class="oh-preview-overlay" *ngIf="previewAssetModal()" (click)="closePreviewAsset()">
+  <div class="oh-preview-dialog" (click)="$event.stopPropagation()">
+    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-laptop-fill text-primary fs-4"></i>
+        <div>
+          <h4 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">{{ previewAssetModal()?.assetName }}</h4>
+          <span class="badge bg-success-soft text-success px-2 py-0.5 rounded-pill" style="font-size: 10px;">HR & IT Verified</span>
+        </div>
+      </div>
+      <button type="button" class="btn-close" (click)="closePreviewAsset()" aria-label="Close"></button>
+    </div>
+
+    <div class="p-4">
+      <div class="oh-preview-mockup mb-3">
+        <div class="oh-preview-mockup__stamp" style="border-color: #0284c7; color: #0284c7;">ASSIGNED</div>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-weight: 700; font-size: 18px;">
+            {{ displayName().charAt(0) }}
+          </div>
+          <div>
+            <h5 class="font-weight-bold text-dark mb-0" style="font-size: 15px;">{{ displayName() }}</h5>
+            <p class="text-muted mb-0" style="font-size: 12px;">Asset Code: <strong>{{ previewAssetModal()?.assetCode }}</strong></p>
+          </div>
+        </div>
+
+        <div class="row g-2 pt-2 border-top" style="font-size: 12px;">
+          <div class="col-6">
+            <span class="text-muted d-block">Category:</span>
+            <span class="font-weight-semibold text-dark">{{ previewAssetModal()?.category }}</span>
+          </div>
+          <div class="col-6">
+            <span class="text-muted d-block">Serial Number:</span>
+            <span class="font-weight-semibold text-dark">{{ previewAssetModal()?.serialNumber }}</span>
+          </div>
+          <div class="col-6 mt-2">
+            <span class="text-muted d-block">Assigned Date:</span>
+            <span class="font-weight-semibold text-dark">{{ previewAssetModal()?.assignedDate }}</span>
+          </div>
+          <div class="col-6 mt-2">
+            <span class="text-muted d-block">Status:</span>
+            <span class="font-weight-semibold text-success text-uppercase">{{ previewAssetModal()?.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 border rounded-lg bg-light text-center">
+        <i class="bi bi-shield-lock-fill text-primary d-block mb-1" style="font-size: 24px;"></i>
+        <p class="text-muted mb-0" style="font-size: 12px;">This hardware device is logged in the company asset tracking vault.</p>
+      </div>
+    </div>
+
+    <div class="p-3 border-top bg-light d-flex align-items-center justify-content-between">
+      <button mat-button (click)="closePreviewAsset()">Close</button>
+      <button mat-flat-button color="primary" class="oh-btn-small" (click)="triggerAlert('Asset report generated for ' + previewAssetModal()?.assetCode); closePreviewAsset()">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Export Asset Certificate
       </button>
     </div>
   </div>

@@ -131,14 +131,36 @@
   color: var(--oh-card-accent);
 }
 
-.oh-home__bg-vector {
+.oh-home__bg-decoration {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 520px;
+  height: 260px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.oh-home__bg-curve {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 320px;
-  height: 320px;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.95;
+  width: 100%;
+  height: 100%;
 }
 
+.oh-home__bg-square {
+  position: absolute;
+  bottom: 20px;
+  left: 80px;
+  width: 160px;
+  height: 160px;
+}
+
+.oh-home__bg-bird {
+  position: absolute;
+  top: -35px;
+  right: 10px;
+  width: 155px;
+  height: 186px;
+}

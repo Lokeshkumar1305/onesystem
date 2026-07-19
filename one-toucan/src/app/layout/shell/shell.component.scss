@@ -18,7 +18,12 @@
   display: flex;
   flex-direction: column;
 
-  &:has(.oh-modal-backdrop) {
+  &:has(.oh-modal-backdrop),
+  &:has(.oh-preview-overlay),
+  &:has(.modal-backdrop),
+  &:has(.modal.show),
+  &:has([class*="overlay"]),
+  &:has([class*="backdrop"]) {
     z-index: 1050 !important;
   }
 }

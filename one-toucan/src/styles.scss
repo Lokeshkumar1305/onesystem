@@ -66,6 +66,21 @@ a {
   box-shadow: var(--oh-focus-ring);
 }
 
+// Suppress inner double-border focus ring on inputs/selects inside Material form fields globally
+.mat-mdc-form-field {
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  .mat-mdc-select:focus,
+  .mat-mdc-select:focus-visible,
+  .mat-mdc-select-trigger:focus,
+  .mat-mdc-select-trigger:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
 // CDK drag-drop (used by the Department Tree) creates these outside any
 // single component's view encapsulation, so they're styled globally here.
 .cdk-drag-preview {

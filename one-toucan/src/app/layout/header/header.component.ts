@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -27,7 +28,8 @@ import { WorkspaceModule, WorkspaceModuleService } from '../../core/workspace/wo
     MatInputModule,
     MatTooltipModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSlideToggleModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -47,8 +49,15 @@ export class HeaderComponent {
     private readonly router: Router
   ) {}
 
+  isDarkMode = false;
+
   get userName(): string {
     return this.currentUser.fullName();
+  }
+
+  get userHandle(): string {
+    const name = this.currentUser.fullName();
+    return name ? name.toLowerCase().replace(/\s+/g, '') : 'ceoofzeste';
   }
 
   get activeModuleLabel(): string {
