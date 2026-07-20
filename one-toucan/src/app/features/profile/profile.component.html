@@ -117,23 +117,40 @@
     <!-- Hero Details Row -->
     <div class="oh-profile-hero__content d-flex align-items-end gap-4 px-4 pb-4 bg-white" style="margin-top: -60px;">
       <!-- Profile Avatar -->
-      <div class="oh-profile-hero__avatar-wrap position-relative flex-shrink-0">
-        <div class="oh-profile-hero__avatar rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold shadow-md" 
+      <div class="oh-profile-hero__avatar-wrap position-relative flex-shrink-0" (click)="avatarFileInput.click()" style="cursor: pointer;">
+        <div class="oh-profile-hero__avatar rounded-circle d-flex align-items-center justify-content-center text-white font-weight-bold shadow-md position-relative overflow-hidden" 
              style="width: 110px; height: 110px; border: 4px solid #fff; font-size: 36px; background-color: var(--oh-primary);">
-          {{ initials() }}
+          
+          <!-- Avatar Image or Initials -->
+          <img *ngIf="profileImage()" [src]="profileImage()" alt="Avatar" class="w-100 h-100 object-fit-cover position-absolute top-0 start-0 oh-profile-avatar-img" style="transition: opacity 0.25s ease;" />
+          <span *ngIf="!profileImage()" class="oh-profile-avatar-initials" style="transition: opacity 0.25s ease;">{{ initials() }}</span>
+
+          <!-- Edit Overlay (Hover state styled in SCSS) -->
+          <div class="oh-profile-avatar-overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center"
+               style="background-color: rgba(0, 0, 0, 0.6); opacity: 0; transition: opacity 0.25s ease;">
+            <i class="bi bi-camera text-white mb-1.5" style="font-size: 22px; line-height: 1;"></i>
+            <span class="text-white text-center font-weight-semibold" style="font-size: 11px; line-height: 1.2;">Edit Image</span>
+          </div>
+
         </div>
         <span class="oh-profile-hero__badge position-absolute rounded-circle" 
-              style="width: 16px; height: 16px; background-color: #22c55e; border: 2.5px solid #fff; bottom: 8px; right: 8px;"
+              style="width: 16px; height: 16px; background-color: #22c55e; border: 2.5px solid #fff; bottom: 8px; right: 8px; z-index: 2;"
               matTooltip="Online"></span>
+        
+        <!-- Hidden File Input for uploading avatar -->
+        <input type="file" #avatarFileInput class="d-none" accept="image/*" (change)="onAvatarSelected($event)" />
       </div>
 
       <!-- Title / Designation Details -->
       <div class="oh-profile-hero__text-info flex-grow-1 pb-2">
         <div class="d-flex align-items-center gap-2">
           <h2 class="h3 font-weight-bold mb-0 text-dark" style="font-family: Outfit, sans-serif; font-weight: 700;">{{ displayName() }}</h2>
-          <span class="badge bg-success-soft text-success px-2 py-1 rounded" style="font-size: 11px;">Active</span>
+          <span class="badge bg-success-soft text-success px-2 py-1 rounded" style="font-size: 11px;">IN</span>
         </div>
-        <p class="text-muted mb-0 font-weight-medium" style="font-size: 14px;">Software Engineer</p>
+        <p class="text-muted mb-0 font-weight-medium d-flex align-items-center gap-2" style="font-size: 14px;">
+          <i class="bi bi-briefcase text-muted" style="font-size: 14px;"></i>
+          <span>Software Engineer</span>
+        </p>
       </div>
     </div>
 

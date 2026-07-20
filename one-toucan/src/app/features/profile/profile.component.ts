@@ -552,6 +552,23 @@ export class ProfileComponent {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   });
 
+  profileImage = signal<string | null>(null);
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          this.profileImage.set(e.target.result as string);
+          this.triggerAlert('Updated profile picture successfully!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   removeExperience(item: ExperienceItem): void {
     this.experiences.set(this.experiences().filter(e => e !== item));
     this.triggerAlert(`Removed experience at ${item.company}`);

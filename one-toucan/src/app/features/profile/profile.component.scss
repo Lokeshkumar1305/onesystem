@@ -91,6 +91,16 @@
   &__avatar-wrap {
     margin-top: -30px;
     z-index: 10;
+
+    &:hover {
+      .oh-profile-avatar-overlay {
+        opacity: 1 !important;
+      }
+      .oh-profile-avatar-img,
+      .oh-profile-avatar-initials {
+        opacity: 0 !important;
+      }
+    }
   }
 
   &__avatar {
