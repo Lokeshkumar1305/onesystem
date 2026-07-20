@@ -1,0 +1,80 @@
+<div class="oh-projects-container" *ngIf="project() as project; else notFound">
+
+  <!-- Workspace Header -->
+  <div class="oh-workspace-header bg-white border p-4 rounded-3 mb-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <button mat-icon-button (click)="goBackToAtlasProjects()" aria-label="Go back">
+          <i class="bi bi-arrow-left fs-4"></i>
+        </button>
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h2 class="oh-heading-h3 font-weight-bold text-gray-900 mb-0">{{ project.name }}</h2>
+            <span class="oh-badge oh-badge--xs" [ngClass]="project.isModule ? 'oh-badge--violet' : (project.customType ? 'oh-badge--warning' : 'oh-badge--info')">
+              {{ project.isModule ? 'Module' : (project.customType || 'Project') }}
+            </span>
+            <span class="oh-badge oh-badge--xs" [ngClass]="project.status === 'completed' ? 'oh-badge--success' : 'oh-badge--outline'">
+              {{ project.status === 'completed' ? 'Completed' : 'Active' }}
+            </span>
+          </div>
+          <p class="text-xs text-muted mb-0">
+            Key: <strong>{{ project.key }}</strong> &middot; Client: {{ project.client }}
+            <span *ngIf="project.parentProjectName"> &middot; Parent: <strong class="text-teal">{{ project.parentProjectName }}</strong></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <!-- Project lifecycle action — visible to everyone, locked unless Manager -->
+        <button mat-stroked-button *ngIf="project.status !== 'completed'"
+                [disabled]="!roleService.canMarkCompleted()"
+                [matTooltip]="roleService.canMarkCompleted() ? 'Marks this project complete — unlocks Developer Tech Doc uploads' : 'Only a Manager can mark a project completed'"
+                (click)="markCompleted()">
+          <i class="bi bi-check2-circle me-1"></i>Mark Project Completed
+        </button>
+
+        <!-- Your Role -->
+        <span class="oh-badge oh-badge--xs" [ngClass]="roleService.roleBadgeClass()" matTooltip="Your role determines what you can create here">
+          <i class="bi bi-person-badge me-1"></i>{{ roleService.roleLabel() }}
+        </span>
+
+        <!-- Avatars Stack -->
+        <div class="d-flex align-items-center gap-2">
+          <div class="oh-avatars-stack mb-0">
+            <span *ngFor="let m of project.team" class="oh-avatar-circle oh-avatar-circle--sm" [ngClass]="getAvatarClass(m.avatarColor)" [title]="m.name + ' ('+ m.role +')'">
+              {{ m.initials }}
+            </span>
+          </div>
+          <span class="text-xs text-muted font-weight-bold">{{ project.team.length }} Team Members</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace Level Horizontal Tabs -->
+    <div class="oh-workspace-tabs mt-4 border-top pt-3 d-flex gap-3">
+      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'board'" (click)="activeTab.set('board')">
+        <i class="bi bi-kanban me-2"></i>Features Board
+      </button>
+      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'backlog'" (click)="activeTab.set('backlog')">
+        <i class="bi bi-compass me-2"></i>Atlas Backlog
+      </button>
+      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'operational'" (click)="activeTab.set('operational')">
+        <i class="bi bi-clipboard-data me-2"></i>Project operational
+      </button>
+    </div>
+  </div>
+
+  <oh-atlas-board-tab *ngIf="activeTab() === 'board'" [project]="project"></oh-atlas-board-tab>
+  <oh-atlas-backlog-tab *ngIf="activeTab() === 'backlog'" [project]="project"></oh-atlas-backlog-tab>
+  <oh-atlas-operational-tab *ngIf="activeTab() === 'operational'" [project]="project"></oh-atlas-operational-tab>
+
+</div>
+
+<ng-template #notFound>
+  <div class="oh-projects-container">
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-emoji-frown fs-1 d-block mb-2"></i>
+      Project not found, or you don't have access to it.
+    </div>
+  </div>
+</ng-template>

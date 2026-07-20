@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="font-weight-bold text-sm mb-0">Test Cases</h3>
+  <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canCreateTestCase()"
+          [matTooltip]="roleService.canCreateTestCase() ? '' : 'Only a Tester or Manager can add test cases'"
+          (click)="showAddForm = !showAddForm">
+    <i class="bi bi-plus-lg me-1"></i>New Test Case
+  </button>
+</div>
+
+<!-- Inline Creator Form -->
+<div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canCreateTestCase()">
+  <h4 class="font-weight-bold text-xs mb-2">Create Test Case</h4>
+  <div class="row g-2 mb-2">
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="newTitle" placeholder="Test case title..." />
+      </mat-form-field>
+    </div>
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="newDescription" placeholder="Steps / what to verify..." />
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="oh-label font-weight-bold mb-1 text-xxs">Link to Requirement</label>
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <mat-select [(ngModel)]="newLinkedRequirementId">
+          <mat-option value="">No linked requirement</mat-option>
+          <mat-option *ngFor="let r of project.requirements" [value]="r.id">{{ r.id }} — {{ r.title }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-3">
+      <label class="oh-label font-weight-bold mb-1 text-xxs">Priority</label>
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <mat-select [(ngModel)]="newPriority">
+          <mat-option value="High">High</mat-option>
+          <mat-option value="Medium">Medium</mat-option>
+          <mat-option value="Low">Low</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-3 offset-md-2 text-end">
+      <button mat-flat-button color="primary" class="w-100" [disabled]="!newTitle.trim()" (click)="addTestCase()">
+        Add Test Case
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Test cases list -->
+<div class="oh-list-grid bg-white border rounded-3 shadow-sm">
+  <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
+    <div class="col-2">ID</div>
+    <div class="col-4">Test Case</div>
+    <div class="col-2 text-center">Linked Req</div>
+    <div class="col-2 text-center">Priority</div>
+    <div class="col-2 text-center">Status</div>
+  </div>
+  <div class="oh-list-row p-3 border-bottom text-sm" *ngFor="let tc of project.testCases">
+    <div class="d-flex align-items-center">
+      <div class="col-2 font-mono text-xs">{{ tc.id }}</div>
+      <div class="col-4 text-gray-800">{{ tc.title }}</div>
+      <div class="col-2 text-center">
+        <span class="oh-badge oh-badge--outline oh-badge--xs" *ngIf="tc.linkedRequirementId">{{ linkedRequirementTitle(tc.linkedRequirementId) }}</span>
+        <span class="text-xxs text-muted" *ngIf="!tc.linkedRequirementId">—</span>
+      </div>
+      <div class="col-2 text-center">
+        <span class="oh-badge oh-badge--xs" [ngClass]="tc.priority === 'High' ? 'oh-badge--danger' : tc.priority === 'Medium' ? 'oh-badge--warning' : 'oh-badge--success'">
+          {{ tc.priority }}
+        </span>
+      </div>
+      <div class="col-2 text-center">
+        <span class="oh-badge oh-badge--xs" [ngClass]="statusBadgeClass(tc.status)">{{ tc.status }}</span>
+      </div>
+    </div>
+    <div class="text-xxs text-muted mt-1" *ngIf="tc.description">{{ tc.description }}</div>
+  </div>
+  <div *ngIf="!project.testCases.length" class="text-center py-5 text-muted text-xs">
+    No test cases logged. {{ roleService.canCreateTestCase() ? 'Click "New Test Case" to add.' : 'Only a Tester or Manager can add test cases.' }}
+  </div>
+</div>

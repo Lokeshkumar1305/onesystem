@@ -57,16 +57,16 @@ export const routes: Routes = [
         data: { title: 'Projects', subtitle: 'Project list & execution details' }
       },
       {
-        path: 'requirements',
+        path: 'atlas/projects',
         loadComponent: () =>
-          import('./features/requirements/requirements.component').then(m => m.RequirementsComponent),
-        data: { title: 'Product Backlog', subtitle: 'Requirements & issue tracking' }
+          import('./features/atlas/atlas-projects/atlas-projects.component').then(m => m.AtlasProjectsComponent),
+        data: { title: 'Atlas Projects', subtitle: 'Delivery workspaces you have access to' }
       },
       {
-        path: 'tasks',
+        path: 'atlas/projects/:id',
         loadComponent: () =>
-          import('./features/tasks/tasks.component').then(m => m.TasksComponent),
-        data: { title: 'My Tasks', subtitle: 'Task tracking and execution' }
+          import('./features/atlas/atlas-workspace/atlas-workspace.component').then(m => m.AtlasWorkspaceComponent),
+        data: { title: 'Atlas Workspace', subtitle: 'Requirements, tasks & delivery tracking' }
       },
       {
         path: 'resource-allocation',
@@ -85,12 +85,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/leave/leave.component').then(m => m.LeaveComponent),
         data: { title: 'Leave Management', subtitle: 'Balances, requests & time-off planning' }
-      },
-      {
-        path: 'bugs',
-        loadComponent: () =>
-          import('./features/bugs/bugs.component').then(m => m.BugsComponent),
-        data: { title: 'Bugs', subtitle: 'Defect tracking & triage' }
       },
       {
         path: 'profile',

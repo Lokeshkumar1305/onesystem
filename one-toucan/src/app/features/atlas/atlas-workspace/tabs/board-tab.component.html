@@ -1,0 +1,99 @@
+<div class="oh-tab-content-board">
+
+  <!-- Toolbar action -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="text-sm font-weight-bold text-gray-700">Drag features to change status</div>
+    <button mat-flat-button color="primary" class="oh-btn-action" (click)="showAddFeatureForm = !showAddFeatureForm">
+      <i class="bi bi-plus-lg me-1"></i>Add Feature Card
+    </button>
+  </div>
+
+  <!-- Quick Add Feature Form Box -->
+  <div class="oh-quick-story-card mb-4 p-3 border rounded-3 bg-white shadow-sm" *ngIf="showAddFeatureForm">
+    <h4 class="font-weight-bold text-sm text-gray-700 mb-2">Create New Feature Card</h4>
+    <div class="row g-2 align-items-end">
+      <div class="col-md-5">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput [(ngModel)]="newFeatureTitle" placeholder="Enter feature summaries..." />
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newFeatureType">
+            <mat-option value="FEATURE">Feature</mat-option>
+            <mat-option value="BUG">Bug</mat-option>
+            <mat-option value="SECURITY">Security</mat-option>
+            <mat-option value="CHORE">Chore</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newFeaturePriority">
+            <mat-option value="green">Low Priority</mat-option>
+            <mat-option value="yellow">Medium Priority</mat-option>
+            <mat-option value="red">High Priority</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-1">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput type="number" [(ngModel)]="newFeaturePoints" placeholder="Story Pts" />
+        </mat-form-field>
+      </div>
+      <div class="col-md-2 text-end">
+        <button mat-flat-button color="primary" class="w-100" [disabled]="!newFeatureTitle.trim()" (click)="addFeatureCard()">
+          Add Card
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kanban columns grid -->
+  <div class="oh-board-columns" cdkDropListGroup>
+    <div class="oh-board-column" *ngFor="let col of project.board">
+
+      <div class="oh-column-header d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+          <span class="oh-column-bullet" [style.background-color]="col.bulletColor"></span>
+          <span class="oh-column-title font-weight-bold">{{ col.name }}</span>
+        </div>
+        <span class="oh-column-count">{{ col.cards.length }}</span>
+      </div>
+
+      <!-- Drag and Drop cards container -->
+      <div class="oh-column-cards-zone" cdkDropList [cdkDropListData]="col.cards" (cdkDropListDropped)="onCardDrop($event)">
+        <div class="oh-task-card" *ngFor="let card of col.cards" cdkDrag>
+          <div class="oh-task-card-placeholder" *cdkDragPlaceholder></div>
+
+          <!-- Card Priority Indicator -->
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="oh-badge oh-badge--xs" [ngClass]="getBadgeClass(card.type)">{{ card.type }}</span>
+            <span class="oh-priority-dot" [ngClass]="getDotClass(card.priorityDotColor)" [title]="card.priorityDotColor + ' Priority'"></span>
+          </div>
+
+          <!-- Title -->
+          <h4 class="oh-task-title mb-3">{{ card.title }}</h4>
+
+          <!-- Footer -->
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+            <span class="oh-task-id">{{ card.id }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="oh-task-points">{{ card.points }}pt</span>
+              <span class="oh-avatar-circle oh-avatar-circle--xs oh-avatar-circle--blue">
+                {{ card.assigneeInitials }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty card indicator -->
+        <div *ngIf="!col.cards.length" class="text-center text-muted py-5 text-xs">
+          Drop tasks here.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

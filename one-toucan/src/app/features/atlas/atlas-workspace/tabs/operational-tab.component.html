@@ -1,0 +1,252 @@
+<div class="oh-tab-content-management">
+
+  <div class="row g-4">
+
+    <!-- Left: Operations Categories Selector -->
+    <div class="col-md-3">
+      <div class="oh-sub-category-list p-2 bg-white border rounded-3 shadow-sm">
+        <button class="oh-sub-cat-btn" [class.oh-sub-cat-btn--active]="activeManagementSub() === 'docs'" (click)="activeManagementSub.set('docs')">
+          <i class="bi bi-file-earmark-pdf me-2"></i>Documents Section
+        </button>
+        <button class="oh-sub-cat-btn" [class.oh-sub-cat-btn--active]="activeManagementSub() === 'kt'" (click)="activeManagementSub.set('kt')">
+          <i class="bi bi-mic me-2"></i>KT Section
+        </button>
+        <button class="oh-sub-cat-btn" [class.oh-sub-cat-btn--active]="activeManagementSub() === 'demo'" (click)="activeManagementSub.set('demo')">
+          <i class="bi bi-easel me-2"></i>Demo Section
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Operational Content Layout -->
+    <div class="col-md-9">
+
+      <!-- SUB-VIEW A: DOCUMENTS SECTION -->
+      <div class="oh-mgmt-sub-container" *ngIf="activeManagementSub() === 'docs'">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="font-weight-bold text-sm mb-0">Project level Documents & Specifications</h3>
+          <button mat-stroked-button class="btn-sm" [disabled]="!canUploadTechDoc()"
+                  [matTooltip]="techDocLockReason()" (click)="showAddDocForm = !showAddDocForm">
+            <i class="bi bi-plus-lg me-1"></i>New Document Link
+          </button>
+        </div>
+
+        <div class="text-xs text-muted mb-3" *ngIf="roleService.isDeveloper() && project.status !== 'completed'">
+          <i class="bi bi-info-circle me-1"></i>Technical Document upload unlocks once this project is marked completed.
+        </div>
+
+        <!-- Add document form -->
+        <div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddDocForm && canUploadTechDoc()">
+          <h4 class="font-weight-bold text-xs mb-2">Log New Document</h4>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDocName" placeholder="Document Display Name..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <mat-select [(ngModel)]="newDocCat">
+                  <mat-option value="BRD">BRD Document</mat-option>
+                  <mat-option value="Architecture">Architecture Design</mat-option>
+                  <mat-option value="User Guide">User Guide / Wiki</mat-option>
+                  <mat-option value="CTO Review">CTO Review log</mat-option>
+                  <mat-option value="Other">Other Document</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDocUrl" placeholder="Document URL (https://...)" />
+              </mat-form-field>
+            </div>
+            <div class="col-md-1 text-end">
+              <button mat-flat-button color="primary" [disabled]="!newDocName.trim()" (click)="addDocument()">
+                Log
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Grid List -->
+        <div class="row g-3">
+          <div class="col-md-6" *ngFor="let doc of project.documents">
+            <div class="oh-doc-card p-3 border rounded-3 bg-white shadow-sm d-flex gap-3 align-items-start">
+              <span class="oh-doc-icon bg-light text-teal border p-2 rounded">
+                <i class="bi bi-file-pdf-fill fs-4" *ngIf="doc.category === 'BRD'"></i>
+                <i class="bi bi-cpu-fill fs-4" *ngIf="doc.category === 'Architecture'"></i>
+                <i class="bi bi-book-fill fs-4" *ngIf="doc.category === 'User Guide'"></i>
+                <i class="bi bi-shield-lock-fill fs-4" *ngIf="doc.category === 'CTO Review'"></i>
+                <i class="bi bi-link-45deg fs-4" *ngIf="doc.category === 'Other'"></i>
+              </span>
+              <div class="flex-grow-1">
+                <span class="oh-badge oh-badge--xs mb-1" [ngClass]="doc.category === 'BRD' ? 'oh-badge--info' : doc.category === 'Architecture' ? 'oh-badge--violet' : 'oh-badge--neutral'">
+                  {{ doc.category }}
+                </span>
+                <h4 class="font-weight-bold text-sm text-gray-900 mb-1">{{ doc.name }}</h4>
+                <span class="text-xxs text-muted d-block mb-2">Added by {{ doc.addedBy }} &middot; {{ doc.addedDate }}</span>
+                <a [href]="doc.url" target="_blank" class="text-xs text-teal font-weight-bold">
+                  <i class="bi bi-box-arrow-up-right me-1"></i>Open Document link
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!project.documents.length" class="text-center py-5 text-muted text-xs bg-white border rounded-3 w-100">
+            No documents logged for this project workspace.
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW B: KT SECTION -->
+      <div class="oh-mgmt-sub-container" *ngIf="activeManagementSub() === 'kt'">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="font-weight-bold text-sm mb-0">Project KT (Knowledge Transfer) Logs</h3>
+          <button mat-stroked-button class="btn-sm" (click)="showAddKtForm = !showAddKtForm">
+            <i class="bi bi-plus-lg me-1"></i>New KT session
+          </button>
+        </div>
+
+        <!-- Inline KT formulation form -->
+        <div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddKtForm">
+          <h4 class="font-weight-bold text-xs mb-2">Schedule / Log KT Session</h4>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newKtTopic" placeholder="KT Topic Name..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newKtHost" placeholder="Host Initials..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newKtAttendees" placeholder="Attendees..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newKtRecordingUrl" placeholder="Video URL..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-1 text-end">
+              <button mat-flat-button color="primary" [disabled]="!newKtTopic.trim()" (click)="addKtSession()">
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KT sessions grid list -->
+        <div class="oh-kt-sessions-list d-flex flex-column gap-3">
+          <div class="oh-kt-card p-3 border rounded-3 bg-white shadow-sm d-flex justify-content-between align-items-center flex-wrap gap-2" *ngFor="let kt of project.ktSessions">
+            <div class="d-flex align-items-center gap-3">
+              <span class="oh-kt-icon bg-light-orange text-orange p-2 rounded">
+                <i class="bi bi-mic-fill fs-4"></i>
+              </span>
+              <div>
+                <h4 class="font-weight-bold text-sm mb-1">{{ kt.topic }}</h4>
+                <span class="text-xs text-gray-500">
+                  Host: <strong>{{ kt.host }}</strong> &middot; Attendees: {{ kt.attendees }} &middot; Date: {{ kt.date }}
+                </span>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+              <span class="oh-badge text-xs" [ngClass]="kt.status === 'Completed' ? 'oh-badge--success' : 'oh-badge--warning'">
+                {{ kt.status }}
+              </span>
+              <a [href]="kt.recordingUrl" target="_blank" class="btn btn-outline-secondary btn-sm" *ngIf="kt.recordingUrl">
+                <i class="bi bi-play-circle me-1"></i>Watch KT Recording
+              </a>
+            </div>
+          </div>
+
+          <div *ngIf="!project.ktSessions.length" class="text-center py-5 text-muted text-xs bg-white border rounded-3 w-100">
+            No Knowledge Transfer sessions logged.
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW C: DEMO SECTION -->
+      <div class="oh-mgmt-sub-container" *ngIf="activeManagementSub() === 'demo'">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="font-weight-bold text-sm mb-0">Project Demo & Feedback Logs</h3>
+          <button mat-stroked-button class="btn-sm" (click)="showAddDemoForm = !showAddDemoForm">
+            <i class="bi bi-plus-lg me-1"></i>New Demo Review
+          </button>
+        </div>
+
+        <!-- Inline demo form -->
+        <div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddDemoForm">
+          <h4 class="font-weight-bold text-xs mb-2">Log Demo Review</h4>
+          <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDemoTitle" placeholder="Demo Name..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDemoAudience" placeholder="Audience..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDemoUrl" placeholder="Video URL..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="newDemoCtoFeedback" placeholder="Feedback notes..." />
+              </mat-form-field>
+            </div>
+            <div class="col-md-1 text-end">
+              <button mat-flat-button color="primary" [disabled]="!newDemoTitle.trim()" (click)="addDemoLog()">
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Demo sessions list -->
+        <div class="oh-demo-logs-list d-flex flex-column gap-3">
+          <div class="oh-demo-card p-3 border rounded-3 bg-white shadow-sm" *ngFor="let demo of project.demos">
+
+            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+              <h4 class="font-weight-bold text-sm mb-0"><i class="bi bi-easel-fill text-teal me-2"></i>{{ demo.title }}</h4>
+              <div class="d-flex align-items-center gap-2">
+                <span class="oh-badge text-xxs"
+                      [ngClass]="demo.status === 'Approved' ? 'oh-badge--success' : demo.status === 'Requires Changes' ? 'oh-badge--danger' : 'oh-badge--warning'">
+                  {{ demo.status }}
+                </span>
+                <span class="text-xs text-muted">{{ demo.date }}</span>
+              </div>
+            </div>
+
+            <div class="text-xs text-gray-600 mb-3">Audience: <strong>{{ demo.audience }}</strong></div>
+
+            <!-- CTO Feedback section -->
+            <div class="oh-cto-feedback-block p-2 rounded bg-light border-start border-primary border-4 text-xs mb-3" *ngIf="demo.ctoFeedback">
+              <strong>CTO Feedback comments:</strong> {{ demo.ctoFeedback }}
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <a [href]="demo.recordingUrl" target="_blank" class="btn btn-sm btn-outline-teal">
+                <i class="bi bi-camera-video me-1"></i>Play Demo Recording
+              </a>
+            </div>
+
+          </div>
+
+          <div *ngIf="!project.demos.length" class="text-center py-5 text-muted text-xs bg-white border rounded-3 w-100">
+            No Demo sessions logged.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

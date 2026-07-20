@@ -1,0 +1,72 @@
+<div class="oh-projects-container">
+
+  <!-- Header Card -->
+  <mat-card appearance="outlined" class="oh-panel oh-projects-list__head mb-4">
+    <mat-card-content class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-projects-list__head-icon">
+          <i class="bi bi-compass" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 class="oh-heading-h3 mb-1">Atlas Projects</h2>
+          <p class="oh-caption mb-0 text-muted">Delivery workspaces you have access to &mdash; requirements, stories, tasks &amp; more.</p>
+        </div>
+      </div>
+      <span class="oh-badge oh-badge--xs" [ngClass]="roleService.roleBadgeClass()" matTooltip="Your role determines what you can create and which projects you see">
+        <i class="bi bi-person-badge me-1"></i>{{ roleService.roleLabel() }}
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Projects grid -->
+  <div class="oh-content-section border rounded-3 p-4 bg-white shadow-sm">
+    <h3 class="oh-dashboard-section-title d-flex align-items-center justify-content-between mb-2">
+      <span><i class="bi bi-folder me-2 text-teal"></i>Your Projects</span>
+      <span class="oh-badge oh-badge--neutral text-xs">{{ projects().length }} Total</span>
+    </h3>
+    <hr class="oh-section-divider mb-3">
+
+    <div class="oh-projects-grid">
+      <div class="oh-proj-card border rounded-3 overflow-hidden cursor-pointer" *ngFor="let proj of projects()" [routerLink]="['/atlas/projects', proj.id]">
+        <div class="oh-proj-card-accent" [ngClass]="proj.isModule ? 'bg-violet' : (proj.customType ? 'bg-orange' : 'bg-teal')"></div>
+        <div class="oh-proj-card-content p-3">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="oh-badge oh-badge--xs" [ngClass]="proj.isModule ? 'oh-badge--violet' : (proj.customType ? 'oh-badge--warning' : 'oh-badge--info')">
+              {{ proj.isModule ? 'Module' : (proj.customType || 'Project') }}
+            </span>
+            <span class="oh-proj-key text-xxs font-mono text-muted">{{ proj.key }}</span>
+          </div>
+          <h4 class="font-weight-bold text-gray-900 mb-1 text-sm">{{ proj.name }}</h4>
+          <p class="text-xs text-gray-500 mb-3 text-truncate-2" style="min-height: 32px; line-height: 1.4;">{{ proj.description }}</p>
+
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded"><i class="bi bi-people me-1"></i>{{ proj.team.length }} Team</span>
+            <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.requirements.length"><i class="bi bi-file-earmark-text me-1"></i>{{ proj.requirements.length }} Specs</span>
+            <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded"><i class="bi bi-flag me-1"></i>{{ proj.status === 'completed' ? 'Completed' : 'Active' }}</span>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+            <div class="d-flex align-items-center gap-1">
+              <div class="oh-avatars-stack mb-0">
+                <span *ngFor="let m of proj.team.slice(0, 3)" class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(m.avatarColor)">
+                  {{ m.initials }}
+                </span>
+                <span *ngIf="proj.team.length > 3" class="oh-avatar-circle oh-avatar-circle--xs oh-avatar-circle--more">
+                  +{{ proj.team.length - 3 }}
+                </span>
+              </div>
+            </div>
+            <span class="text-xxs font-weight-bold text-teal" *ngIf="proj.isModule && proj.parentProjectName">
+              Parent: {{ proj.parentProjectName }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!projects().length" class="text-center py-5 text-muted text-xs w-100">
+        No Atlas projects visible to your account yet.
+      </div>
+    </div>
+  </div>
+
+</div>

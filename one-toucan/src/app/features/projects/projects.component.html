@@ -1,563 +1,936 @@
-<!-- View 1: Projects Kanban Board -->
-<div class="oh-projects-board-view" *ngIf="activeView() === 'board'">
-  <!-- Header row -->
-  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-      <h2 class="oh-board-title mb-0">Atlas Migration</h2>
-      <span class="oh-board-badge">
-        <span class="oh-board-badge-dot"></span>
-        Active
-      </span>
-      <span class="oh-board-subtitle">Sprint 14 &middot; 5 days left</span>
-    </div>
+<!-- MAIN CONTAINER -->
+<div class="oh-projects-container">
 
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-      <!-- Avatars stack -->
-      <div class="oh-avatars-stack">
-        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--blue">RM</span>
-        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--purple">SK</span>
-        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--pink">AK</span>
-        <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--more">+6</span>
-      </div>
+  <!-- ==================== VIEW 1: PROJECTS DASHBOARD OVERVIEW ==================== -->
+  <div class="oh-dashboard-view" *ngIf="activeView() === 'dashboard'">
 
-      <button mat-stroked-button class="oh-board-header-btn">
-        <i class="bi bi-funnel me-1"></i>
-        Filter
-      </button>
-
-      <button mat-flat-button color="primary" class="oh-board-header-btn oh-btn-story" (click)="toggleStoryInput()">
-        <i class="bi bi-plus-lg me-1"></i>
-        Story
-      </button>
-
-      <button mat-flat-button color="primary" class="oh-board-header-btn oh-btn-story" (click)="showCreateScreen()">
-        <i class="bi bi-plus-circle me-1"></i>
-        New Project
-      </button>
-    </div>
-  </div>
-
-  <!-- Inline Story Addition Input -->
-  <div class="oh-quick-story-card mb-4 p-3 border rounded-3 bg-white" *ngIf="showAddStoryInput">
-    <h4 class="font-weight-bold mb-2 text-sm text-gray-700">Quick Add Story to Backlog</h4>
-    <div class="d-flex gap-2 align-items-center">
-      <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
-        <input matInput [(ngModel)]="storyTitleInput" placeholder="Enter story summary..." (keyup.enter)="addStory()" />
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline" class="oh-compact-field" style="width: 130px;" subscriptSizing="dynamic">
-        <mat-select [(ngModel)]="storyTypeInput">
-          <mat-option value="FEATURE">Feature</mat-option>
-          <mat-option value="BUG">Bug</mat-option>
-          <mat-option value="SECURITY">Security</mat-option>
-          <mat-option value="CHORE">Chore</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <button mat-flat-button color="primary" (click)="addStory()" [disabled]="!storyTitleInput.trim()">Add</button>
-      <button mat-stroked-button (click)="toggleStoryInput()">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Kanban Board Columns container -->
-  <div class="oh-board-columns" cdkDropListGroup>
-    <div class="oh-board-column" *ngFor="let col of board()">
-      <div class="oh-column-header d-flex align-items-center justify-content-between mb-3">
+    <!-- Header Card -->
+    <mat-card appearance="outlined" class="oh-panel oh-projects-list__head mb-4">
+      <mat-card-content class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <span class="oh-projects-list__head-icon">
+            <i class="bi bi-briefcase" aria-hidden="true"></i>
+          </span>
+          <div>
+            <h2 class="oh-heading-h3 mb-1">Project Management Workspace</h2>
+            <p class="oh-caption mb-0 text-muted">Initialize new ideas, allocate teams, and track execution across Atlas and Project levels.</p>
+          </div>
+        </div>
         <div class="d-flex align-items-center gap-2">
-          <span class="oh-column-bullet" [style.background-color]="col.bulletColor"></span>
-          <span class="oh-column-title font-weight-bold">{{ col.name }}</span>
+          <button mat-flat-button color="primary" [disabled]="!roleService.canManageProjects()"
+                  [matTooltip]="roleService.canManageProjects() ? '' : 'Manager access required to start a new proposal'"
+                  (click)="startNewProposal()">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            Start Project Proposal
+          </button>
         </div>
-        <span class="oh-column-count">{{ col.cards.length }}</span>
-      </div>
+      </mat-card-content>
+    </mat-card>
 
-      <!-- Draggable items zone -->
-      <div
-        class="oh-column-cards-zone"
-        cdkDropList
-        [cdkDropListData]="col.cards"
-        (cdkDropListDropped)="onCardDrop($event)"
-      >
-        <div class="oh-task-card" *ngFor="let card of col.cards" cdkDrag>
-          <div class="oh-task-card-placeholder" *cdkDragPlaceholder></div>
-          
-          <!-- Card Header (Type label & Priority Dot) -->
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <span class="oh-badge oh-badge--xs" [ngClass]="getBadgeClass(card.type)">{{ card.type }}</span>
-            <span class="oh-priority-dot" [ngClass]="getDotClass(card.priorityDotColor)"></span>
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="oh-stat-card">
+          <div class="oh-stat-card-icon oh-stat-icon--teal">
+            <i class="bi bi-folder-fill"></i>
           </div>
-
-          <!-- Card Title -->
-          <h4 class="oh-task-title mb-3">{{ card.title }}</h4>
-
-          <!-- Card Footer (Task ID, Points, Assignee) -->
-          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-            <span class="oh-task-id">{{ card.id }}</span>
-            <div class="d-flex align-items-center gap-2">
-              <span class="oh-task-points">{{ card.points }}pt</span>
-              <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="card.assigneeColorClass">
-                {{ card.assigneeInitials }}
-              </span>
-            </div>
+          <div>
+            <span class="oh-stat-label">Active Projects</span>
+            <h3 class="oh-stat-val mb-0">{{ activeProjects().length }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="oh-stat-card">
+          <div class="oh-stat-card-icon oh-stat-icon--blue">
+            <i class="bi bi-layers-half"></i>
+          </div>
+          <div>
+            <span class="oh-stat-label">Sub-Modules</span>
+            <h3 class="oh-stat-val mb-0">{{ activeProjects().length - parentProjects.length }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="oh-stat-card">
+          <div class="oh-stat-card-icon oh-stat-icon--orange">
+            <i class="bi bi-compass"></i>
+          </div>
+          <div>
+            <span class="oh-stat-label">In Proposals Pipeline</span>
+            <h3 class="oh-stat-val mb-0">{{ proposals().length }}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="oh-stat-card">
+          <div class="oh-stat-card-icon oh-stat-icon--purple">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div>
+            <span class="oh-stat-label">Simulated Approver</span>
+            <h3 class="oh-stat-val mb-0">CTO Office</h3>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- View 2: Project Creation Screen (Multi-section Card form) -->
-<div class="oh-project-create-view" *ngIf="activeView() === 'create'">
-  <div class="container-fluid oh-project-create-layout pb-5">
+    <!-- Main Dashboard Row -->
+    <div class="row g-4">
 
-    <!-- Heading Card -->
-    <div class="oh-project-create-header d-flex align-items-center justify-content-between p-4">
-      <div class="d-flex align-items-center gap-3">
-        <span class="oh-project-create-header-icon">
-          <i class="bi bi-kanban" aria-hidden="true"></i>
-        </span>
-        <div>
-          <h2 class="oh-project-create-header-title mb-0">New Project</h2>
-          <p class="oh-project-create-header-subtitle mb-0">Step {{ activeStep() }} of 5 &middot; {{ currentStepLabel }}</p>
-        </div>
-      </div>
-      <div class="d-flex align-items-center gap-2">
-        <button mat-button type="button" (click)="cancelCreation()">Cancel</button>
-        <button mat-stroked-button type="button" (click)="saveDraft()">Save draft</button>
-      </div>
-    </div>
+      <!-- Left side: Active Projects List -->
+      <div class="col-lg-7">
+        <div class="oh-content-section border rounded-3 p-4 bg-white shadow-sm">
+          <h3 class="oh-dashboard-section-title d-flex align-items-center justify-content-between mb-2">
+            <span><i class="bi bi-folder me-2 text-teal"></i>Active Projects & Modules</span>
+            <span class="oh-badge oh-badge--neutral text-xs">{{ filteredActiveProjects().length }} Total</span>
+          </h3>
+          <hr class="oh-section-divider mb-3">
 
-    <div class="row g-4 mt-2">
-      <!-- Left Column: Stepper matching the image exactly -->
-      <div class="col-lg-3 col-md-4">
-        <div class="oh-stepper-container d-flex flex-column gap-3">
-          
-          <!-- Step 1: Project Basics -->
-          <div 
-            class="oh-stepper-step" 
-            [class.oh-stepper-step--completed]="activeStep() > 1"
-            [class.oh-stepper-step--active]="activeStep() === 1"
-            (click)="goToStep(1)"
-          >
-            <span class="oh-step-badge">
-              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 1"></i>
-              <span *ngIf="activeStep() <= 1">1</span>
-            </span>
-            <div>
-              <h4 class="oh-step-title mb-0">Project basics</h4>
-              <p class="oh-step-subtitle mb-0">Name, key, client</p>
-            </div>
+          <!-- Filter Pills Row -->
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'all'" (click)="selectedTypeFilter.set('all')">
+              All
+            </button>
+            <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'project'" (click)="selectedTypeFilter.set('project')">
+              Projects
+            </button>
+            <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'module'" (click)="selectedTypeFilter.set('module')">
+              Modules
+            </button>
           </div>
 
-          <!-- Step 2: Methodology -->
-          <div 
-            class="oh-stepper-step" 
-            [class.oh-stepper-step--completed]="activeStep() > 2"
-            [class.oh-stepper-step--active]="activeStep() === 2"
-            (click)="goToStep(2)"
-          >
-            <span class="oh-step-badge">
-              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 2"></i>
-              <span *ngIf="activeStep() <= 2">2</span>
-            </span>
-            <div>
-              <h4 class="oh-step-title mb-0">Methodology</h4>
-              <p class="oh-step-subtitle mb-0">Scrum, Kanban, Waterfall</p>
-            </div>
-          </div>
-
-          <!-- Step 3: Timeline & budget -->
-          <div 
-            class="oh-stepper-step" 
-            [class.oh-stepper-step--completed]="activeStep() > 3"
-            [class.oh-stepper-step--active]="activeStep() === 3"
-            (click)="goToStep(3)"
-          >
-            <span class="oh-step-badge">
-              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 3"></i>
-              <span *ngIf="activeStep() <= 3">3</span>
-            </span>
-            <div>
-              <h4 class="oh-step-title mb-0">Timeline & budget</h4>
-              <p class="oh-step-subtitle mb-0">Start date, budget</p>
-            </div>
-          </div>
-
-          <!-- Step 4: Team -->
-          <div 
-            class="oh-stepper-step" 
-            [class.oh-stepper-step--completed]="activeStep() > 4"
-            [class.oh-stepper-step--active]="activeStep() === 4"
-            (click)="goToStep(4)"
-          >
-            <span class="oh-step-badge">
-              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 4"></i>
-              <span *ngIf="activeStep() <= 4">4</span>
-            </span>
-            <div>
-              <h4 class="oh-step-title mb-0">Team</h4>
-              <p class="oh-step-subtitle mb-0">Project lead & members</p>
-            </div>
-          </div>
-
-          <!-- Step 5: Review & launch -->
-          <div 
-            class="oh-stepper-step" 
-            [class.oh-stepper-step--completed]="activeStep() > 5"
-            [class.oh-stepper-step--active]="activeStep() === 5"
-            (click)="goToStep(5)"
-          >
-            <span class="oh-step-badge">
-              <i class="bi bi-check-lg text-white" *ngIf="activeStep() > 5"></i>
-              <span *ngIf="activeStep() <= 5">5</span>
-            </span>
-            <div>
-              <h4 class="oh-step-title mb-0">Review & launch</h4>
-              <p class="oh-step-subtitle mb-0">Go live</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Right Column: Current Active Form Card -->
-      <div class="col-lg-9 col-md-8">
-        
-        <!-- Step 1 Card: Project Basics -->
-        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 1">
-          <mat-card-content class="p-4">
-            <div class="d-flex align-items-center gap-2 mb-4">
-              <span class="oh-section-num">1</span>
-              <h3 class="oh-section-title mb-0">Project basics</h3>
-            </div>
-
-            <div class="oh-field mb-4">
-              <label class="oh-label oh-label--tight font-weight-bold" for="projNameInput"><span>Project name <span class="text-danger">*</span></span></label>
-              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <input matInput id="projNameInput" [(ngModel)]="newProjName" placeholder="Polaris Settlement Engine" />
-              </mat-form-field>
-            </div>
-
-            <div class="oh-field mb-4">
-              <label class="oh-label oh-label--tight font-weight-bold" for="projDescInput">Description</label>
-              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-                <textarea matInput id="projDescInput" [(ngModel)]="newProjDesc" rows="5" placeholder="Real-time settlement & reconciliation rails for merchant payouts. Replaces the legacy batch job with an event-driven pipeline."></textarea>
-              </mat-form-field>
-            </div>
-
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight font-weight-bold" for="projKeyInput"><span>Project key <span class="text-danger">*</span></span></label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="projKeyInput" [(ngModel)]="newProjKey" placeholder="PSE" />
-                  </mat-form-field>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight font-weight-bold" for="projClientInput">Client</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="projClientInput" [(ngModel)]="newProjClient" placeholder="e.g. Razorpay" />
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Step 2 Card: Methodology -->
-        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 2">
-          <mat-card-content class="p-4">
-            <div class="d-flex align-items-center gap-2 mb-4">
-              <span class="oh-section-num">2</span>
-              <h3 class="oh-section-title mb-0">Methodology</h3>
-            </div>
-
-            <div class="row g-3">
-              <!-- Scrum Option -->
-              <div class="col-md-4">
-                <div
-                  class="oh-method-card"
-                  [class.oh-method-card--selected]="newProjMethodology === 'scrum'"
-                  (click)="newProjMethodology = 'scrum'"
-                >
-                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'scrum'">
-                    <i class="bi bi-check-circle-fill"></i>
-                  </div>
-                  <div class="oh-method-card-icon oh-method-card-icon--orange">
-                    <i class="bi bi-lightning-charge-fill"></i>
-                  </div>
-                  <h4 class="oh-method-title mb-1">Scrum / Agile</h4>
-                  <p class="oh-method-desc mb-0">Sprints, story points, velocity</p>
-                </div>
-              </div>
-
-              <!-- Kanban Option -->
-              <div class="col-md-4">
-                <div
-                  class="oh-method-card"
-                  [class.oh-method-card--selected]="newProjMethodology === 'kanban'"
-                  (click)="newProjMethodology = 'kanban'"
-                >
-                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'kanban'">
-                    <i class="bi bi-check-circle-fill"></i>
-                  </div>
-                  <div class="oh-method-card-icon oh-method-card-icon--purple">
-                    <i class="bi bi-clipboard-data"></i>
-                  </div>
-                  <h4 class="oh-method-title mb-1">Kanban</h4>
-                  <p class="oh-method-desc mb-0">Continuous flow, WIP limits</p>
-                </div>
-              </div>
-
-              <!-- Waterfall Option -->
-              <div class="col-md-4">
-                <div
-                  class="oh-method-card"
-                  [class.oh-method-card--selected]="newProjMethodology === 'waterfall'"
-                  (click)="newProjMethodology = 'waterfall'"
-                >
-                  <div class="oh-method-card-check" *ngIf="newProjMethodology === 'waterfall'">
-                    <i class="bi bi-check-circle-fill"></i>
-                  </div>
-                  <div class="oh-method-card-icon oh-method-card-icon--blue">
-                    <i class="bi bi-water"></i>
-                  </div>
-                  <h4 class="oh-method-title mb-1">Waterfall</h4>
-                  <p class="oh-method-desc mb-0">Phases, gates, milestones</p>
-                </div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Step 3 Card: Timeline & Budget -->
-        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 3">
-          <mat-card-content class="p-4">
-            <div class="d-flex align-items-center gap-2 mb-4">
-              <span class="oh-section-num">3</span>
-              <h3 class="oh-section-title mb-0">Timeline & budget</h3>
-            </div>
-
-            <div class="row g-3">
-              <div class="col-md-4">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight font-weight-bold" for="projStartDateInput">Start date</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="projStartDateInput" [matDatepicker]="startDatePicker" [(ngModel)]="newProjStartDate" />
-                    <mat-datepicker-toggle matIconSuffix [for]="startDatePicker" />
-                    <mat-datepicker #startDatePicker />
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight font-weight-bold" for="projEndDateInput">Target end</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="projEndDateInput" [matDatepicker]="endDatePicker" [(ngModel)]="newProjEndDate" />
-                    <mat-datepicker-toggle matIconSuffix [for]="endDatePicker" />
-                    <mat-datepicker #endDatePicker />
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="oh-field">
-                  <label class="oh-label oh-label--tight font-weight-bold" for="projBudgetInput">Budget (₹)</label>
-                  <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                    <input matInput id="projBudgetInput" [(ngModel)]="newProjBudget" placeholder="84,000" />
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <!-- Step 4 Card: Team -->
-        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 4">
-          <mat-card-content class="p-4">
-            <div class="d-flex align-items-center gap-2 mb-4">
-              <span class="oh-section-num">4</span>
-              <h3 class="oh-section-title mb-0">Team</h3>
-            </div>
-
-            <div class="oh-field mb-4">
-              <label class="oh-label oh-label--tight font-weight-bold">Project lead & members</label>
-              <div class="oh-team-chips-container d-flex align-items-center flex-wrap gap-2 p-2 border rounded-3 bg-white">
-                <!-- Render Chips -->
-                <div class="oh-member-chip d-flex align-items-center gap-2" *ngFor="let member of teamMembers()">
-                  <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(member.avatarColor)">
-                    {{ member.initials }}
+          <div class="oh-projects-grid">
+            <div class="oh-proj-card border rounded-3 overflow-hidden cursor-pointer" *ngFor="let proj of filteredActiveProjects()" (click)="openProject(proj)">
+              <div class="oh-proj-card-accent" [ngClass]="proj.isModule ? 'bg-violet' : (proj.customType ? 'bg-orange' : 'bg-teal')"></div>
+              <div class="oh-proj-card-content p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="oh-badge oh-badge--xs" [ngClass]="proj.isModule ? 'oh-badge--violet' : (proj.customType ? 'oh-badge--warning' : 'oh-badge--info')">
+                    {{ proj.isModule ? 'Module' : (proj.customType || 'Project') }}
                   </span>
-                  <span class="oh-member-chip-name">{{ member.name }}</span>
-                  <button type="button" class="oh-member-chip-close" (click)="removeTeamMember(member)">
-                    <i class="bi bi-x"></i>
-                  </button>
+                  <span class="oh-proj-key text-xxs font-mono text-muted">{{ proj.key }}</span>
+                </div>
+                <h4 class="font-weight-bold text-gray-900 mb-1 text-sm">{{ proj.name }}</h4>
+                <p class="text-xs text-gray-500 mb-3 text-truncate-2" style="min-height: 32px; line-height: 1.4;">{{ proj.description }}</p>
+
+                <!-- Quick stats list -->
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded"><i class="bi bi-people me-1"></i>{{ proj.team.length }} Team</span>
+                  <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.requirements.length"><i class="bi bi-file-earmark-text me-1"></i>{{ proj.requirements.length }} Specs</span>
+                  <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.documents.length"><i class="bi bi-folder me-1"></i>{{ proj.documents.length }} Docs</span>
                 </div>
 
-                <!-- Inline add input -->
-                <input
-                  type="text"
-                  class="oh-member-inline-input"
-                  placeholder="+ Add member..."
-                  [(ngModel)]="newMemberInput"
-                  (keyup.enter)="addTeamMember()"
-                />
-                <button
-                  *ngIf="newMemberInput.trim()"
-                  type="button"
-                  class="oh-member-add-btn"
-                  (click)="addTeamMember()"
-                >
-                  Add
+                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                  <div class="d-flex align-items-center gap-1">
+                    <div class="oh-avatars-stack mb-0">
+                      <span *ngFor="let m of proj.team.slice(0, 3)" class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(m.avatarColor)">
+                        {{ m.initials }}
+                      </span>
+                      <span *ngIf="proj.team.length > 3" class="oh-avatar-circle oh-avatar-circle--xs oh-avatar-circle--more">
+                        +{{ proj.team.length - 3 }}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-xxs font-weight-bold text-teal" *ngIf="proj.isModule && proj.parentProjectName">
+                    Parent: {{ proj.parentProjectName }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Proposal Workflow Pipeline Status -->
+      <div class="col-lg-5">
+        <div class="oh-content-section border rounded-3 p-4 bg-white shadow-sm h-100">
+          <h3 class="oh-dashboard-section-title d-flex align-items-center justify-content-between mb-2">
+            <span><i class="bi bi-compass me-2 text-orange"></i>Initialization Pipeline</span>
+            <span class="oh-badge oh-badge--neutral text-xs">{{ proposals().length }} Proposed</span>
+          </h3>
+          <hr class="oh-section-divider mb-3">
+          <p class="text-xs text-muted mb-4">Proposed concepts moving through the CTO review gates.</p>
+
+          <div class="oh-pipeline-list">
+            <div class="oh-proposal-new-card p-3 border rounded-3 mb-3 bg-white shadow-sm" *ngFor="let prop of proposals()">
+              <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                <div>
+                  <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h4 class="font-weight-bold text-sm mb-0 text-gray-900">{{ prop.name || 'Unnamed Concept' }}</h4>
+                    <span class="oh-badge oh-badge--xs" [ngClass]="prop.isModule ? 'oh-badge--violet' : (prop.customType ? 'oh-badge--warning' : 'oh-badge--info')">
+                      {{ prop.isModule ? 'Module' : (prop.customType || 'Project') }}
+                    </span>
+                  </div>
+                  <span class="text-xxs text-muted">Proposed by: {{ prop.ideation.submittedBy || 'Anonymous' }}</span>
+                </div>
+                <button mat-flat-button color="primary" class="oh-btn-open-wizard text-xxs" (click)="openProposalWizard(prop)">
+                  <i class="bi bi-pencil-square me-1"></i>Resume
                 </button>
               </div>
+
+              <!-- Stage Step Indicators -->
+              <div class="oh-pipeline-flow mt-3 pt-2 border-top">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="text-xxs font-weight-bold text-gray-500">Initialization Progress:</span>
+                  <span class="text-xxs font-weight-bold text-teal capitalize">{{ prop.stage.replace('_', ' ') }}</span>
+                </div>
+
+                <!-- Step pills dots -->
+                <div class="oh-proposal-steps-row d-flex align-items-center gap-1 justify-content-between mt-1">
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 1" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 1" title="Ideation">
+                    <span class="oh-pill-num">1</span>
+                  </div>
+                  <div class="oh-proposal-line-connector" [class.oh-proposal-line-connector--active]="getStageStep(prop.stage) > 1"></div>
+
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 2" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 2" title="Ideation Review">
+                    <span class="oh-pill-num">2</span>
+                  </div>
+                  <div class="oh-proposal-line-connector" [class.oh-proposal-line-connector--active]="getStageStep(prop.stage) > 2"></div>
+
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 3" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 3" title="BRD Specs">
+                    <span class="oh-pill-num">3</span>
+                  </div>
+                  <div class="oh-proposal-line-connector" [class.oh-proposal-line-connector--active]="getStageStep(prop.stage) > 3"></div>
+
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 4" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 4" title="BRD Review">
+                    <span class="oh-pill-num">4</span>
+                  </div>
+                  <div class="oh-proposal-line-connector" [class.oh-proposal-line-connector--active]="getStageStep(prop.stage) > 4"></div>
+
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 5" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 5" title="Configuration">
+                    <span class="oh-pill-num">5</span>
+                  </div>
+                  <div class="oh-proposal-line-connector" [class.oh-proposal-line-connector--active]="getStageStep(prop.stage) > 5"></div>
+
+                  <div class="oh-proposal-step-pill" [class.oh-proposal-step-pill--completed]="getStageStep(prop.stage) > 6" [class.oh-proposal-step-pill--active]="getStageStep(prop.stage) === 6" title="Allocation">
+                    <span class="oh-pill-num">6</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!proposals().length" class="text-center py-5">
+              <i class="bi bi-clipboard2-check text-muted fs-1 mb-2 d-block"></i>
+              <p class="text-gray-500 mb-0 text-sm">No proposals in the pipeline.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ==================== VIEW 2: 6-STEP PROPOSAL WIZARD ==================== -->
+  <div class="oh-wizard-view" *ngIf="activeView() === 'proposal-wizard'">
+    <div class="container-fluid oh-project-create-layout pb-5">
+
+      <!-- Wizard Heading Card -->
+      <mat-card appearance="outlined" class="oh-panel oh-projects-list__head mb-4">
+        <mat-card-content class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <span class="oh-projects-list__head-icon">
+              <i class="bi bi-bezier2" aria-hidden="true"></i>
+            </span>
+            <div>
+              <h2 class="oh-heading-h3 mb-1">Project Initialization flow</h2>
+              <p class="oh-caption mb-0 text-muted">
+                Step {{ wizardStep() }} of 6 &middot;
+                <span *ngIf="wizardStep() === 1">Ideation Stage</span>
+                <span *ngIf="wizardStep() === 2">CTO Ideation Approval</span>
+                <span *ngIf="wizardStep() === 3">BRD Formulation</span>
+                <span *ngIf="wizardStep() === 4">CTO BRD Review</span>
+                <span *ngIf="wizardStep() === 5">Project Configuration</span>
+                <span *ngIf="wizardStep() === 6">Team Allocations</span>
+              </p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button mat-stroked-button (click)="cancelWizard()">
+              <i class="bi bi-x-circle me-1"></i>Cancel & Close
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="row g-4 align-items-start">
+
+        <!-- Left: 6-Step Visual Timeline Stepper -->
+        <div class="col-lg-3 col-md-4">
+          <div class="oh-stepper-container d-flex flex-column gap-3 p-3 bg-white border rounded-3 shadow-sm">
+            <!-- Vertical Stepper Connector Line -->
+            <div class="oh-stepper-track">
+              <div class="oh-stepper-track-line"></div>
+              <div class="oh-stepper-track-fill" [style.height.%]="(wizardStep() - 1) * 20"></div>
             </div>
 
-            <div class="oh-notify-card d-flex align-items-center justify-content-between mt-4 p-3">
-              <div class="d-flex align-items-center gap-3">
-                <span class="oh-notify-icon">
-                  <i class="bi bi-slack" aria-hidden="true"></i>
-                </span>
-                <div>
-                  <p class="oh-notify-title mb-0">Notify members & create a Slack channel</p>
-                  <p class="oh-notify-subtitle mb-0">Teammates are pinged and a #project channel is created on save</p>
-                </div>
-              </div>
-              <mat-slide-toggle [(ngModel)]="newProjSlack"></mat-slide-toggle>
-            </div>
-          </mat-card-content>
-        </mat-card>
 
-        <!-- Step 5 Card: Review Summary -->
-        <mat-card appearance="outlined" class="oh-form-section-card mb-4" *ngIf="activeStep() === 5">
-          <mat-card-content class="p-4">
-            <div class="d-flex align-items-center gap-2 mb-4">
-              <span class="oh-section-num">5</span>
-              <h3 class="oh-section-title mb-0">Review details & launch</h3>
+            <!-- Step 1 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 1" [class.oh-stepper-step--completed]="wizardStep() > 1">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 1"></i>
+                <span *ngIf="wizardStep() <= 1">1</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">Ideation</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">Concept & Value Prop</p>
+              </div>
             </div>
 
-            <div class="row g-3">
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--teal">
-                    <i class="bi bi-folder2" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Project Name</span>
-                    <p class="oh-review-value">{{ newProjName || '(Empty)' }}</p>
+            <!-- Step 2 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 2" [class.oh-stepper-step--completed]="wizardStep() > 2">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 2"></i>
+                <span *ngIf="wizardStep() <= 2">2</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">CTO Approval 1</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">Ideation Gates</p>
+              </div>
+            </div>
+
+            <!-- Step 3 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 3" [class.oh-stepper-step--completed]="wizardStep() > 3">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 3"></i>
+                <span *ngIf="wizardStep() <= 3">3</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">BRD Formulation</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">Scope & Boundaries</p>
+              </div>
+            </div>
+
+            <!-- Step 4 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 4" [class.oh-stepper-step--completed]="wizardStep() > 4">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 4"></i>
+                <span *ngIf="wizardStep() <= 4">4</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">CTO Approval 2</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">BRD Review & Sign-off</p>
+              </div>
+            </div>
+
+            <!-- Step 5 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 5" [class.oh-stepper-step--completed]="wizardStep() > 5">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 5"></i>
+                <span *ngIf="wizardStep() <= 5">5</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">Creation Prompts</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">Module vs Project</p>
+              </div>
+            </div>
+
+            <!-- Step 6 Indicator -->
+            <div class="oh-stepper-step" [class.oh-stepper-step--active]="wizardStep() === 6" [class.oh-stepper-step--completed]="wizardStep() > 6">
+              <span class="oh-step-badge">
+                <i class="bi bi-check-lg" *ngIf="wizardStep() > 6"></i>
+                <span *ngIf="wizardStep() <= 6">6</span>
+              </span>
+              <div>
+                <h4 class="oh-step-title mb-0">Team Allocation</h4>
+                <p class="oh-step-subtitle mb-0 text-muted">Roles & Allocation %</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Current Active Wizard Panel -->
+        <div class="col-lg-9 col-md-8">
+
+          <!-- WIZARD STEP 1: IDEATION -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 1">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num">1</span>
+                <h3 class="oh-section-title mb-0">Project Ideation Concept</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+              <p class="text-sm text-muted mb-4">Enter the core vision and purpose of this proposed initiative. This will be sent to the CTO for initial gates evaluation.</p>
+
+              <div class="oh-field mb-3">
+                <label class="oh-label font-weight-bold mb-1">Concept / Title Name <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [(ngModel)]="ideaTitle" placeholder="e.g. AI-powered Performance Reviews" />
+                </mat-form-field>
+              </div>
+
+              <div class="oh-field mb-3">
+                <label class="oh-label font-weight-bold mb-1">Objective / Description <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                  <textarea matInput [(ngModel)]="ideaDesc" rows="4" placeholder="Brief explanation of the goal..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="oh-field mb-3">
+                <label class="oh-label font-weight-bold mb-1">Business Value / Impact <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                  <textarea matInput [(ngModel)]="ideaValue" rows="3" placeholder="How does this help the company/client? e.g. saves 5 hours of manual work weekly..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="oh-field mb-4">
+                <label class="oh-label font-weight-bold mb-1">Submitted By</label>
+                <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [(ngModel)]="ideaSubmitter" placeholder="Rahul Menon" />
+                </mat-form-field>
+              </div>
+
+              <hr class="oh-section-divider mt-4 mb-3">
+              <div class="d-flex justify-content-end">
+                <button mat-flat-button color="primary" [disabled]="!ideaTitle.trim() || !ideaDesc.trim() || !ideaValue.trim()" (click)="submitIdeation()">
+                  Submit to CTO <i class="bi bi-arrow-right-short ms-1"></i>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- WIZARD STEP 2: CTO IDEATION APPROVAL (SIMULATOR) -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 2">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num bg-purple">2</span>
+                <h3 class="oh-section-title mb-0">CTO Ideation Gates Approval</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+
+              <!-- Proposal Recap Box -->
+              <div class="oh-recap-box mb-4 p-3 rounded bg-light border">
+                <h4 class="font-weight-bold mb-2">{{ ideaTitle }}</h4>
+                <p class="text-sm mb-3"><strong>Objective:</strong> {{ ideaDesc }}</p>
+                <p class="text-sm mb-0"><strong>Value Proposition:</strong> {{ ideaValue }}</p>
+                <div class="text-xs mt-3 text-muted">Submitted by: {{ ideaSubmitter }}</div>
+              </div>
+
+              <!-- Simulated Approver Workspace -->
+              <div class="oh-simulator-box p-4 border border-teal-dashed rounded-3 bg-teal-light">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--blue">LK</span>
+                  <div class="text-sm">
+                    <strong class="d-block">Lokesh Kanuboina (CTO Office)</strong>
+                    <span class="text-xs text-muted">Simulate CTA decisions</span>
+                  </div>
+                </div>
+
+                <div class="oh-field mb-3">
+                  <label class="oh-label font-weight-bold mb-1 text-teal-dark">CTO Feedback Comments <span class="text-danger">*</span></label>
+                  <mat-form-field appearance="outline" class="w-100 bg-white" subscriptSizing="dynamic">
+                    <textarea matInput [(ngModel)]="ctoIdeaComment" rows="3" placeholder="Provide CTO feedback notes..."></textarea>
+                  </mat-form-field>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                  <button mat-flat-button color="warn" [disabled]="!ctoIdeaComment.trim()" (click)="ctoApproveIdeation(false)">
+                    <i class="bi bi-x-circle me-1"></i>Reject Concept
+                  </button>
+                  <button mat-flat-button class="oh-btn-approve" [disabled]="!ctoIdeaComment.trim()" (click)="ctoApproveIdeation(true)">
+                    <i class="bi bi-check-circle me-1"></i>Approve Concept
+                  </button>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- WIZARD STEP 3: BRD FORMULATION -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 3">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num">3</span>
+                <h3 class="oh-section-title mb-0">Business Requirements Specifications (BRD)</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+              <p class="text-sm text-muted mb-4">Outline the functional requirements scope, document reference, and details to lock down constraints before coding.</p>
+
+              <div class="oh-field mb-3">
+                <label class="oh-label font-weight-bold mb-1">BRD Title Spec <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [(ngModel)]="brdTitle" placeholder="e.g. AI Performance Appraisals Specification" />
+                </mat-form-field>
+              </div>
+
+              <div class="oh-field mb-3">
+                <label class="oh-label font-weight-bold mb-1">Scope Details (In-Scope) <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                  <textarea matInput [(ngModel)]="brdDesc" rows="4" placeholder="List details and user flows that are inside scope..."></textarea>
+                </mat-form-field>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Key Scope Points (e.g. CSV, OAuth)</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="brdScope" placeholder="Functional boundaries..." />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Out of Scope Boundaries</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="brdOutOfScope" placeholder="e.g. Chat bot, 3rd party logs" />
+                    </mat-form-field>
                   </div>
                 </div>
               </div>
 
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--blue">
-                    <i class="bi bi-key" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Project Key</span>
-                    <p class="oh-review-value">{{ newProjKey.toUpperCase() || '(Empty)' }}</p>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label oh-label--tight font-weight-bold mb-1">BRD Document URL link</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="brdDocUrl" placeholder="https://docs.google.com/document/..." />
+                    </mat-form-field>
                   </div>
                 </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--purple">
-                    <i class="bi bi-building" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Client</span>
-                    <p class="oh-review-value">{{ newProjClient || '(Empty)' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--orange">
-                    <i class="bi bi-diagram-3" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Methodology</span>
-                    <p class="oh-review-value capitalize">{{ newProjMethodology }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--green">
-                    <i class="bi bi-calendar-range" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Timeline</span>
-                    <p class="oh-review-value">{{ newProjStartDate | date:'dd MMM yyyy' }} &mdash; {{ newProjEndDate | date:'dd MMM yyyy' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--teal">
-                    <i class="bi bi-wallet2" aria-hidden="true"></i>
-                  </span>
-                  <div>
-                    <span class="oh-review-label">Budget</span>
-                    <p class="oh-review-value">₹{{ newProjBudget || '0' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-12">
-                <div class="oh-review-tile">
-                  <span class="oh-review-tile-icon oh-review-tile-icon--pink">
-                    <i class="bi bi-people" aria-hidden="true"></i>
-                  </span>
-                  <div class="flex-grow-1">
-                    <span class="oh-review-label">Allocated Team Members</span>
-                    <div class="d-flex align-items-center gap-2 flex-wrap mt-1">
-                      <span class="oh-member-chip d-flex align-items-center gap-2" *ngFor="let member of teamMembers()">
-                        <span class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(member.avatarColor)">
-                          {{ member.initials }}
-                        </span>
-                        <span class="oh-member-chip-name">{{ member.name }}</span>
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label oh-label--tight font-weight-bold mb-1">Upload BRD Specification</label>
+                    <div class="oh-upload-zone" (click)="fileInput.click()">
+                      <i class="bi bi-cloud-arrow-up text-teal" style="font-size: 18px;"></i>
+                      <span class="text-xs text-gray-700 font-weight-bold">
+                        {{ uploadedBrdFile() ? uploadedBrdFile()?.name : 'Choose File' }}
                       </span>
-                      <span *ngIf="!teamMembers().length" class="oh-review-value oh-review-value--muted">No members added</span>
+                      <input type="file" #fileInput class="d-none" (change)="onBrdFileSelected($event)" accept=".pdf,.doc,.docx,.xls,.xlsx" />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
+
+              <hr class="oh-section-divider mt-4 mb-3">
+              <div class="d-flex justify-content-end">
+                <button mat-flat-button color="primary" [disabled]="!brdTitle.trim() || !brdDesc.trim()" (click)="submitBrd()">
+                  Submit BRD to CTO <i class="bi bi-arrow-right-short ms-1"></i>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- WIZARD STEP 4: CTO BRD REVIEW (SIMULATOR) -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 4">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num bg-purple">4</span>
+                <h3 class="oh-section-title mb-0">CTO BRD Review & Sign-Off</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+
+              <!-- BRD Recap Card -->
+              <div class="oh-brd-recap-card mb-4 rounded-3 p-4 position-relative">
+                <span class="oh-brd-recap-tag">BRD Snapshot</span>
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                  <div class="oh-brd-icon-box">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                  </div>
+                  <div>
+                    <h4 class="oh-brd-recap-title mb-0">{{ brdTitle }}</h4>
+                    <span class="oh-brd-recap-subtitle">Document specifications loaded</span>
+                  </div>
+                </div>
+
+                <div class="oh-brd-details-grid">
+                  <div class="oh-brd-detail-item">
+                    <span class="oh-brd-detail-label"><i class="bi bi-bullseye"></i>BRD Scope Details</span>
+                    <span class="oh-brd-detail-value">{{ brdDesc }}</span>
+                  </div>
+                  <div class="oh-brd-detail-item">
+                    <span class="oh-brd-detail-label"><i class="bi bi-check-square-fill"></i>Scope Points</span>
+                    <span class="oh-brd-detail-value">{{ brdScope || 'General UI Integration' }}</span>
+                  </div>
+                  <div class="oh-brd-detail-item">
+                    <span class="oh-brd-detail-label"><i class="bi bi-dash-circle-fill"></i>Out of Scope</span>
+                    <span class="oh-brd-detail-value oh-brd-detail-value--danger">{{ brdOutOfScope || 'None' }}</span>
+                  </div>
+                </div>
+
+                <div class="oh-brd-footer">
+                  <a [href]="brdDocUrl" target="_blank" class="oh-brd-link">
+                    <i class="bi bi-box-arrow-up-right"></i> Open BRD Document Link
+                  </a>
+                  <span *ngIf="uploadedBrdFile()" class="oh-brd-file-badge">
+                    <i class="bi bi-file-earmark-check-fill"></i> {{ uploadedBrdFile()?.name }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Simulated CTO Sign-off Workspace -->
+              <div class="oh-simulator-box p-4 border border-teal-dashed rounded-3 bg-teal-light">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <span class="oh-avatar-circle oh-avatar-circle--sm oh-avatar-circle--blue">LK</span>
+                  <div class="text-sm">
+                    <strong class="d-block">Lokesh Kanuboina (CTO Office)</strong>
+                    <span class="text-xs text-muted">BRD Verification Gate</span>
+                  </div>
+                </div>
+
+                <div class="oh-field mb-3">
+                  <label class="oh-label font-weight-bold mb-1 text-teal-dark">CTO Audit Review Notes <span class="text-danger">*</span></label>
+                  <mat-form-field appearance="outline" class="w-100 bg-white" subscriptSizing="dynamic">
+                    <textarea matInput [(ngModel)]="ctoBrdComment" rows="3" placeholder="Provide CTO audit / changes requirements..."></textarea>
+                  </mat-form-field>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                  <button mat-flat-button color="warn" [disabled]="!ctoBrdComment.trim()" (click)="ctoApproveBrd(false)">
+                    <i class="bi bi-x-circle me-1"></i>Request Changes
+                  </button>
+                  <button mat-flat-button class="oh-btn-approve" [disabled]="!ctoBrdComment.trim()" (click)="ctoApproveBrd(true)">
+                    <i class="bi bi-check-circle me-1"></i>Approve & Sign-Off BRD
+                  </button>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- WIZARD STEP 5: PROJECT CONFIGURATION -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 5">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num">5</span>
+                <h3 class="oh-section-title mb-0">Project / Module Prompts</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+
+              <!-- Question: Module, Project, or Other? -->
+              <div class="oh-prompt-box mb-4 p-4 border rounded-3 bg-light text-center">
+                <h4 class="font-weight-bold text-gray-900 mb-3">Is this a Module, a Project, or Other?</h4>
+                <div class="d-flex justify-content-center gap-4 flex-wrap">
+                  <div class="oh-type-selector p-3 border rounded-3 bg-white cursor-pointer"
+                       [class.oh-type-selector--selected]="propType === 'project'"
+                       (click)="propType = 'project'">
+                    <i class="bi bi-folder2 fs-1 text-teal d-block mb-1"></i>
+                    <strong>Standalone Project</strong>
+                    <p class="text-xs text-muted mb-0">New independent container</p>
+                  </div>
+
+                  <div class="oh-type-selector p-3 border rounded-3 bg-white cursor-pointer"
+                       [class.oh-type-selector--selected]="propType === 'module'"
+                       (click)="propType = 'module'">
+                    <i class="bi bi-layers fs-1 text-violet d-block mb-1"></i>
+                    <strong>Sub-Module</strong>
+                    <p class="text-xs text-muted mb-0">Part of a parent project</p>
+                  </div>
+
+                  <div class="oh-type-selector p-3 border rounded-3 bg-white cursor-pointer"
+                       [class.oh-type-selector--selected]="propType === 'other'"
+                       (click)="propType = 'other'">
+                    <i class="bi bi-question-circle fs-1 text-orange d-block mb-1"></i>
+                    <strong>Other</strong>
+                    <p class="text-xs text-muted mb-0">Custom initiative type</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conditional: Parent Project Select -->
+              <div class="oh-field mb-3" *ngIf="propType === 'module'">
+                <label class="oh-label font-weight-bold mb-1">Select Parent Project <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                  <mat-select [(ngModel)]="propParentProjectId" placeholder="Choose project...">
+                    <mat-option *ngFor="let p of parentProjects" [value]="p.id">{{ p.name }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <!-- Conditional: Custom Type manual entry -->
+              <div class="oh-field mb-3" *ngIf="propType === 'other'">
+                <label class="oh-label font-weight-bold mb-1">Custom Type Name <span class="text-danger">*</span></label>
+                <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [(ngModel)]="propCustomType" placeholder="e.g. Research Spike, Internal Tooling, POC" />
+                </mat-form-field>
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Project Key <span class="text-danger">*</span></label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="creationKey" placeholder="e.g. BIL" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Client Name</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="creationClient" placeholder="e.g. Razorpay" />
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Estimation Budget (₹)</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="creationBudget" placeholder="84,000" />
+                    </mat-form-field>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="oh-field">
+                    <label class="oh-label font-weight-bold mb-1">Methodology</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                      <mat-select [(ngModel)]="creationMethodology">
+                        <mat-option value="scrum">Scrum / Agile Sprints</mat-option>
+                        <mat-option value="kanban">Kanban Continuous</mat-option>
+                        <mat-option value="waterfall">Waterfall Phased</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="oh-section-divider mt-4 mb-3">
+              <div class="d-flex justify-content-end">
+                <button mat-flat-button color="primary"
+                        [disabled]="!creationKey.trim() || (propType === 'module' && !propParentProjectId) || (propType === 'other' && !propCustomType.trim())"
+                        (click)="saveProjectDefinition()">
+                  Continue to Allocations <i class="bi bi-arrow-right-short ms-1"></i>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- WIZARD STEP 6: TEAM ALLOCATION -->
+          <mat-card appearance="outlined" class="oh-panel mb-4" *ngIf="wizardStep() === 6">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="oh-section-num">6</span>
+                <h3 class="oh-section-title mb-0">Resource & Team Allocation</h3>
+              </div>
+              <hr class="oh-section-divider mb-3">
+              <p class="text-sm text-muted mb-4">Assign resources, configure roles, and assign allocation weightages to finalize this project.</p>
+
+              <!-- Live Allocation Summary -->
+              <div class="oh-alloc-summary-row mb-4">
+                <div class="oh-alloc-summary-tile">
+                  <span class="oh-alloc-summary-icon oh-alloc-summary-icon--teal"><i class="bi bi-people-fill"></i></span>
+                  <div>
+                    <span class="oh-alloc-summary-val">{{ allocatedMembers.length }}</span>
+                    <span class="oh-alloc-summary-label">Team Members</span>
+                  </div>
+                </div>
+                <div class="oh-alloc-summary-tile">
+                  <span class="oh-alloc-summary-icon oh-alloc-summary-icon--blue"><i class="bi bi-pie-chart-fill"></i></span>
+                  <div>
+                    <span class="oh-alloc-summary-val">{{ totalAllocationPercent() }}%</span>
+                    <span class="oh-alloc-summary-label">Total Allocation</span>
+                  </div>
+                </div>
+                <div class="oh-alloc-summary-tile">
+                  <span class="oh-alloc-summary-icon oh-alloc-summary-icon--violet"><i class="bi bi-diagram-3-fill"></i></span>
+                  <div>
+                    <span class="oh-alloc-summary-val">{{ uniqueRolesCount() }}</span>
+                    <span class="oh-alloc-summary-label">Distinct Roles</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resource Pool: search + allocation % to apply on assign -->
+              <div class="oh-pool-toolbar mb-3">
+                <mat-form-field appearance="outline" class="oh-pool-search oh-compact-field bg-white" subscriptSizing="dynamic">
+                  <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                  <input matInput [(ngModel)]="resourceSearch" placeholder="Search by name, role, or skill (e.g. React, QA, Figma)..." />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="oh-pool-percent oh-compact-field bg-white" subscriptSizing="dynamic">
+                  <mat-select [(ngModel)]="newAllocPercent">
+                    <mat-option [value]="25">Assign at 25%</mat-option>
+                    <mat-option [value]="50">Assign at 50%</mat-option>
+                    <mat-option [value]="75">Assign at 75%</mat-option>
+                    <mat-option [value]="100">Assign at 100%</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <!-- Category 1: Available Resources -->
+              <div class="oh-resource-category mb-4">
+                <h4 class="font-weight-bold text-sm mb-3 d-flex align-items-center gap-2">
+                  <span class="oh-resource-category-dot oh-resource-category-dot--available"></span>
+                  Available Now
+                  <span class="oh-badge oh-badge--success text-xs">{{ availableResources.length }}</span>
+                </h4>
+                <div class="oh-resource-grid">
+                  <div class="oh-resource-card" *ngFor="let r of availableResources">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="oh-avatar-circle oh-avatar-circle--sm" [ngClass]="getAvatarClass(r.avatarColor)">{{ r.initials }}</span>
+                        <div class="min-width-0">
+                          <strong class="d-block text-xs text-truncate">{{ r.name }}</strong>
+                          <span class="text-xxs text-muted">{{ r.role }}</span>
+                        </div>
+                      </div>
+                      <span class="oh-badge oh-badge--success text-xxs">Available</span>
+                    </div>
+
+                    <div class="oh-resource-meta text-xxs text-muted mb-2">
+                      <i class="bi bi-briefcase me-1"></i>{{ r.experienceYears }} yrs experience
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1 mb-2">
+                      <span class="oh-skill-tag" *ngFor="let s of r.skills">{{ s }}</span>
+                    </div>
+
+                    <div class="oh-resource-prev text-xxs text-muted mb-3">
+                      <i class="bi bi-clock-history me-1"></i>Previously: {{ r.previousProjects.join(', ') }}
+                    </div>
+
+                    <button mat-flat-button color="primary" class="w-100 oh-btn-assign"
+                            [disabled]="isResourceAssigned(r)"
+                            (click)="assignResourceFromPool(r)">
+                      <i class="bi" [ngClass]="isResourceAssigned(r) ? 'bi-check-lg' : 'bi-plus-lg'"></i>
+                      {{ isResourceAssigned(r) ? 'Assigned' : 'Assign to Project' }}
+                    </button>
+                  </div>
+                  <div *ngIf="!availableResources.length" class="oh-resource-empty">
+                    No available resources match your search.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 2: Already Allocated to Other Projects -->
+              <div class="oh-resource-category mb-4">
+                <h4 class="font-weight-bold text-sm mb-3 d-flex align-items-center gap-2">
+                  <span class="oh-resource-category-dot oh-resource-category-dot--busy"></span>
+                  Already Allocated to Other Projects
+                  <span class="oh-badge oh-badge--warning text-xs">{{ busyResources.length }}</span>
+                </h4>
+                <div class="oh-resource-grid">
+                  <div class="oh-resource-card oh-resource-card--busy" *ngFor="let r of busyResources">
+                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="oh-avatar-circle oh-avatar-circle--sm" [ngClass]="getAvatarClass(r.avatarColor)">{{ r.initials }}</span>
+                        <div class="min-width-0">
+                          <strong class="d-block text-xs text-truncate">{{ r.name }}</strong>
+                          <span class="text-xxs text-muted">{{ r.role }}</span>
+                        </div>
+                      </div>
+                      <span class="oh-badge oh-badge--warning text-xxs">Busy</span>
+                    </div>
+
+                    <div class="oh-resource-meta text-xxs text-muted mb-2">
+                      <i class="bi bi-briefcase me-1"></i>{{ r.experienceYears }} yrs experience
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-1 mb-2">
+                      <span class="oh-skill-tag" *ngFor="let s of r.skills">{{ s }}</span>
+                    </div>
+
+                    <div class="oh-resource-prev text-xxs text-muted mb-2">
+                      <i class="bi bi-clock-history me-1"></i>Previously: {{ r.previousProjects.join(', ') }}
+                    </div>
+
+                    <div class="oh-resource-current-badge mb-3">
+                      <i class="bi bi-exclamation-triangle-fill me-1"></i>Currently on: {{ r.currentAllocation }}
+                    </div>
+
+                    <button mat-stroked-button class="w-100 oh-btn-assign oh-btn-assign--warn"
+                            [disabled]="isResourceAssigned(r)"
+                            (click)="assignResourceFromPool(r)">
+                      <i class="bi" [ngClass]="isResourceAssigned(r) ? 'bi-check-lg' : 'bi-plus-lg'"></i>
+                      {{ isResourceAssigned(r) ? 'Assigned' : 'Assign Anyway' }}
+                    </button>
+                  </div>
+                  <div *ngIf="!busyResources.length" class="oh-resource-empty">
+                    No busy resources match your search.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inline Member Allocation Input Form -->
+              <div class="oh-alloc-form p-3 border rounded-3 mb-4 bg-light">
+                <h4 class="font-weight-bold text-xs mb-3 d-flex align-items-center gap-2">
+                  <i class="bi bi-person-plus-fill text-teal"></i>Or Add a Custom Resource Manually
+                </h4>
+                <div class="row g-2 align-items-end">
+                  <div class="col-md-4">
+                    <label class="oh-label font-weight-bold mb-1 text-xxs">Resource Name</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field bg-white" subscriptSizing="dynamic">
+                      <input matInput [(ngModel)]="newAllocName" placeholder="e.g. Ankit Verma" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="oh-label font-weight-bold mb-1 text-xxs">Role</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field bg-white" subscriptSizing="dynamic">
+                      <mat-select [(ngModel)]="newAllocRole">
+                        <mat-option value="Project Lead">Project Lead</mat-option>
+                        <mat-option value="Business Analyst">Business Analyst</mat-option>
+                        <mat-option value="Developer">Developer</mat-option>
+                        <mat-option value="QA Tester">QA Tester</mat-option>
+                        <mat-option value="UI/UX Designer">UI/UX Designer</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="oh-label font-weight-bold mb-1 text-xxs">Allocation</label>
+                    <mat-form-field appearance="outline" class="w-100 oh-compact-field bg-white" subscriptSizing="dynamic">
+                      <mat-select [(ngModel)]="newAllocPercent">
+                        <mat-option [value]="25">25% Allocation</mat-option>
+                        <mat-option [value]="50">50% Allocation</mat-option>
+                        <mat-option [value]="75">75% Allocation</mat-option>
+                        <mat-option [value]="100">100% Fulltime</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  <div class="col-md-2">
+                    <button mat-flat-button color="primary" class="w-100 oh-btn-allocate" [disabled]="!newAllocName.trim()" (click)="addAllocatedMember()">
+                      <i class="bi bi-plus-lg me-1"></i>Allocate
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Allocated List of Cards -->
+              <div class="oh-team-allocations mb-4">
+                <h4 class="font-weight-bold text-sm mb-3 d-flex align-items-center justify-content-between">
+                  <span>Allocated Resources</span>
+                  <span class="oh-badge oh-badge--neutral text-xs">{{ allocatedMembers.length }} Assigned</span>
+                </h4>
+                <div class="oh-allocated-grid">
+                  <div class="oh-allocated-card" *ngFor="let m of allocatedMembers">
+                    <button type="button" class="oh-allocated-remove" (click)="removeAllocatedMember(m)" aria-label="Remove resource">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                      <span class="oh-avatar-circle oh-avatar-circle--sm" [ngClass]="getAvatarClass(m.avatarColor)">
+                        {{ m.initials }}
+                      </span>
+                      <div class="oh-allocated-info">
+                        <strong class="d-block text-xs text-truncate">{{ m.name }}</strong>
+                        <span class="text-xxs text-muted">{{ m.role }}</span>
+                      </div>
+                    </div>
+                    <div class="oh-allocated-bar-track">
+                      <div class="oh-allocated-bar-fill" [style.width.%]="m.allocation"></div>
+                    </div>
+                    <span class="oh-allocated-pct">{{ m.allocation }}% Allocated</span>
+                  </div>
+                  <div *ngIf="!allocatedMembers.length" class="oh-allocated-empty">
+                    <i class="bi bi-people d-block mb-2"></i>
+                    No resources allocated yet. Use the form above to add your first team member.
+                  </div>
+                </div>
+              </div>
+
+              <hr class="oh-section-divider mt-4 mb-3">
+              <div class="d-flex justify-content-end">
+                <button mat-flat-button class="oh-btn-approve" [disabled]="!allocatedMembers.length" (click)="launchProject()">
+                  Launch Project <i class="bi bi-rocket-takeoff-fill ms-1"></i>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+        </div>
 
       </div>
-    </div>
 
+    </div>
   </div>
 
-  <!-- Bottom Fixed Bar -->
-  <div class="oh-project-create-footer-bar d-flex align-items-center px-4 py-3 bg-white border-top">
-    <div class="oh-project-create-footer-side d-flex">
-      <button mat-stroked-button type="button" *ngIf="activeStep() > 1" (click)="prevStep()">
-        <i class="bi bi-chevron-left me-1" aria-hidden="true"></i>Back
-      </button>
-    </div>
-    <span class="oh-project-create-footer-status flex-grow-1 text-center">Auto-saved {{ lastSavedLabel() }}</span>
-    <div class="oh-project-create-footer-side d-flex justify-content-end">
-      <button
-        mat-flat-button
-        color="primary"
-        type="button"
-        [disabled]="activeStep() === 1 && (!newProjName.trim() || !newProjKey.trim())"
-        (click)="activeStep() === 5 ? saveProject() : nextStep()"
-      >
-        {{ activeStep() === 5 ? 'Create project' : 'Continue' }}
-        <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
-      </button>
-    </div>
-  </div>
 </div>

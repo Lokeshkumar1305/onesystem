@@ -1,0 +1,53 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="font-weight-bold text-sm mb-0">Atlas Tasks Estimations</h3>
+  <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canCreateTask()"
+          [matTooltip]="roleService.canCreateTask() ? '' : 'Only a Developer or Manager can add tasks'"
+          (click)="showAddForm = !showAddForm">
+    <i class="bi bi-plus-lg me-1"></i>New Task
+  </button>
+</div>
+
+<!-- Inline Creator Form -->
+<div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canCreateTask()">
+  <h4 class="font-weight-bold text-xs mb-2">Create Atlas Task</h4>
+  <div class="row g-2 align-items-end">
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="newTaskTitle" placeholder="Task execution summaries..." />
+      </mat-form-field>
+    </div>
+    <div class="col-md-4">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="newTaskAssignee" placeholder="Assignee initials (e.g. RM)..." />
+      </mat-form-field>
+    </div>
+    <div class="col-md-2 text-end">
+      <button mat-flat-button color="primary" class="w-100" [disabled]="!newTaskTitle.trim()" (click)="addAtlasTask()">
+        Add Task
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Tasks list -->
+<div class="oh-list-grid bg-white border rounded-3 shadow-sm">
+  <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
+    <div class="col-2">ID</div>
+    <div class="col-6">Task Description</div>
+    <div class="col-2 text-center">Assignee</div>
+    <div class="col-2 text-center">Status</div>
+  </div>
+  <div class="oh-list-row p-3 border-bottom d-flex align-items-center text-sm" *ngFor="let t of project.tasks">
+    <div class="col-2 font-mono text-xs">{{ t.id }}</div>
+    <div class="col-6 text-gray-800">{{ t.title }}</div>
+    <div class="col-2 text-center">
+      <span class="oh-avatar-circle oh-avatar-circle--xs oh-avatar-circle--blue">{{ t.assignee }}</span>
+    </div>
+    <div class="col-2 text-center">
+      <span class="oh-badge oh-badge--outline oh-badge--xs">{{ t.status }}</span>
+    </div>
+  </div>
+  <div *ngIf="!project.tasks.length" class="text-center py-5 text-muted text-xs">
+    No tasks available. {{ roleService.canCreateTask() ? 'Click "New Task" to create.' : 'Only a Developer or Manager can add tasks.' }}
+  </div>
+</div>

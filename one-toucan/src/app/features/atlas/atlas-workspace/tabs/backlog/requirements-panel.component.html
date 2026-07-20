@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="font-weight-bold text-sm mb-0">Project Requirements</h3>
+  <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canCreateRequirement()"
+          [matTooltip]="roleService.canCreateRequirement() ? '' : 'Only a Business Analyst or Manager can add requirements'"
+          (click)="showAddForm = !showAddForm">
+    <i class="bi bi-plus-lg me-1"></i>New Requirement
+  </button>
+</div>
+
+<!-- Inline Creator Form -->
+<div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canCreateRequirement()">
+  <h4 class="font-weight-bold text-xs mb-2">Add Requirement Spec</h4>
+  <div class="row g-2 align-items-end">
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput [(ngModel)]="newReqTitle" placeholder="Requirements description..." />
+      </mat-form-field>
+    </div>
+    <div class="col-md-3">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <mat-select [(ngModel)]="newReqPriority">
+          <mat-option value="High">High Priority</mat-option>
+          <mat-option value="Medium">Medium Priority</mat-option>
+          <mat-option value="Low">Low Priority</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-1">
+      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+        <input matInput type="number" [(ngModel)]="newReqPts" placeholder="Pts" />
+      </mat-form-field>
+    </div>
+    <div class="col-md-2 text-end">
+      <button mat-flat-button color="primary" class="w-100" [disabled]="!newReqTitle.trim()" (click)="addRequirement()">
+        Add
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Requirements lists -->
+<div class="oh-list-grid bg-white border rounded-3 shadow-sm">
+  <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
+    <div class="col-2">ID</div>
+    <div class="col-5">Requirement Summary</div>
+    <div class="col-2 text-center">Priority</div>
+    <div class="col-1 text-center">Pts</div>
+    <div class="col-2 text-center">Status</div>
+  </div>
+  <div class="oh-list-row p-3 border-bottom d-flex align-items-center text-sm" *ngFor="let r of project.requirements">
+    <div class="col-2 font-mono text-xs">{{ r.id }}</div>
+    <div class="col-5 text-gray-800">{{ r.title }}</div>
+    <div class="col-2 text-center">
+      <span class="oh-badge oh-badge--xs" [ngClass]="r.priority === 'High' ? 'oh-badge--danger' : r.priority === 'Medium' ? 'oh-badge--warning' : 'oh-badge--success'">
+        {{ r.priority }}
+      </span>
+    </div>
+    <div class="col-1 text-center font-weight-bold">{{ r.pts }}pt</div>
+    <div class="col-2 text-center">
+      <span class="oh-badge oh-badge--outline oh-badge--xs">{{ r.status }}</span>
+    </div>
+  </div>
+  <div *ngIf="!project.requirements.length" class="text-center py-5 text-muted text-xs">
+    No requirements logged. {{ roleService.canCreateRequirement() ? 'Click "New Requirement" to add.' : 'Only a Business Analyst or Manager can add requirements.' }}
+  </div>
+</div>

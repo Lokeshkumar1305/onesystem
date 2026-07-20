@@ -104,17 +104,19 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     label: 'Atlas',
     icon: 'compass',
     tagline: 'Build & Ship',
-    description: 'Author user stories, manage tasks and raise or triage bugs.',
-    homeRoute: '/dashboard',
+    description: 'Manage project delivery workspaces — requirements, stories, tasks, test cases, and bugs.',
+    // Unique route (not shared with any other module) so moduleForPath()
+    // resolves unambiguously — Project Management also lists '/dashboard',
+    // and syncFromUrl() would otherwise always resolve the shared URL to
+    // whichever module appears first, silently overriding Atlas context.
+    homeRoute: '/atlas/projects',
     accent: 'amber',
     groups: [
       { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
       {
         title: 'Delivery Board',
         items: [
-          { label: 'User Stories', icon: 'list-check', route: '/requirements' },
-          { label: 'My Tasks', icon: 'check2-square', route: '/tasks' },
-          { label: 'Bugs', icon: 'bug', route: '/bugs' }
+          { label: 'Projects', icon: 'folder', route: '/atlas/projects' }
         ]
       }
     ]

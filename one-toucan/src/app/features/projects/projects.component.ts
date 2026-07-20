@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,23 +10,23 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { INITIAL_BOARD, ProjectColumn, ProjectCard } from './projects.data';
-
-interface TeamMember {
-  initials: string;
-  name: string;
-  avatarColor: string; // e.g. 'blue', 'purple', 'pink', 'teal'
-}
-
-const STEP_LABELS = ['Project basics', 'Methodology', 'Timeline & budget', 'Team', 'Review & launch'];
+import { RoleService } from '../../core/auth/role.service';
+import { ProjectStateService } from '../../core/projects/project-state.service';
+import {
+  ActiveProject,
+  ProjectProposal,
+  TeamMember,
+  ResourcePoolMember,
+  RESOURCE_POOL
+} from '../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-projects',
   standalone: true,
   imports: [
     CommonModule,
-    DragDropModule,
     MatCardModule,
     MatDatepickerModule,
     MatIconModule,
@@ -35,217 +35,431 @@ const STEP_LABELS = ['Project basics', 'Methodology', 'Timeline & budget', 'Team
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatTooltipModule,
     FormsModule
   ],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.scss'
 })
 export class ProjectsComponent implements OnDestroy {
-  readonly activeView = signal<'board' | 'create'>('board');
-  readonly activeStep = signal<number>(1);
-  readonly lastSavedLabel = signal('12 seconds ago');
+  private readonly router = inject(Router);
+  private readonly projectState = inject(ProjectStateService);
+  readonly roleService = inject(RoleService);
 
-  get currentStepLabel(): string {
-    return STEP_LABELS[this.activeStep() - 1];
+  // Navigation & View States
+  readonly activeView = signal<'dashboard' | 'proposal-wizard'>('dashboard');
+
+  // Shared project/proposal data — owned by ProjectStateService so both this
+  // Project Management screen and the Atlas per-project workspace read the
+  // same live list.
+  readonly activeProjects = this.projectState.activeProjects;
+  readonly proposals = this.projectState.proposals;
+
+  // Filter Active Projects by Project or Module Type
+  readonly selectedTypeFilter = signal<'all' | 'project' | 'module'>('all');
+  readonly filteredActiveProjects = computed(() => {
+    const filter = this.selectedTypeFilter();
+    const list = this.activeProjects();
+    if (filter === 'all') return list;
+    if (filter === 'project') return list.filter(p => !p.isModule);
+    return list.filter(p => p.isModule);
+  });
+
+  // Selected entities
+  readonly selectedProposal = signal<ProjectProposal | null>(null);
+
+  // Wizard state (1 to 6)
+  // 1: Ideation, 2: Ideation Approval, 3: BRD, 4: BRD Approval, 5: Project Creation, 6: Team Allocation
+  readonly wizardStep = signal<number>(1);
+  readonly lastSavedLabel = signal('Just now');
+
+  // Temporary/Input forms states
+  // Proposal Wizard Inputs
+  propName = '';
+  propType: 'project' | 'module' | 'other' = 'project';
+  propCustomType = '';
+  propParentProjectId = '';
+  propDesc = '';
+
+  // Step 1 Ideation inputs
+  ideaTitle = '';
+  ideaDesc = '';
+  ideaValue = '';
+  ideaSubmitter = 'Rahul Menon';
+
+  // Step 2 Ideation Approval simulated CTO inputs
+  ctoIdeaComment = '';
+
+  // Step 3 BRD inputs
+  brdTitle = '';
+  brdDesc = '';
+  brdDocUrl = 'https://docs.google.com/brd/new-draft';
+  brdScope = '';
+  brdOutOfScope = '';
+  readonly uploadedBrdFile = signal<File | null>(null);
+
+  // Step 4 BRD Approval simulated CTO inputs
+  ctoBrdComment = '';
+
+  // Step 5 Creation parameters
+  creationKey = '';
+  creationClient = 'Razorpay';
+  creationBudget = '45,000';
+  creationMethodology: 'scrum' | 'kanban' | 'waterfall' = 'scrum';
+
+  // Step 6 Allocation inputs
+  allocatedMembers: TeamMember[] = [];
+  newAllocName = '';
+  newAllocRole = 'Developer';
+  newAllocPercent = 100;
+  newAllocInitials = '';
+
+  // Step 6 Resource Pool (available vs. already allocated elsewhere)
+  resourcePool: ResourcePoolMember[] = RESOURCE_POOL;
+  resourceSearch = '';
+
+  // Helper arrays for lookups
+  get parentProjects(): ActiveProject[] {
+    return this.activeProjects().filter(p => !p.isModule);
   }
 
-  // Kanban Board columns
-  readonly board = signal<ProjectColumn[]>(INITIAL_BOARD);
+  // Navigate into the project's Atlas workspace
+  openProject(project: ActiveProject): void {
+    this.router.navigate(['/atlas/projects', project.id]);
+  }
 
-  // New Project Form parameters
-  newProjName = '';
-  newProjDesc = '';
-  newProjKey = '';
-  newProjClient = 'Razorpay';
-  newProjMethodology: 'scrum' | 'kanban' | 'waterfall' = 'scrum';
-  newProjStartDate: Date | null = new Date(2026, 6, 7);
-  newProjEndDate: Date | null = new Date(2026, 11, 31);
-  newProjBudget = '84,000';
-  newProjSlack = true;
+  goBackToDashboard(): void {
+    this.activeView.set('dashboard');
+  }
 
-  // Team list state
-  readonly teamMembers = signal<TeamMember[]>([
-    { initials: 'RM', name: 'Rahul Menon', avatarColor: 'blue' },
-    { initials: 'SI', name: 'Sneha Iyer', avatarColor: 'teal' },
-    { initials: 'AK', name: 'Arman Khan', avatarColor: 'pink' }
-  ]);
-  newMemberInput = '';
+  // Stepper wizards triggers
+  startNewProposal(): void {
+    if (!this.roleService.canManageProjects()) return;
 
-  // Quick Story Creation Form (Inline on Backlog header or simple dialog input)
-  showAddStoryInput = false;
-  storyTitleInput = '';
-  storyTypeInput: 'FEATURE' | 'BUG' | 'CHORE' | 'SECURITY' = 'FEATURE';
+    this.selectedProposal.set({
+      id: 'PROP-' + (this.proposals().length + 101),
+      name: '',
+      isModule: false,
+      description: '',
+      stage: 'ideation',
+      ideation: { title: '', description: '', valueProps: '', submittedBy: 'Rahul Menon', status: 'Pending', comments: '' },
+      brd: { title: '', description: '', documentUrl: '', scope: '', outOfScope: '', status: 'Pending', comments: '' },
+      creation: { key: '', client: 'Razorpay', budget: '20,000', methodology: 'scrum' },
+      team: []
+    });
+
+    this.resetWizardInputs();
+    this.wizardStep.set(1);
+    this.activeView.set('proposal-wizard');
+  }
+
+  openProposalWizard(proposal: ProjectProposal): void {
+    this.selectedProposal.set(proposal);
+    this.propName = proposal.name;
+    this.propType = proposal.isModule ? 'module' : (proposal.customType ? 'other' : 'project');
+    this.propCustomType = proposal.customType || '';
+    this.propParentProjectId = proposal.parentProjectId || '';
+    this.propDesc = proposal.description;
+
+    // Load sub-fields based on current step
+    this.ideaTitle = proposal.ideation.title || proposal.name;
+    this.ideaDesc = proposal.ideation.description || proposal.description;
+    this.ideaValue = proposal.ideation.valueProps;
+    this.ideaSubmitter = proposal.ideation.submittedBy;
+    this.ctoIdeaComment = proposal.ideation.comments;
+
+    this.brdTitle = proposal.brd.title || (proposal.name ? proposal.name + ' Specs' : '');
+    this.brdDesc = proposal.brd.description;
+    this.brdDocUrl = proposal.brd.documentUrl || 'https://docs.google.com/brd/draft';
+    this.brdScope = proposal.brd.scope;
+    this.brdOutOfScope = proposal.brd.outOfScope;
+    this.ctoBrdComment = proposal.brd.comments;
+
+    this.creationKey = proposal.creation.key;
+    this.creationClient = proposal.creation.client;
+    this.creationBudget = proposal.creation.budget;
+    this.creationMethodology = proposal.creation.methodology;
+
+    this.allocatedMembers = [...proposal.team];
+
+    // Determine current wizard step based on proposal stage
+    switch (proposal.stage) {
+      case 'ideation':
+        this.wizardStep.set(1);
+        break;
+      case 'ideation_approval':
+        this.wizardStep.set(2);
+        break;
+      case 'brd':
+        this.wizardStep.set(3);
+        break;
+      case 'brd_approval':
+        this.wizardStep.set(4);
+        break;
+      case 'creation':
+        this.wizardStep.set(5);
+        break;
+      case 'allocation':
+        this.wizardStep.set(6);
+        break;
+      default:
+        this.wizardStep.set(1);
+        break;
+    }
+
+    this.activeView.set('proposal-wizard');
+  }
+
+  // Stepper Step 1: Submit Ideation
+  submitIdeation(): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    proposal.name = this.ideaTitle;
+    proposal.description = this.ideaDesc;
+    proposal.ideation = {
+      title: this.ideaTitle,
+      description: this.ideaDesc,
+      valueProps: this.ideaValue,
+      submittedBy: this.ideaSubmitter,
+      status: 'Pending',
+      comments: ''
+    };
+    proposal.stage = 'ideation_approval';
+    this.projectState.saveProposal(proposal);
+    this.wizardStep.set(2);
+  }
+
+  // Stepper Step 2: CTO Approves/Rejects Ideation (simulated)
+  ctoApproveIdeation(approved: boolean): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    proposal.ideation.status = approved ? 'Approved' : 'Rejected';
+    proposal.ideation.comments = this.ctoIdeaComment;
+
+    if (approved) {
+      proposal.stage = 'brd';
+      this.brdTitle = proposal.name + ' BRD';
+      this.wizardStep.set(3);
+    } else {
+      alert(`Proposal "${proposal.name}" rejected by CTO.`);
+      this.activeView.set('dashboard');
+    }
+    this.projectState.saveProposal(proposal);
+  }
+
+  // Stepper Step 3: Submit BRD
+  submitBrd(): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    proposal.brd = {
+      title: this.brdTitle,
+      description: this.brdDesc,
+      documentUrl: this.brdDocUrl,
+      scope: this.brdScope,
+      outOfScope: this.brdOutOfScope,
+      status: 'Pending',
+      comments: ''
+    };
+    proposal.stage = 'brd_approval';
+    this.projectState.saveProposal(proposal);
+    this.wizardStep.set(4);
+  }
+
+  onBrdFileSelected(event: Event): void {
+    const element = event.target as HTMLInputElement;
+    const fileList = element.files;
+    if (fileList && fileList.length > 0) {
+      const file = fileList[0];
+      this.uploadedBrdFile.set(file);
+      this.brdDocUrl = `file:///${file.name}`;
+    }
+  }
+
+  // Stepper Step 4: CTO Approves/Rejects BRD
+  ctoApproveBrd(approved: boolean): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    proposal.brd.status = approved ? 'Approved' : 'Rejected';
+    proposal.brd.comments = this.ctoBrdComment;
+
+    if (approved) {
+      proposal.stage = 'creation';
+      // Auto-suggest key
+      if (!this.creationKey) {
+        this.creationKey = proposal.name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 3);
+      }
+      this.wizardStep.set(5);
+    } else {
+      alert(`BRD rejected by CTO. Feedback: ${this.ctoBrdComment}`);
+      this.activeView.set('dashboard');
+    }
+    this.projectState.saveProposal(proposal);
+  }
+
+  // Stepper Step 5: Save Project Definition
+  saveProjectDefinition(): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    proposal.isModule = this.propType === 'module';
+    proposal.customType = this.propType === 'other' ? this.propCustomType.trim() : undefined;
+    proposal.parentProjectId = this.propParentProjectId;
+    proposal.creation = {
+      key: this.creationKey,
+      client: this.creationClient,
+      budget: this.creationBudget,
+      methodology: this.creationMethodology
+    };
+    proposal.stage = 'allocation';
+    this.projectState.saveProposal(proposal);
+    this.wizardStep.set(6);
+  }
+
+  // Stepper Step 6: Team Allocation and Finalize
+  addAllocatedMember(): void {
+    if (!this.newAllocName.trim()) return;
+
+    const parts = this.newAllocName.split(' ').filter(Boolean);
+    const initials = parts.length > 0
+      ? (parts[0][0] + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase()
+      : '??';
+
+    const colors = ['blue', 'purple', 'pink', 'teal'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
+    this.allocatedMembers.push({
+      initials,
+      name: this.newAllocName,
+      role: this.newAllocRole,
+      allocation: this.newAllocPercent,
+      avatarColor: color
+    });
+
+    this.newAllocName = '';
+  }
+
+  removeAllocatedMember(member: TeamMember): void {
+    this.allocatedMembers = this.allocatedMembers.filter(m => m.name !== member.name);
+  }
+
+  totalAllocationPercent(): number {
+    return this.allocatedMembers.reduce((sum, m) => sum + m.allocation, 0);
+  }
+
+  uniqueRolesCount(): number {
+    return new Set(this.allocatedMembers.map(m => m.role)).size;
+  }
+
+  // Step 6: Resource Pool — available vs. already-allocated-elsewhere
+  get availableResources(): ResourcePoolMember[] {
+    return this.filterResourcePool(this.resourcePool.filter(r => r.status === 'available'));
+  }
+
+  get busyResources(): ResourcePoolMember[] {
+    return this.filterResourcePool(this.resourcePool.filter(r => r.status === 'allocated'));
+  }
+
+  private filterResourcePool(list: ResourcePoolMember[]): ResourcePoolMember[] {
+    const term = this.resourceSearch.trim().toLowerCase();
+    if (!term) return list;
+    return list.filter(r =>
+      r.name.toLowerCase().includes(term) ||
+      r.role.toLowerCase().includes(term) ||
+      r.skills.some(s => s.toLowerCase().includes(term))
+    );
+  }
+
+  isResourceAssigned(member: ResourcePoolMember): boolean {
+    return this.allocatedMembers.some(m => m.name === member.name);
+  }
+
+  assignResourceFromPool(member: ResourcePoolMember): void {
+    if (this.isResourceAssigned(member)) return;
+
+    this.allocatedMembers.push({
+      initials: member.initials,
+      name: member.name,
+      role: member.role,
+      allocation: this.newAllocPercent,
+      avatarColor: member.avatarColor
+    });
+  }
+
+  launchProject(): void {
+    const proposal = this.selectedProposal();
+    if (!proposal) return;
+
+    const newProj = this.projectState.launchProject(
+      proposal,
+      { key: this.creationKey, client: this.creationClient },
+      this.allocatedMembers
+    );
+
+    this.selectedProposal.set(null);
+    alert(`Successfully launched ${proposal.isModule ? 'Module' : (proposal.customType || 'Project')} "${newProj.name}"!`);
+
+    // Redirect straight into the newly created project's Atlas workspace.
+    this.router.navigate(['/atlas/projects', newProj.id]);
+  }
+
+  // Cancel flow
+  cancelWizard(): void {
+    this.activeView.set('dashboard');
+    this.selectedProposal.set(null);
+  }
+
+  private resetWizardInputs(): void {
+    this.propName = '';
+    this.propType = 'project';
+    this.propCustomType = '';
+    this.propParentProjectId = '';
+    this.propDesc = '';
+
+    this.ideaTitle = '';
+    this.ideaDesc = '';
+    this.ideaValue = '';
+    this.ideaSubmitter = 'Rahul Menon';
+    this.ctoIdeaComment = '';
+
+    this.brdTitle = '';
+    this.brdDesc = '';
+    this.brdDocUrl = 'https://docs.google.com/brd/new-draft';
+    this.brdScope = '';
+    this.brdOutOfScope = '';
+    this.uploadedBrdFile.set(null);
+    this.ctoBrdComment = '';
+
+    this.creationKey = '';
+    this.creationClient = 'Razorpay';
+    this.creationBudget = '45,000';
+    this.creationMethodology = 'scrum';
+
+    this.allocatedMembers = [];
+    this.newAllocName = '';
+    this.newAllocRole = 'Developer';
+    this.newAllocPercent = 100;
+  }
+
+  // Utilities
+  getStageStep(stage: string): number {
+    switch (stage) {
+      case 'ideation': return 1;
+      case 'ideation_approval': return 2;
+      case 'brd': return 3;
+      case 'brd_approval': return 4;
+      case 'creation': return 5;
+      case 'allocation': return 6;
+      case 'completed': return 7;
+      default: return 1;
+    }
+  }
 
   getAvatarClass(color: string): string {
     return `oh-avatar-circle--${color}`;
-  }
-
-  getBadgeClass(type: string): string {
-    switch (type) {
-      case 'FEATURE':
-        return 'oh-badge--info';
-      case 'BUG':
-        return 'oh-badge--danger';
-      case 'SECURITY':
-        return 'oh-badge--warning';
-      case 'CHORE':
-        return 'oh-badge--violet';
-      default:
-        return 'oh-badge--neutral';
-    }
-  }
-
-  getDotClass(color: string): string {
-    return `oh-priority-dot--${color}`;
-  }
-
-  // Kanban Drag and Drop handler
-  onCardDrop(event: CdkDragDrop<ProjectCard[]>): void {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      const prevCol = this.board().find(c => c.cards === event.previousContainer.data);
-      const currCol = this.board().find(c => c.cards === event.container.data);
-
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-
-      if (prevCol && currCol) {
-        // Force refresh board signals
-        this.board.set([...this.board()]);
-      }
-    }
-  }
-
-  showCreateScreen(): void {
-    this.activeView.set('create');
-    this.activeStep.set(1);
-  }
-
-  goToStep(step: number): void {
-    this.activeStep.set(step);
-  }
-
-  nextStep(): void {
-    if (this.activeStep() < 5) {
-      this.activeStep.update(s => s + 1);
-    }
-  }
-
-  prevStep(): void {
-    if (this.activeStep() > 1) {
-      this.activeStep.update(s => s - 1);
-    }
-  }
-
-  cancelCreation(): void {
-    this.activeView.set('board');
-    this.resetCreateForm();
-  }
-
-  saveDraft(): void {
-    this.lastSavedLabel.set('just now');
-  }
-
-  saveProject(): void {
-    if (!this.newProjName.trim() || !this.newProjKey.trim()) {
-      return;
-    }
-    // Simple alert / redirect back
-    alert(`Project "${this.newProjName}" successfully created!`);
-    this.activeView.set('board');
-    this.resetCreateForm();
-  }
-
-  // Team members chips logic
-  addTeamMember(): void {
-    const val = this.newMemberInput.trim();
-    if (!val) return;
-
-    const parts = val.split(' ').filter(Boolean);
-    const initials = parts.length > 0
-      ? (parts[0][0] + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase()
-      : '?';
-
-    const colors = ['blue', 'purple', 'pink', 'teal'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-    this.teamMembers.update(list => [...list, {
-      initials,
-      name: val,
-      avatarColor: randomColor
-    }]);
-
-    this.newMemberInput = '';
-  }
-
-  removeTeamMember(member: TeamMember): void {
-    this.teamMembers.update(list => list.filter(m => m.name !== member.name));
-  }
-
-  // Inline Quick Story logic
-  toggleStoryInput(): void {
-    this.showAddStoryInput = !this.showAddStoryInput;
-    this.storyTitleInput = '';
-    this.storyTypeInput = 'FEATURE';
-  }
-
-  addStory(): void {
-    const title = this.storyTitleInput.trim();
-    if (!title) return;
-
-    const keyNum = Math.floor(Math.random() * 90) + 200; // e.g. ATL-200+
-    const typesColors: Record<string, string> = {
-      FEATURE: 'oh-avatar-circle--blue',
-      BUG: 'oh-avatar-circle--pink',
-      SECURITY: 'oh-avatar-circle--teal',
-      CHORE: 'oh-avatar-circle--purple'
-    };
-
-    const newCard: ProjectCard = {
-      id: `ATL-${keyNum}`,
-      type: this.storyTypeInput,
-      title: title,
-      points: [1, 2, 3, 5, 8][Math.floor(Math.random() * 5)],
-      assigneeInitials: 'RM',
-      assigneeColorClass: typesColors[this.storyTypeInput] || 'oh-avatar-circle--blue',
-      priorityDotColor: ['green', 'yellow', 'red'][Math.floor(Math.random() * 3)] as any
-    };
-
-    this.board.update(cols => cols.map(c => {
-      if (c.id === 'backlog') {
-        return {
-          ...c,
-          cards: [newCard, ...c.cards]
-        };
-      }
-      return c;
-    }));
-
-    this.toggleStoryInput();
-  }
-
-  private resetCreateForm(): void {
-    this.activeStep.set(1);
-    this.newProjName = '';
-    this.newProjDesc = '';
-    this.newProjKey = '';
-    this.newProjClient = 'Razorpay';
-    this.newProjMethodology = 'scrum';
-    this.newProjStartDate = new Date(2026, 6, 7);
-    this.newProjEndDate = new Date(2026, 11, 31);
-    this.newProjBudget = '84,000';
-    this.newProjSlack = true;
-    this.teamMembers.set([
-      { initials: 'RM', name: 'Rahul Menon', avatarColor: 'blue' },
-      { initials: 'SI', name: 'Sneha Iyer', avatarColor: 'teal' },
-      { initials: 'AK', name: 'Arman Khan', avatarColor: 'pink' }
-    ]);
-    this.newMemberInput = '';
   }
 
   ngOnDestroy(): void {
