@@ -186,6 +186,13 @@ export class ProjectStateService {
     this.updateProject(projectId, p => ({ ...p, testCases: [...p.testCases, newItem] }));
   }
 
+  setTestCaseStatus(projectId: string, testCaseId: string, status: AtlasTestCase['status']): void {
+    this.updateProject(projectId, p => ({
+      ...p,
+      testCases: p.testCases.map(tc => (tc.id === testCaseId ? { ...tc, status } : tc))
+    }));
+  }
+
   addBug(projectId: string, item: Omit<AtlasBug, 'id'>): void {
     const project = this.getProject(projectId);
     if (!project) return;

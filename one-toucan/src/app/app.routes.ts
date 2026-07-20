@@ -66,7 +66,45 @@ export const routes: Routes = [
         path: 'atlas/projects/:id',
         loadComponent: () =>
           import('./features/atlas/atlas-workspace/atlas-workspace.component').then(m => m.AtlasWorkspaceComponent),
-        data: { title: 'Atlas Workspace', subtitle: 'Requirements, tasks & delivery tracking' }
+        data: { title: 'Atlas Workspace', subtitle: 'Requirements, tasks & delivery tracking' },
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'board' },
+          {
+            path: 'board',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/board-tab.component').then(m => m.BoardTabComponent)
+          },
+          {
+            path: 'requirements',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/backlog/requirements-panel.component').then(m => m.RequirementsPanelComponent)
+          },
+          {
+            path: 'stories',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/backlog/user-stories-panel.component').then(m => m.UserStoriesPanelComponent)
+          },
+          {
+            path: 'tasks',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/backlog/tasks-panel.component').then(m => m.TasksPanelComponent)
+          },
+          {
+            path: 'test-cases',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/backlog/test-cases-panel.component').then(m => m.TestCasesPanelComponent)
+          },
+          {
+            path: 'bugs',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/backlog/bugs-panel.component').then(m => m.BugsPanelComponent)
+          },
+          {
+            path: 'operational',
+            loadComponent: () =>
+              import('./features/atlas/atlas-workspace/tabs/operational-tab.component').then(m => m.OperationalTabComponent)
+          }
+        ]
       },
       {
         path: 'resource-allocation',

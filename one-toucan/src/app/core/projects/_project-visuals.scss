@@ -445,6 +445,19 @@ mat-select:focus-visible {
   flex-shrink: 0;
 }
 
+.oh-mgmt-header-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--oh-primary-soft);
+  color: var(--oh-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
 .oh-brd-recap-title {
   font-size: 14px;
   font-weight: 700;
@@ -1276,6 +1289,138 @@ mat-select:focus-visible {
     i {
       color: var(--oh-primary) !important;
     }
+  }
+}
+
+// Test Cases — Spira/Jira-style execution view
+.oh-tc-summary-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.oh-tc-summary-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+
+  &--notrun { border-top: 3px solid var(--oh-gray-400); }
+  &--passed { border-top: 3px solid var(--oh-success); }
+  &--failed { border-top: 3px solid var(--oh-error); }
+  &--blocked { border-top: 3px solid var(--oh-warning); }
+}
+
+.oh-tc-summary-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--oh-gray-800);
+  line-height: 1.2;
+}
+
+.oh-tc-summary-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--oh-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+}
+
+.oh-tc-creator-card {
+  border-color: var(--oh-primary-200) !important;
+  background: var(--oh-primary-50) !important;
+}
+
+.oh-tc-add-btn {
+  height: 50px !important;
+}
+
+.oh-tc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oh-tc-card {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: 12px;
+  padding: 14px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--oh-gray-300);
+    box-shadow: var(--oh-shadow-sm);
+  }
+}
+
+.oh-tc-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--oh-gray-800);
+}
+
+.oh-tc-description {
+  font-size: 12px;
+  color: var(--oh-gray-500);
+  line-height: 1.5;
+}
+
+.oh-tc-status-badge {
+  font-size: 11px;
+  padding: 4px 9px;
+}
+
+.oh-tc-actions {
+  flex-wrap: wrap;
+}
+
+.oh-tc-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--oh-border);
+  background: var(--oh-surface);
+  color: var(--oh-gray-500);
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &--passed:hover, &--passed.oh-tc-action-btn--current {
+    background: var(--oh-success-bg);
+    border-color: var(--oh-success);
+    color: var(--oh-success);
+  }
+  &--failed:hover, &--failed.oh-tc-action-btn--current {
+    background: var(--oh-error-bg);
+    border-color: var(--oh-error);
+    color: var(--oh-error);
+  }
+  &--blocked:hover, &--blocked.oh-tc-action-btn--current {
+    background: var(--oh-warning-bg);
+    border-color: var(--oh-warning);
+    color: var(--oh-warning);
+  }
+}
+
+.oh-tc-empty {
+  text-align: center;
+  color: var(--oh-gray-400);
+  font-size: 12px;
+  padding: 32px 16px;
+  border: 1px dashed var(--oh-border);
+  border-radius: 12px;
+
+  i {
+    font-size: 22px;
   }
 }
 

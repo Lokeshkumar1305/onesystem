@@ -49,24 +49,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Workspace Level Horizontal Tabs -->
-    <div class="oh-workspace-tabs mt-4 border-top pt-3 d-flex gap-3">
-      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'board'" (click)="activeTab.set('board')">
-        <i class="bi bi-kanban me-2"></i>Features Board
-      </button>
-      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'backlog'" (click)="activeTab.set('backlog')">
-        <i class="bi bi-compass me-2"></i>Atlas Backlog
-      </button>
-      <button class="oh-workspace-tab-btn" [class.oh-workspace-tab-btn--active]="activeTab() === 'operational'" (click)="activeTab.set('operational')">
-        <i class="bi bi-clipboard-data me-2"></i>Project operational
-      </button>
-    </div>
   </div>
 
-  <oh-atlas-board-tab *ngIf="activeTab() === 'board'" [project]="project"></oh-atlas-board-tab>
-  <oh-atlas-backlog-tab *ngIf="activeTab() === 'backlog'" [project]="project"></oh-atlas-backlog-tab>
-  <oh-atlas-operational-tab *ngIf="activeTab() === 'operational'" [project]="project"></oh-atlas-operational-tab>
+  <!-- Artifact navigation now lives in the left sidenav (contextual to this project) -->
+  <router-outlet></router-outlet>
 
 </div>
 

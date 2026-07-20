@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 
 import { ProjectStateService } from '../../../../core/projects/project-state.service';
-import { ActiveProject, ProjectCard } from '../../../../core/projects/projects.data';
+import { ProjectCard } from '../../../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-atlas-board-tab',
@@ -18,9 +21,14 @@ import { ActiveProject, ProjectCard } from '../../../../core/projects/projects.d
   styleUrl: './board-tab.component.scss'
 })
 export class BoardTabComponent {
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
 
-  @Input({ required: true }) project!: ActiveProject;
+  private readonly projectId = toSignal(this.route.parent!.paramMap.pipe(map(p => p.get('id') ?? '')), {
+    initialValue: this.route.parent!.snapshot.paramMap.get('id') ?? ''
+  });
+
+  readonly project = computed(() => this.projectState.activeProjects().find(p => p.id === this.projectId()));
 
   showAddFeatureForm = false;
   newFeatureTitle = '';
@@ -30,13 +38,16 @@ export class BoardTabComponent {
   newFeatureAssignee = 'RM';
 
   onCardDrop(event: CdkDragDrop<ProjectCard[]>): void {
-    this.projectState.onCardDrop(this.project.id, event);
+    const project = this.project();
+    if (!project) return;
+    this.projectState.onCardDrop(project.id, event);
   }
 
   addFeatureCard(): void {
-    if (!this.newFeatureTitle.trim()) return;
+    const project = this.project();
+    if (!project || !this.newFeatureTitle.trim()) return;
 
-    this.projectState.addFeatureCard(this.project.id, {
+    this.projectState.addFeatureCard(project.id, {
       type: this.newFeatureType,
       title: this.newFeatureTitle,
       points: this.newFeaturePoints,

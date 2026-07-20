@@ -1,4 +1,4 @@
-<div class="oh-tab-content-management">
+<div class="oh-tab-content-management" *ngIf="project() as project; else notFound">
 
   <div class="row g-4">
 
@@ -22,8 +22,16 @@
 
       <!-- SUB-VIEW A: DOCUMENTS SECTION -->
       <div class="oh-mgmt-sub-container" *ngIf="activeManagementSub() === 'docs'">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="font-weight-bold text-sm mb-0">Project level Documents & Specifications</h3>
+        <div class="oh-mgmt-header-card d-flex justify-content-between align-items-center mb-3 p-3 border rounded-3 bg-white shadow-sm">
+          <div class="d-flex align-items-center gap-3">
+            <span class="oh-mgmt-header-icon">
+              <i class="bi bi-file-earmark-text"></i>
+            </span>
+            <div>
+              <h3 class="font-weight-bold text-sm mb-0">Project level Documents & Specifications</h3>
+              <p class="text-xxs text-muted mb-0">Architecture specs, BRDs, guides and review logs for this project.</p>
+            </div>
+          </div>
           <button mat-stroked-button class="btn-sm" [disabled]="!canUploadTechDoc()"
                   [matTooltip]="techDocLockReason()" (click)="showAddDocForm = !showAddDocForm">
             <i class="bi bi-plus-lg me-1"></i>New Document Link
@@ -72,10 +80,10 @@
           <div class="col-md-6" *ngFor="let doc of project.documents">
             <div class="oh-doc-card p-3 border rounded-3 bg-white shadow-sm d-flex gap-3 align-items-start">
               <span class="oh-doc-icon bg-light text-teal border p-2 rounded">
-                <i class="bi bi-file-pdf-fill fs-4" *ngIf="doc.category === 'BRD'"></i>
-                <i class="bi bi-cpu-fill fs-4" *ngIf="doc.category === 'Architecture'"></i>
-                <i class="bi bi-book-fill fs-4" *ngIf="doc.category === 'User Guide'"></i>
-                <i class="bi bi-shield-lock-fill fs-4" *ngIf="doc.category === 'CTO Review'"></i>
+                <i class="bi bi-file-earmark-pdf fs-4" *ngIf="doc.category === 'BRD'"></i>
+                <i class="bi bi-diagram-3 fs-4" *ngIf="doc.category === 'Architecture'"></i>
+                <i class="bi bi-book fs-4" *ngIf="doc.category === 'User Guide'"></i>
+                <i class="bi bi-shield-lock fs-4" *ngIf="doc.category === 'CTO Review'"></i>
                 <i class="bi bi-link-45deg fs-4" *ngIf="doc.category === 'Other'"></i>
               </span>
               <div class="flex-grow-1">
@@ -250,3 +258,7 @@
   </div>
 
 </div>
+
+<ng-template #notFound>
+  <div class="text-center text-muted py-5">Project not found.</div>
+</ng-template>

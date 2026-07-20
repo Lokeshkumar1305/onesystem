@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,7 +13,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CurrentUserService } from '../../../../../core/auth/current-user.service';
 import { RoleService } from '../../../../../core/auth/role.service';
 import { ProjectStateService } from '../../../../../core/projects/project-state.service';
-import { ActiveProject } from '../../../../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-bugs-panel',
@@ -20,11 +22,16 @@ import { ActiveProject } from '../../../../../core/projects/projects.data';
   styleUrl: './bugs-panel.component.scss'
 })
 export class BugsPanelComponent {
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
   private readonly currentUser = inject(CurrentUserService);
   readonly roleService = inject(RoleService);
 
-  @Input({ required: true }) project!: ActiveProject;
+  private readonly projectId = toSignal(this.route.parent!.paramMap.pipe(map(p => p.get('id') ?? '')), {
+    initialValue: this.route.parent!.snapshot.paramMap.get('id') ?? ''
+  });
+
+  readonly project = computed(() => this.projectState.activeProjects().find(p => p.id === this.projectId()));
 
   showAddForm = false;
   newTitle = '';
@@ -32,9 +39,10 @@ export class BugsPanelComponent {
   newPriority: 'High' | 'Medium' | 'Low' = 'Medium';
 
   addBug(): void {
-    if (!this.newTitle.trim() || !this.roleService.canRaiseIncident()) return;
+    const project = this.project();
+    if (!project || !this.newTitle.trim() || !this.roleService.canRaiseIncident()) return;
 
-    this.projectState.addBug(this.project.id, {
+    this.projectState.addBug(project.id, {
       title: this.newTitle,
       severity: this.newSeverity,
       priority: this.newPriority,

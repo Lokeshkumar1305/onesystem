@@ -1,4 +1,4 @@
-<div class="oh-tab-content-board">
+<div class="oh-tab-content-board" *ngIf="project() as project; else notFound">
 
   <!-- Toolbar action -->
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -97,3 +97,7 @@
   </div>
 
 </div>
+
+<ng-template #notFound>
+  <div class="text-center text-muted py-5">Project not found.</div>
+</ng-template>

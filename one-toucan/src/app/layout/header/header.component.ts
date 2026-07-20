@@ -85,6 +85,12 @@ export class HeaderComponent {
     this.router.navigateByUrl('/profile');
   }
 
+  logout(): void {
+    this.currentUser.logout();
+    this.workspaceModules.clearActiveModule();
+    this.router.navigateByUrl('/login');
+  }
+
   getAppAccentBg(accent: string): string {
     switch (accent) {
       case 'violet': return 'var(--oh-violet-bg)';

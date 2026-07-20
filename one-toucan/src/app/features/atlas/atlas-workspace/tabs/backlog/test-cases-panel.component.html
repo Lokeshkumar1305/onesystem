@@ -1,84 +1,131 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="font-weight-bold text-sm mb-0">Test Cases</h3>
-  <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canCreateTestCase()"
-          [matTooltip]="roleService.canCreateTestCase() ? '' : 'Only a Tester or Manager can add test cases'"
-          (click)="showAddForm = !showAddForm">
-    <i class="bi bi-plus-lg me-1"></i>New Test Case
-  </button>
-</div>
+<div *ngIf="project() as project; else notFound">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="font-weight-bold text-sm mb-0">Test Cases</h3>
+    <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canCreateTestCase()"
+            [matTooltip]="roleService.canCreateTestCase() ? '' : 'Only a Tester or Manager can add test cases'"
+            (click)="showAddForm = !showAddForm">
+      <i class="bi bi-plus-lg me-1"></i>New Test Case
+    </button>
+  </div>
 
-<!-- Inline Creator Form -->
-<div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canCreateTestCase()">
-  <h4 class="font-weight-bold text-xs mb-2">Create Test Case</h4>
-  <div class="row g-2 mb-2">
-    <div class="col-md-6">
+  <!-- Execution Summary -->
+  <div class="oh-tc-summary-row mb-3">
+    <div class="oh-tc-summary-tile">
+      <span class="oh-tc-summary-val">{{ stats().total }}</span>
+      <span class="oh-tc-summary-label">Total</span>
+    </div>
+    <div class="oh-tc-summary-tile oh-tc-summary-tile--notrun">
+      <span class="oh-tc-summary-val">{{ stats().notRun }}</span>
+      <span class="oh-tc-summary-label"><i class="bi bi-dash-circle me-1"></i>Not Run</span>
+    </div>
+    <div class="oh-tc-summary-tile oh-tc-summary-tile--passed">
+      <span class="oh-tc-summary-val">{{ stats().passed }}</span>
+      <span class="oh-tc-summary-label"><i class="bi bi-check-circle-fill me-1"></i>Passed</span>
+    </div>
+    <div class="oh-tc-summary-tile oh-tc-summary-tile--failed">
+      <span class="oh-tc-summary-val">{{ stats().failed }}</span>
+      <span class="oh-tc-summary-label"><i class="bi bi-x-circle-fill me-1"></i>Failed</span>
+    </div>
+    <div class="oh-tc-summary-tile oh-tc-summary-tile--blocked">
+      <span class="oh-tc-summary-val">{{ stats().blocked }}</span>
+      <span class="oh-tc-summary-label"><i class="bi bi-slash-circle-fill me-1"></i>Blocked</span>
+    </div>
+  </div>
+
+  <!-- Inline Creator Form -->
+  <div class="oh-tc-creator-card p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canCreateTestCase()">
+    <h4 class="font-weight-bold text-xs mb-3 d-flex align-items-center gap-2">
+      <i class="bi bi-clipboard2-plus text-teal"></i>New Test Case
+    </h4>
+
+    <div class="oh-field mb-3">
+      <label class="oh-label font-weight-bold mb-1 text-xxs">Title</label>
       <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <input matInput [(ngModel)]="newTitle" placeholder="Test case title..." />
+        <input matInput [(ngModel)]="newTitle" placeholder="e.g. Verify webhook retry does not duplicate payouts" />
       </mat-form-field>
     </div>
-    <div class="col-md-6">
+
+    <div class="oh-field mb-3">
+      <label class="oh-label font-weight-bold mb-1 text-xxs">Steps / Expected Result</label>
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <input matInput [(ngModel)]="newDescription" placeholder="Steps / what to verify..." />
+        <textarea matInput [(ngModel)]="newDescription" rows="2" placeholder="Describe the steps to execute and what a passing result looks like..."></textarea>
       </mat-form-field>
     </div>
-  </div>
-  <div class="row g-2 align-items-end">
-    <div class="col-md-4">
-      <label class="oh-label font-weight-bold mb-1 text-xxs">Link to Requirement</label>
-      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <mat-select [(ngModel)]="newLinkedRequirementId">
-          <mat-option value="">No linked requirement</mat-option>
-          <mat-option *ngFor="let r of project.requirements" [value]="r.id">{{ r.id }} — {{ r.title }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="col-md-3">
-      <label class="oh-label font-weight-bold mb-1 text-xxs">Priority</label>
-      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <mat-select [(ngModel)]="newPriority">
-          <mat-option value="High">High</mat-option>
-          <mat-option value="Medium">Medium</mat-option>
-          <mat-option value="Low">Low</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="col-md-3 offset-md-2 text-end">
-      <button mat-flat-button color="primary" class="w-100" [disabled]="!newTitle.trim()" (click)="addTestCase()">
-        Add Test Case
-      </button>
-    </div>
-  </div>
-</div>
 
-<!-- Test cases list -->
-<div class="oh-list-grid bg-white border rounded-3 shadow-sm">
-  <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
-    <div class="col-2">ID</div>
-    <div class="col-4">Test Case</div>
-    <div class="col-2 text-center">Linked Req</div>
-    <div class="col-2 text-center">Priority</div>
-    <div class="col-2 text-center">Status</div>
-  </div>
-  <div class="oh-list-row p-3 border-bottom text-sm" *ngFor="let tc of project.testCases">
-    <div class="d-flex align-items-center">
-      <div class="col-2 font-mono text-xs">{{ tc.id }}</div>
-      <div class="col-4 text-gray-800">{{ tc.title }}</div>
-      <div class="col-2 text-center">
-        <span class="oh-badge oh-badge--outline oh-badge--xs" *ngIf="tc.linkedRequirementId">{{ linkedRequirementTitle(tc.linkedRequirementId) }}</span>
-        <span class="text-xxs text-muted" *ngIf="!tc.linkedRequirementId">—</span>
+    <div class="row g-2 align-items-end">
+      <div class="col-md-5">
+        <label class="oh-label font-weight-bold mb-1 text-xxs">Link to Requirement</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newLinkedRequirementId">
+            <mat-option value="">No linked requirement</mat-option>
+            <mat-option *ngFor="let r of project.requirements" [value]="r.id">{{ r.id }} — {{ r.title }}</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
-      <div class="col-2 text-center">
-        <span class="oh-badge oh-badge--xs" [ngClass]="tc.priority === 'High' ? 'oh-badge--danger' : tc.priority === 'Medium' ? 'oh-badge--warning' : 'oh-badge--success'">
-          {{ tc.priority }}
+      <div class="col-md-3">
+        <label class="oh-label font-weight-bold mb-1 text-xxs">Priority</label>
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newPriority">
+            <mat-option value="High">High</mat-option>
+            <mat-option value="Medium">Medium</mat-option>
+            <mat-option value="Low">Low</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 text-end">
+        <button mat-flat-button color="primary" class="w-100 oh-tc-add-btn" [disabled]="!newTitle.trim()" (click)="addTestCase()">
+          <i class="bi bi-plus-lg me-1"></i>Add Test Case
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test cases list -->
+  <div class="oh-tc-list">
+    <div class="oh-tc-card" *ngFor="let tc of project.testCases">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="min-width-0 flex-grow-1">
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <span class="font-mono text-xxs text-muted">{{ tc.id }}</span>
+            <span class="oh-badge oh-badge--xs" [ngClass]="priorityBadgeClass(tc.priority)">{{ tc.priority }}</span>
+            <span class="oh-badge oh-badge--outline oh-badge--xs" *ngIf="tc.linkedRequirementId">
+              <i class="bi bi-link-45deg me-1"></i>{{ linkedRequirementTitle(tc.linkedRequirementId) }}
+            </span>
+          </div>
+          <h4 class="oh-tc-title mb-1">{{ tc.title }}</h4>
+          <p class="oh-tc-description mb-0" *ngIf="tc.description">{{ tc.description }}</p>
+        </div>
+
+        <span class="oh-badge oh-tc-status-badge flex-shrink-0" [ngClass]="statusBadgeClass(tc.status)">
+          <i class="bi {{ statusIcon(tc.status) }} me-1"></i>{{ tc.status }}
         </span>
       </div>
-      <div class="col-2 text-center">
-        <span class="oh-badge oh-badge--xs" [ngClass]="statusBadgeClass(tc.status)">{{ tc.status }}</span>
+
+      <!-- Quick execution actions -->
+      <div class="oh-tc-actions mt-3 pt-3 border-top d-flex align-items-center gap-2" *ngIf="roleService.canCreateTestCase()">
+        <span class="text-xxs text-muted font-weight-bold me-1">Mark as:</span>
+        <button type="button" class="oh-tc-action-btn oh-tc-action-btn--passed" [class.oh-tc-action-btn--current]="tc.status === 'Passed'"
+                (click)="setStatus(tc, 'Passed')" matTooltip="Mark Passed">
+          <i class="bi bi-check-circle-fill"></i>Passed
+        </button>
+        <button type="button" class="oh-tc-action-btn oh-tc-action-btn--failed" [class.oh-tc-action-btn--current]="tc.status === 'Failed'"
+                (click)="setStatus(tc, 'Failed')" matTooltip="Mark Failed">
+          <i class="bi bi-x-circle-fill"></i>Failed
+        </button>
+        <button type="button" class="oh-tc-action-btn oh-tc-action-btn--blocked" [class.oh-tc-action-btn--current]="tc.status === 'Blocked'"
+                (click)="setStatus(tc, 'Blocked')" matTooltip="Mark Blocked">
+          <i class="bi bi-slash-circle-fill"></i>Blocked
+        </button>
       </div>
     </div>
-    <div class="text-xxs text-muted mt-1" *ngIf="tc.description">{{ tc.description }}</div>
-  </div>
-  <div *ngIf="!project.testCases.length" class="text-center py-5 text-muted text-xs">
-    No test cases logged. {{ roleService.canCreateTestCase() ? 'Click "New Test Case" to add.' : 'Only a Tester or Manager can add test cases.' }}
+
+    <div *ngIf="!project.testCases.length" class="oh-tc-empty">
+      <i class="bi bi-clipboard2-check d-block mb-2"></i>
+      No test cases logged. {{ roleService.canCreateTestCase() ? 'Click "New Test Case" to add one.' : 'Only a Tester or Manager can add test cases.' }}
+    </div>
   </div>
 </div>
+
+<ng-template #notFound>
+  <div class="text-center text-muted py-5">Project not found.</div>
+</ng-template>

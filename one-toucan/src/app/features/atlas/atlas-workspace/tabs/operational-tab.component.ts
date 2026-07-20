@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +12,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RoleService } from '../../../../core/auth/role.service';
 import { ProjectStateService } from '../../../../core/projects/project-state.service';
-import { ActiveProject } from '../../../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-atlas-operational-tab',
@@ -19,10 +21,15 @@ import { ActiveProject } from '../../../../core/projects/projects.data';
   styleUrl: './operational-tab.component.scss'
 })
 export class OperationalTabComponent {
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
   readonly roleService = inject(RoleService);
 
-  @Input({ required: true }) project!: ActiveProject;
+  private readonly projectId = toSignal(this.route.parent!.paramMap.pipe(map(p => p.get('id') ?? '')), {
+    initialValue: this.route.parent!.snapshot.paramMap.get('id') ?? ''
+  });
+
+  readonly project = computed(() => this.projectState.activeProjects().find(p => p.id === this.projectId()));
 
   readonly activeManagementSub = signal<'docs' | 'kt' | 'demo'>('docs');
 
@@ -46,7 +53,8 @@ export class OperationalTabComponent {
   newDemoCtoFeedback = '';
 
   canUploadTechDoc(): boolean {
-    return this.roleService.canUploadTechDoc(this.project);
+    const project = this.project();
+    return !!project && this.roleService.canUploadTechDoc(project);
   }
 
   techDocLockReason(): string {
@@ -56,9 +64,10 @@ export class OperationalTabComponent {
   }
 
   addDocument(): void {
-    if (!this.newDocName.trim() || !this.canUploadTechDoc()) return;
+    const project = this.project();
+    if (!project || !this.newDocName.trim() || !this.canUploadTechDoc()) return;
 
-    this.projectState.addDocument(this.project.id, {
+    this.projectState.addDocument(project.id, {
       name: this.newDocName,
       category: this.newDocCat,
       url: this.newDocUrl || 'https://docs.google.com/document/view',
@@ -71,9 +80,10 @@ export class OperationalTabComponent {
   }
 
   addKtSession(): void {
-    if (!this.newKtTopic.trim()) return;
+    const project = this.project();
+    if (!project || !this.newKtTopic.trim()) return;
 
-    this.projectState.addKtSession(this.project.id, {
+    this.projectState.addKtSession(project.id, {
       topic: this.newKtTopic,
       host: this.newKtHost || 'Rahul Menon',
       date: this.newKtDate || new Date().toISOString().split('T')[0],
@@ -91,9 +101,10 @@ export class OperationalTabComponent {
   }
 
   addDemoLog(): void {
-    if (!this.newDemoTitle.trim()) return;
+    const project = this.project();
+    if (!project || !this.newDemoTitle.trim()) return;
 
-    this.projectState.addDemoLog(this.project.id, {
+    this.projectState.addDemoLog(project.id, {
       title: this.newDemoTitle,
       date: this.newDemoDate || new Date().toISOString().split('T')[0],
       audience: this.newDemoAudience || 'CTO Review',

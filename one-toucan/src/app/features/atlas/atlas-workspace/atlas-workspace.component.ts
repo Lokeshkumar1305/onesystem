@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -8,14 +8,11 @@ import { map } from 'rxjs';
 
 import { RoleService } from '../../../core/auth/role.service';
 import { ProjectStateService } from '../../../core/projects/project-state.service';
-import { BoardTabComponent } from './tabs/board-tab.component';
-import { BacklogTabComponent } from './tabs/backlog-tab.component';
-import { OperationalTabComponent } from './tabs/operational-tab.component';
 
 @Component({
   selector: 'oh-atlas-workspace',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatButtonModule, MatTooltipModule, BoardTabComponent, BacklogTabComponent, OperationalTabComponent],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatTooltipModule],
   templateUrl: './atlas-workspace.component.html',
   styleUrl: './atlas-workspace.component.scss'
 })
@@ -33,8 +30,6 @@ export class AtlasWorkspaceComponent {
     const id = this.projectId();
     return this.projectState.activeProjects().find(p => p.id === id) ?? null;
   });
-
-  readonly activeTab = signal<'board' | 'backlog' | 'operational'>('board');
 
   getAvatarClass(color: string): string {
     return `oh-avatar-circle--${color}`;

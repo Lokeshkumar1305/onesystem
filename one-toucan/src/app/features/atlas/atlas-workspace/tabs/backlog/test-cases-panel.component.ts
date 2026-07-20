@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RoleService } from '../../../../../core/auth/role.service';
 import { ProjectStateService } from '../../../../../core/projects/project-state.service';
-import { ActiveProject } from '../../../../../core/projects/projects.data';
+import { AtlasTestCase } from '../../../../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-test-cases-panel',
@@ -19,10 +22,26 @@ import { ActiveProject } from '../../../../../core/projects/projects.data';
   styleUrl: './test-cases-panel.component.scss'
 })
 export class TestCasesPanelComponent {
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
   readonly roleService = inject(RoleService);
 
-  @Input({ required: true }) project!: ActiveProject;
+  private readonly projectId = toSignal(this.route.parent!.paramMap.pipe(map(p => p.get('id') ?? '')), {
+    initialValue: this.route.parent!.snapshot.paramMap.get('id') ?? ''
+  });
+
+  readonly project = computed(() => this.projectState.activeProjects().find(p => p.id === this.projectId()));
+
+  readonly stats = computed(() => {
+    const testCases = this.project()?.testCases ?? [];
+    return {
+      total: testCases.length,
+      passed: testCases.filter(tc => tc.status === 'Passed').length,
+      failed: testCases.filter(tc => tc.status === 'Failed').length,
+      blocked: testCases.filter(tc => tc.status === 'Blocked').length,
+      notRun: testCases.filter(tc => tc.status === 'Not Run').length
+    };
+  });
 
   showAddForm = false;
   newTitle = '';
@@ -31,9 +50,10 @@ export class TestCasesPanelComponent {
   newPriority: 'High' | 'Medium' | 'Low' = 'Medium';
 
   addTestCase(): void {
-    if (!this.newTitle.trim() || !this.roleService.canCreateTestCase()) return;
+    const project = this.project();
+    if (!project || !this.newTitle.trim() || !this.roleService.canCreateTestCase()) return;
 
-    this.projectState.addTestCase(this.project.id, {
+    this.projectState.addTestCase(project.id, {
       title: this.newTitle,
       description: this.newDescription,
       linkedRequirementId: this.newLinkedRequirementId || undefined,
@@ -47,9 +67,15 @@ export class TestCasesPanelComponent {
     this.showAddForm = false;
   }
 
+  setStatus(testCase: AtlasTestCase, status: AtlasTestCase['status']): void {
+    const project = this.project();
+    if (!project || !this.roleService.canCreateTestCase() || testCase.status === status) return;
+    this.projectState.setTestCaseStatus(project.id, testCase.id, status);
+  }
+
   linkedRequirementTitle(linkedRequirementId?: string): string {
     if (!linkedRequirementId) return '—';
-    const req = this.project.requirements.find(r => r.id === linkedRequirementId);
+    const req = this.project()?.requirements.find(r => r.id === linkedRequirementId);
     return req ? req.id : '—';
   }
 
@@ -59,6 +85,23 @@ export class TestCasesPanelComponent {
       case 'Failed': return 'oh-badge--danger';
       case 'Blocked': return 'oh-badge--warning';
       default: return 'oh-badge--outline';
+    }
+  }
+
+  statusIcon(status: string): string {
+    switch (status) {
+      case 'Passed': return 'bi-check-circle-fill';
+      case 'Failed': return 'bi-x-circle-fill';
+      case 'Blocked': return 'bi-slash-circle-fill';
+      default: return 'bi-dash-circle';
+    }
+  }
+
+  priorityBadgeClass(priority: string): string {
+    switch (priority) {
+      case 'High': return 'oh-badge--danger';
+      case 'Medium': return 'oh-badge--warning';
+      default: return 'oh-badge--success';
     }
   }
 }

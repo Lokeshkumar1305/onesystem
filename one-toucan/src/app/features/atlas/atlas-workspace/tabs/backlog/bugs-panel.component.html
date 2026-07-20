@@ -1,69 +1,75 @@
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3 class="font-weight-bold text-sm mb-0">Bugs</h3>
-  <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canRaiseIncident()"
-          [matTooltip]="roleService.canRaiseIncident() ? '' : 'Only a Tester or Manager can raise bugs'"
-          (click)="showAddForm = !showAddForm">
-    <i class="bi bi-plus-lg me-1"></i>New Bug
-  </button>
+<div *ngIf="project() as project; else notFound">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="font-weight-bold text-sm mb-0">Bugs</h3>
+    <button mat-stroked-button class="btn-sm" [disabled]="!roleService.canRaiseIncident()"
+            [matTooltip]="roleService.canRaiseIncident() ? '' : 'Only a Tester or Manager can raise bugs'"
+            (click)="showAddForm = !showAddForm">
+      <i class="bi bi-plus-lg me-1"></i>New Bug
+    </button>
+  </div>
+
+  <!-- Inline Creator Form -->
+  <div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canRaiseIncident()">
+    <h4 class="font-weight-bold text-xs mb-2">Raise Bug</h4>
+    <div class="row g-2 align-items-end">
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <input matInput [(ngModel)]="newTitle" placeholder="Bug summary..." />
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newSeverity">
+            <mat-option value="Critical">Critical</mat-option>
+            <mat-option value="Major">Major</mat-option>
+            <mat-option value="Minor">Minor</mat-option>
+            <mat-option value="Trivial">Trivial</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-2">
+        <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+          <mat-select [(ngModel)]="newPriority">
+            <mat-option value="High">High</mat-option>
+            <mat-option value="Medium">Medium</mat-option>
+            <mat-option value="Low">Low</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-md-2 text-end">
+        <button mat-flat-button color="primary" class="w-100" [disabled]="!newTitle.trim()" (click)="addBug()">
+          Raise Bug
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bugs list -->
+  <div class="oh-list-grid bg-white border rounded-3 shadow-sm">
+    <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
+      <div class="col-2">ID</div>
+      <div class="col-4">Bug Summary</div>
+      <div class="col-2 text-center">Severity</div>
+      <div class="col-2 text-center">Reported By</div>
+      <div class="col-2 text-center">Status</div>
+    </div>
+    <div class="oh-list-row p-3 border-bottom d-flex align-items-center text-sm" *ngFor="let b of project.bugs">
+      <div class="col-2 font-mono text-xs">{{ b.id }}</div>
+      <div class="col-4 text-gray-800">{{ b.title }}</div>
+      <div class="col-2 text-center">
+        <span class="oh-badge oh-badge--xs" [ngClass]="severityBadgeClass(b.severity)">{{ b.severity }}</span>
+      </div>
+      <div class="col-2 text-center text-xxs text-muted">{{ b.reportedBy }}</div>
+      <div class="col-2 text-center">
+        <span class="oh-badge oh-badge--xs" [ngClass]="statusBadgeClass(b.status)">{{ b.status }}</span>
+      </div>
+    </div>
+    <div *ngIf="!project.bugs.length" class="text-center py-5 text-muted text-xs">
+      No bugs raised. {{ roleService.canRaiseIncident() ? 'Click "New Bug" to raise one.' : 'Only a Tester or Manager can raise bugs.' }}
+    </div>
+  </div>
 </div>
 
-<!-- Inline Creator Form -->
-<div class="oh-creator-box p-3 border rounded-3 mb-3 bg-white" *ngIf="showAddForm && roleService.canRaiseIncident()">
-  <h4 class="font-weight-bold text-xs mb-2">Raise Bug</h4>
-  <div class="row g-2 align-items-end">
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <input matInput [(ngModel)]="newTitle" placeholder="Bug summary..." />
-      </mat-form-field>
-    </div>
-    <div class="col-md-2">
-      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <mat-select [(ngModel)]="newSeverity">
-          <mat-option value="Critical">Critical</mat-option>
-          <mat-option value="Major">Major</mat-option>
-          <mat-option value="Minor">Minor</mat-option>
-          <mat-option value="Trivial">Trivial</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="col-md-2">
-      <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-        <mat-select [(ngModel)]="newPriority">
-          <mat-option value="High">High</mat-option>
-          <mat-option value="Medium">Medium</mat-option>
-          <mat-option value="Low">Low</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div class="col-md-2 text-end">
-      <button mat-flat-button color="primary" class="w-100" [disabled]="!newTitle.trim()" (click)="addBug()">
-        Raise Bug
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Bugs list -->
-<div class="oh-list-grid bg-white border rounded-3 shadow-sm">
-  <div class="oh-list-header-row p-3 border-bottom font-weight-bold text-xs text-gray-500 d-flex">
-    <div class="col-2">ID</div>
-    <div class="col-4">Bug Summary</div>
-    <div class="col-2 text-center">Severity</div>
-    <div class="col-2 text-center">Reported By</div>
-    <div class="col-2 text-center">Status</div>
-  </div>
-  <div class="oh-list-row p-3 border-bottom d-flex align-items-center text-sm" *ngFor="let b of project.bugs">
-    <div class="col-2 font-mono text-xs">{{ b.id }}</div>
-    <div class="col-4 text-gray-800">{{ b.title }}</div>
-    <div class="col-2 text-center">
-      <span class="oh-badge oh-badge--xs" [ngClass]="severityBadgeClass(b.severity)">{{ b.severity }}</span>
-    </div>
-    <div class="col-2 text-center text-xxs text-muted">{{ b.reportedBy }}</div>
-    <div class="col-2 text-center">
-      <span class="oh-badge oh-badge--xs" [ngClass]="statusBadgeClass(b.status)">{{ b.status }}</span>
-    </div>
-  </div>
-  <div *ngIf="!project.bugs.length" class="text-center py-5 text-muted text-xs">
-    No bugs raised. {{ roleService.canRaiseIncident() ? 'Click "New Bug" to raise one.' : 'Only a Tester or Manager can raise bugs.' }}
-  </div>
-</div>
+<ng-template #notFound>
+  <div class="text-center text-muted py-5">Project not found.</div>
+</ng-template>

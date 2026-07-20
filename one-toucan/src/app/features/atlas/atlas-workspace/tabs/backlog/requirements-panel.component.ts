@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +12,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RoleService } from '../../../../../core/auth/role.service';
 import { ProjectStateService } from '../../../../../core/projects/project-state.service';
-import { ActiveProject } from '../../../../../core/projects/projects.data';
 
 @Component({
   selector: 'oh-requirements-panel',
@@ -19,10 +21,15 @@ import { ActiveProject } from '../../../../../core/projects/projects.data';
   styleUrl: './requirements-panel.component.scss'
 })
 export class RequirementsPanelComponent {
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
   readonly roleService = inject(RoleService);
 
-  @Input({ required: true }) project!: ActiveProject;
+  private readonly projectId = toSignal(this.route.parent!.paramMap.pipe(map(p => p.get('id') ?? '')), {
+    initialValue: this.route.parent!.snapshot.paramMap.get('id') ?? ''
+  });
+
+  readonly project = computed(() => this.projectState.activeProjects().find(p => p.id === this.projectId()));
 
   showAddForm = false;
   newReqTitle = '';
@@ -30,9 +37,10 @@ export class RequirementsPanelComponent {
   newReqPts = 3;
 
   addRequirement(): void {
-    if (!this.newReqTitle.trim() || !this.roleService.canCreateRequirement()) return;
+    const project = this.project();
+    if (!project || !this.newReqTitle.trim() || !this.roleService.canCreateRequirement()) return;
 
-    this.projectState.addRequirement(this.project.id, {
+    this.projectState.addRequirement(project.id, {
       title: this.newReqTitle,
       priority: this.newReqPriority,
       pts: this.newReqPts,
