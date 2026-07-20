@@ -1,4 +1,4 @@
-<div class="oh-home" style="overflow: hidden;">
+<div class="oh-home">
   <div class="oh-home__greeting" style="position: relative; z-index: 1;">
     <h1 class="oh-display-h2 mb-2">{{ greeting }}, {{ userFirstName }}</h1>
     <p class="oh-caption mb-0">Choose a workspace to get started.</p>
@@ -32,50 +32,8 @@
       </span>
     </button>
   </div>
-
-  <!-- Bottom-Right Background Vector Decoration -->
-  <div class="oh-home__bg-decoration" aria-hidden="true">
-    <!-- Curved background shape (reduced height) -->
-    <svg class="oh-home__bg-curve" viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <path d="M80,300 L600,300 L600,40 C520,70 400,140 260,200 C160,250 100,280 80,300 Z" fill="#eef0f8" />
-    </svg>
-
-    <!-- Single tilted square outline -->
-    <svg class="oh-home__bg-square" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="10" width="170" height="170" rx="10" transform="rotate(-18 95 95)"
-            fill="none" stroke="rgba(190, 195, 220, 0.5)" stroke-width="1.2" />
-    </svg>
-
-    <!-- Toucan bird vector matching reference image -->
-    <svg class="oh-home__bg-bird" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
-      <!-- Translucent body, head & beak fill -->
-      <g fill="rgba(215, 225, 248, 0.7)" stroke="none">
-        <!-- Body silhouette -->
-        <path d="M70,75 C60,85 55,105 58,135 C60,160 55,185 45,210 C55,200 70,180 80,150 C90,125 92,95 85,75 Z" />
-        <!-- Head -->
-        <circle cx="75" cy="55" r="25" />
-        <!-- Curved Toucan Beak -->
-        <path d="M75,32 C105,25 145,30 165,48 C172,55 170,68 158,78 C140,88 110,88 85,75 Z" />
-      </g>
-
-      <!-- Signature white accent ribbon running along lower beak curve and neck -->
-      <path d="M160,56 C145,74 118,78 92,72 C80,68 76,82 72,110 C68,140 62,175 48,205"
-            fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M160,56 C145,74 118,78 92,72 C80,68 76,82 72,110 C68,140 62,175 48,205"
-            fill="none" stroke="rgba(185, 202, 238, 0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-
-      <!-- Outer contour curve of upper beak -->
-      <path d="M75,32 C105,25 145,30 165,48 C170,54 166,64 158,74"
-            fill="none" stroke="rgba(205, 218, 245, 0.85)" stroke-width="2" stroke-linecap="round" />
-
-      <!-- Eye: Large white ring with pupil and highlight reflection -->
-      <circle cx="78" cy="52" r="10" fill="#ffffff" />
-      <circle cx="78" cy="52" r="5" fill="rgba(165, 182, 222, 0.9)" />
-      <circle cx="80" cy="50" r="1.8" fill="#ffffff" />
-
-      <!-- Tail feathers pointing down-left -->
-      <path d="M48,205 L38,230 M53,205 L45,225"
-            stroke="rgba(200, 215, 245, 0.85)" stroke-width="3" stroke-linecap="round" />
-    </svg>
-  </div>
 </div>
+
+<!-- Bottom-Right Background Illustration -->
+<img src="assets/home-bg.svg" alt="" aria-hidden="true" class="oh-home__bg-decoration" />
+
