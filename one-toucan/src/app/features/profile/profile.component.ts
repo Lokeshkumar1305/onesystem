@@ -292,8 +292,27 @@ export class ProfileComponent {
   }
 
   // Experience and Education lists
-  experiences = signal<ExperienceItem[]>([]);
-  educations = signal<EducationItem[]>([]);
+  experiences = signal<ExperienceItem[]>([
+    {
+      company: 'Toucan Payments',
+      role: 'Software Engineer',
+      startDate: '2023-04',
+      endDate: ''
+    },
+    {
+      company: 'TechSolutions Ltd',
+      role: 'Associate Software Engineer',
+      startDate: '2021-06',
+      endDate: '2023-03'
+    }
+  ]);
+  educations = signal<EducationItem[]>([
+    {
+      school: 'Jawaharlal Nehru Technological University',
+      degree: 'B.Tech in Computer Science',
+      year: '2021'
+    }
+  ]);
 
   // Documents Store (Signal)
   documentsList = signal<DocumentDetails[]>([
@@ -483,6 +502,65 @@ export class ProfileComponent {
 
     return Math.round((filledFields / totalFields) * 100);
   });
+
+  isPrimaryComplete = computed(() => {
+    return !!this.firstName().trim() &&
+           !!this.lastName().trim() &&
+           !!this.displayName().trim() &&
+           !!this.gender().trim() &&
+           !!this.dob().trim() &&
+           !!this.maritalStatus().trim() &&
+           !!this.bloodGroup().trim() &&
+           !!this.nationality().trim();
+  });
+
+  isContactComplete = computed(() => {
+    return !!this.workEmail().trim() &&
+           !!this.personalEmail().trim() &&
+           !!this.mobileNumber().trim();
+  });
+
+  isAddressesComplete = computed(() => {
+    return !!this.currentAddress().trim() &&
+           !!this.permanentAddress().trim();
+  });
+
+  isExperienceComplete = computed(() => {
+    return this.experiences().length > 0;
+  });
+
+  isEducationComplete = computed(() => {
+    return this.educations().length > 0;
+  });
+
+  isSummaryComplete = computed(() => {
+    return !!this.professionalSummaryText().trim();
+  });
+
+  panCardDoc = computed(() => {
+    return this.documentsList().find(d => d.id === 'pan');
+  });
+
+  aadhaarCardDoc = computed(() => {
+    return this.documentsList().find(d => d.id === 'aadhaar');
+  });
+
+  initials = computed(() => {
+    const parts = this.displayName().trim().split(/\s+/);
+    if (parts.length === 0) return '';
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  });
+
+  removeExperience(item: ExperienceItem): void {
+    this.experiences.set(this.experiences().filter(e => e !== item));
+    this.triggerAlert(`Removed experience at ${item.company}`);
+  }
+
+  removeEducation(item: EducationItem): void {
+    this.educations.set(this.educations().filter(e => e !== item));
+    this.triggerAlert(`Removed education at ${item.school}`);
+  }
 
   // Dynamic filter for documents pending count and summary stats
   pendingDocsCount = computed(() => {

@@ -23,6 +23,38 @@
   color: var(--oh-gray-900);
 }
 
+.oh-field-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+
+  @media (min-width: 576px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.oh-field-tile {
+  padding: 10px 14px;
+  background-color: var(--oh-gray-50, #f8fafc);
+  border: 1px solid var(--oh-border, #cbd5e1);
+  border-radius: 4px !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  &--full {
+    @media (min-width: 576px) {
+      grid-column: span 2;
+    }
+  }
+}
+
 // Profile Header Hero
 .oh-profile-hero {
   background: var(--oh-card-bg, #fff);
