@@ -1362,12 +1362,6 @@ mat-select:focus-visible {
   letter-spacing: 0.02em;
 }
 
-.oh-tc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
 .oh-tc-card {
   background: var(--oh-surface);
   border: 1px solid var(--oh-border);
@@ -1407,56 +1401,9 @@ mat-select:focus-visible {
   gap: 8px;
 }
 
-.oh-tc-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--oh-gray-800);
-}
-
-.oh-tc-description {
-  font-size: 12px;
-  color: var(--oh-gray-500);
-  line-height: 1.5;
-}
-
 .oh-tc-status-badge {
   font-size: 11px;
   padding: 4px 9px;
-}
-
-.oh-tc-actions {
-  flex-wrap: wrap;
-}
-
-.oh-tc-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 5px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--oh-border);
-  background: var(--oh-surface);
-  color: var(--oh-gray-500);
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &--passed:hover, &--passed.oh-tc-action-btn--current {
-    background: var(--oh-success-bg);
-    border-color: var(--oh-success);
-    color: var(--oh-success);
-  }
-  &--failed:hover, &--failed.oh-tc-action-btn--current {
-    background: var(--oh-error-bg);
-    border-color: var(--oh-error);
-    color: var(--oh-error);
-  }
-  &--blocked:hover, &--blocked.oh-tc-action-btn--current {
-    background: var(--oh-warning-bg);
-    border-color: var(--oh-warning);
-    color: var(--oh-warning);
-  }
 }
 
 .oh-tc-empty {
@@ -1473,6 +1420,26 @@ mat-select:focus-visible {
 }
 
 // Test Cases — Spira-style folder tree
+// Plain flex row (not Bootstrap's .row.g-3, which offsets children with
+// negative-margin gutters) so the tree column's width formula can exactly
+// mirror the summary row's `repeat(5, 1fr)` grid — same "(100% - 4 gaps) / 5"
+// math, same 10px gap — making it precisely one summary-tile wide.
+.oh-tc-main-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.oh-tc-tree-col {
+  flex: 0 0 auto;
+  width: calc((100% - 40px) / 5);
+}
+
+.oh-tc-grid-col {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
 .oh-tc-tree {
   display: flex;
   flex-direction: column;
@@ -1489,12 +1456,19 @@ mat-select:focus-visible {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.15s ease;
+  position: relative;
 
   &:hover {
     background-color: var(--oh-gray-50);
 
+    .oh-tc-tree-count,
+    .oh-tc-tree-bar {
+      opacity: 0;
+    }
+
     .oh-tc-tree-actions {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -1535,21 +1509,25 @@ mat-select:focus-visible {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .oh-tc-tree-count {
   margin-left: auto;
   flex-shrink: 0;
+  transition: opacity 0.15s ease;
 }
 
 .oh-tc-tree-bar {
-  width: 40px;
+  width: 32px;
   height: 5px;
   border-radius: 3px;
   background: var(--oh-gray-100);
   overflow: hidden;
   flex-shrink: 0;
   margin-left: 6px;
+  transition: opacity 0.15s ease;
 }
 
 .oh-tc-tree-bar-fill {
@@ -1558,14 +1536,22 @@ mat-select:focus-visible {
   border-radius: 3px;
 }
 
+// Overlays the count/pass-rate bar on hover instead of reserving its own
+// permanent layout width — otherwise every row loses ~48px of name space
+// to two rarely-used icon buttons, which is what made nested folder names
+// truncate unreadably (e.g. "Profes...", "AUT...").
 .oh-tc-tree-actions {
   display: flex;
   align-items: center;
   gap: 2px;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.15s ease;
-  margin-left: 6px;
-  flex-shrink: 0;
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--oh-gray-50);
 
   button {
     width: 20px;
@@ -1602,49 +1588,26 @@ mat-select:focus-visible {
   }
 }
 
-.oh-tc-tree-row--new {
-  cursor: default;
-  background: var(--oh-primary-50);
-
-  &:hover {
-    background: var(--oh-primary-50);
-  }
-}
-
-.oh-tc-tree-new-input {
-  flex: 1;
-  min-width: 0;
-  border: 1px solid var(--oh-primary);
-  border-radius: 4px;
-  padding: 3px 7px;
-  font-size: 13px;
-  font-family: inherit;
-  background: var(--oh-surface);
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: var(--oh-focus-ring);
-  }
-}
-
+// Save/Cancel icon pair shown beside an active rename input, in both the
+// folder tree and the data table.
 .oh-tc-tree-new-actions {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-left: 6px;
   flex-shrink: 0;
+}
 
-  button {
-    width: 22px;
-    height: 22px;
-    border: none;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-  }
+.oh-tc-tree-save-btn,
+.oh-tc-tree-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--oh-radius-md, 6px);
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .oh-tc-tree-save-btn {
@@ -1666,6 +1629,80 @@ mat-select:focus-visible {
     background: var(--oh-gray-100);
     color: var(--oh-gray-700);
   }
+}
+
+// "Add Folder" panel — mirrors Spira's Add Folder dialog fields (an explicit
+// Parent Folder picker so a folder can nest under any existing folder, not
+// just whichever one is currently selected in the tree), presented as a
+// full-height right-side drawer.
+@keyframes oh-tc-drawer-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.oh-tc-folder-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  backdrop-filter: blur(1.5px);
+}
+
+.oh-tc-folder-modal {
+  background: var(--oh-surface);
+  border-radius: 0;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  animation: oh-tc-drawer-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oh-tc-folder-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--oh-border);
+  flex-shrink: 0;
+
+  .btn-close {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background-size: 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    border: none;
+    box-shadow: none;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--oh-gray-100);
+    }
+  }
+}
+
+.oh-tc-folder-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.oh-tc-folder-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--oh-border);
+  flex-shrink: 0;
 }
 
 .oh-tc-tree-hint {
@@ -1701,28 +1738,6 @@ mat-select:focus-visible {
   }
 }
 
-.oh-tc-grid-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.oh-tc-grid-folder-row {
-  display: flex;
-  align-items: center;
-  background: var(--oh-surface);
-  border: 1px solid var(--oh-border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    border-color: var(--oh-gray-300);
-    box-shadow: var(--oh-shadow-sm);
-  }
-}
-
 .oh-tc-grid-folder-bar {
   width: 70px;
 }
@@ -1736,4 +1751,234 @@ mat-select:focus-visible {
     color: var(--oh-gray-400) !important;
     opacity: 0.65 !important;
   }
+}
+
+// Test Cases — data table, mirroring the Employee Onboarding list's
+// mat-table pattern (search row, uppercase header, paginated footer) so the
+// folder/test-case grid reads like the rest of the app's "get all" tables.
+.oh-tc-table-card {
+  overflow: hidden;
+}
+
+.oh-tc-list__search-row {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+  padding: var(--oh-4);
+  border-bottom: 1px solid var(--oh-border);
+}
+
+.oh-tc-list__search {
+  position: relative;
+  flex: 1;
+
+  .oh-tc-list__search-icon {
+    position: absolute;
+    top: 50%;
+    left: var(--oh-3);
+    transform: translateY(-50%);
+    color: var(--oh-gray-400);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  .oh-input {
+    height: 40px;
+    padding-left: calc(var(--oh-3) * 2 + 15px);
+    padding-right: calc(var(--oh-3) * 2 + 14px);
+  }
+}
+
+.oh-tc-list__search-clear {
+  position: absolute;
+  top: 50%;
+  right: var(--oh-2);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  border-radius: var(--oh-radius-full);
+  color: var(--oh-gray-400);
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--oh-surface-sunken);
+    color: var(--oh-gray-600);
+  }
+}
+
+.oh-tc-table {
+  background: transparent;
+
+  th {
+    background: var(--oh-surface-sunken);
+    font-family: var(--oh-font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--oh-gray-500);
+  }
+}
+
+.oh-tc-table__name {
+  font-weight: 600;
+  color: var(--oh-gray-900);
+}
+
+.oh-tc-table-row--folder {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--oh-surface-sunken);
+  }
+}
+
+.oh-tc-folder-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-3);
+}
+
+.oh-tc-folder-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: var(--oh-radius-md);
+  font-size: 16px;
+  cursor: pointer;
+
+  &--edit {
+    color: var(--oh-primary);
+
+    &:hover {
+      background: var(--oh-primary-soft);
+    }
+  }
+
+  &--delete {
+    color: var(--oh-error);
+
+    &:hover {
+      background: var(--oh-error-bg);
+    }
+  }
+}
+
+.oh-tc-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-3);
+}
+
+// Icon-only, borderless buttons — same shape/hover treatment as
+// .oh-onboarding-table__action, just with a status color per action.
+.oh-tc-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  border-radius: var(--oh-radius-md);
+  font-size: 16px;
+  color: var(--oh-gray-400);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &--passed {
+    color: var(--oh-success);
+    &:hover { background: var(--oh-success-bg); }
+  }
+  &--failed {
+    color: var(--oh-error);
+    &:hover { background: var(--oh-error-bg); }
+  }
+  &--blocked {
+    color: var(--oh-warning);
+    &:hover { background: var(--oh-warning-bg); }
+  }
+
+  &--passed.oh-tc-quick-btn--current { background: var(--oh-success-bg); }
+  &--failed.oh-tc-quick-btn--current { background: var(--oh-error-bg); }
+  &--blocked.oh-tc-quick-btn--current { background: var(--oh-warning-bg); }
+}
+
+.oh-tc-list__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--oh-4);
+  border-top: 1px solid var(--oh-border);
+}
+
+.oh-tc-list__page-size {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-2);
+
+  .oh-select {
+    width: 64px;
+    height: 32px;
+    padding-left: var(--oh-2);
+    padding-right: var(--oh-5);
+    font-size: 13px;
+  }
+}
+
+.oh-tc-list__pager {
+  display: flex;
+  align-items: center;
+  gap: var(--oh-1);
+}
+
+.oh-tc-list__page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-md);
+  background: var(--oh-surface);
+  color: var(--oh-gray-700);
+  font-family: var(--oh-font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--oh-surface-sunken);
+  }
+
+  &:disabled {
+    color: var(--oh-gray-300);
+    cursor: not-allowed;
+  }
+
+  &--active {
+    background: var(--oh-primary);
+    border-color: var(--oh-primary);
+    color: var(--oh-gray-white);
+  }
+}
+
+.oh-tc-list__page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  color: var(--oh-gray-400);
+  font-weight: 600;
 }

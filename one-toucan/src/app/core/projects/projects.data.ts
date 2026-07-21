@@ -314,7 +314,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     ],
     testCases: [
       { id: 'TC-ATL-1', title: 'Verify CSV export includes all dynamic columns', description: 'Export a settlement report and confirm every configured column appears with correct values.', linkedRequirementId: 'REQ-001', priority: 'High', status: 'Passed', folderId: 'TCF-ATL-1', createdBy: 'Arman Khan' },
-      { id: 'TC-ATL-2', title: 'SAML SSO login rejects expired assertions', description: 'Attempt login with an expired SAML assertion and confirm the request is rejected with a clear error.', linkedRequirementId: 'REQ-002', priority: 'High', status: 'Failed', folderId: null, createdBy: 'Arman Khan' }
+      { id: 'TC-ATL-2', title: 'SAML SSO login rejects expired assertions', description: 'Attempt login with an expired SAML assertion and confirm the request is rejected with a clear error.', linkedRequirementId: 'REQ-002', priority: 'High', status: 'Failed', folderId: 'TCF-ATL-2', createdBy: 'Arman Khan' }
     ],
     bugs: [
       { id: 'BUG-ATL-1', title: 'Settlement total off by rounding paise', severity: 'Critical', priority: 'High', status: 'In Progress', reportedBy: 'Arman Khan' },
@@ -394,9 +394,11 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     tasks: [
       { id: 'TSK-011', title: 'Style the invoice PDF using pdf-lib', assignee: 'Prerna Nair', status: 'In Progress' }
     ],
-    testCaseFolders: [],
+    testCaseFolders: [
+      { id: 'TCF-BIL-1', name: 'Regression Suite', parentId: null }
+    ],
     testCases: [
-      { id: 'TC-BIL-1', title: 'Invoice PDF renders correct line items and totals', description: 'Generate an invoice PDF for a multi-line subscription and verify totals match the billing ledger.', linkedRequirementId: 'REQ-011', priority: 'Medium', status: 'Not Run', folderId: null, createdBy: 'Karthik Iyer' }
+      { id: 'TC-BIL-1', title: 'Invoice PDF renders correct line items and totals', description: 'Generate an invoice PDF for a multi-line subscription and verify totals match the billing ledger.', linkedRequirementId: 'REQ-011', priority: 'Medium', status: 'Not Run', folderId: 'TCF-BIL-1', createdBy: 'Karthik Iyer' }
     ],
     bugs: [
       { id: 'BUG-BIL-1', title: 'CSV export truncates merchant names with commas', severity: 'Major', priority: 'Medium', status: 'Fixed', reportedBy: 'Karthik Iyer' }

@@ -7,8 +7,8 @@
               (click)="toggleNewFolderForm()">
         <i class="bi bi-folder-plus me-1"></i>New Folder
       </button>
-      <button mat-flat-button color="primary" class="btn-sm" [disabled]="!roleService.canCreateTestCase()"
-              [matTooltip]="roleService.canCreateTestCase() ? '' : 'Only a Tester or Manager can add test cases'"
+      <button mat-flat-button color="primary" class="btn-sm" [disabled]="!roleService.canCreateTestCase() || selectedFolderId() === null"
+              [matTooltip]="!roleService.canCreateTestCase() ? 'Only a Tester or Manager can add test cases' : (selectedFolderId() === null ? 'Select or create a folder first — test cases can\'t be added directly to Root' : '')"
               (click)="toggleNewTestCaseForm()">
         <i class="bi bi-plus-lg me-1"></i>New Test Case
       </button>
@@ -54,42 +54,22 @@
     </div>
   </div>
 
-  <div class="row g-3" cdkDropListGroup>
+  <div class="oh-tc-main-row" cdkDropListGroup>
     <!-- Left: Folder Tree -->
-    <div class="col-md-4 col-lg-3">
+    <div class="oh-tc-tree-col">
       <div class="oh-tc-tree p-2 bg-white border rounded-3 shadow-sm">
-        <div class="oh-tc-tree-row" cdkDropList id="folder-root" [cdkDropListData]="emptyDropData"
-             (cdkDropListDropped)="onDropOnFolder(null, $event)"
-             [class.oh-tc-tree-row--active]="selectedFolderId() === null"
-             (click)="selectFolder(null)">
-          <span class="oh-tc-tree-caret-spacer"></span>
+        <div class="oh-tc-tree-row" [class.oh-tc-tree-row--active]="selectedFolderId() === null" (click)="selectFolder(null)">
+          <button type="button" class="oh-tc-tree-caret" *ngIf="rootHasChildren(); else rootCaretSpacer" (click)="toggleRootCollapsed($event)">
+            <i class="bi" [ngClass]="rootCollapsed() ? 'bi-caret-right-fill' : 'bi-caret-down-fill'"></i>
+          </button>
+          <ng-template #rootCaretSpacer><span class="oh-tc-tree-caret-spacer"></span></ng-template>
           <i class="bi bi-folder2-open me-2"></i>
-          <span class="oh-tc-tree-name">Root</span>
+          <span class="oh-tc-tree-name" title="Root">Root</span>
           <span class="oh-badge oh-badge--neutral oh-tc-tree-count">{{ project.testCases.length }}</span>
         </div>
 
-        <!-- Inline "new folder" row — mirrors Spira's in-grid row creation -->
-        <div class="oh-tc-tree-row oh-tc-tree-row--new" *ngIf="showNewFolderForm && roleService.canCreateTestCase()">
-          <span class="oh-tc-tree-caret-spacer"></span>
-          <i class="bi bi-folder-plus me-2"></i>
-          <input class="oh-tc-tree-new-input" [(ngModel)]="newFolderName"
-                 [placeholder]="'New folder in ' + (selectedFolderId() === null ? 'Root' : (breadcrumb() | slice:-1)[0]?.name)"
-                 (keyup.enter)="addFolder()" (keyup.escape)="cancelNewFolder()"
-                 (click)="$event.stopPropagation()" #newFolderInput />
-          <span class="oh-tc-tree-new-actions">
-            <button type="button" class="oh-tc-tree-save-btn" [disabled]="!newFolderName.trim()"
-                    (click)="addFolder(); $event.stopPropagation()" matTooltip="Save">
-              <i class="bi bi-check-lg"></i>
-            </button>
-            <button type="button" class="oh-tc-tree-cancel-btn"
-                    (click)="cancelNewFolder(); $event.stopPropagation()" matTooltip="Cancel">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </span>
-        </div>
-
         <div class="oh-tc-tree-row" *ngFor="let row of folderRows()"
-             [style.padding-left.px]="12 + row.depth * 16"
+             [style.padding-left.px]="12 + row.depth * 14"
              cdkDropList [id]="'folder-' + row.folder.id" [cdkDropListData]="emptyDropData"
              (cdkDropListDropped)="onDropOnFolder(row.folder.id, $event)"
              [class.oh-tc-tree-row--active]="selectedFolderId() === row.folder.id"
@@ -101,15 +81,15 @@
 
           <i class="bi bi-folder2 me-2"></i>
 
-          <ng-container *ngIf="renamingFolderId !== row.folder.id; else renameInput">
-            <span class="oh-tc-tree-name">{{ row.folder.name }}</span>
+          <ng-container *ngIf="!(renamingFolderId === row.folder.id && renameSource === 'tree'); else renameInput">
+            <span class="oh-tc-tree-name" [title]="row.folder.name">{{ row.folder.name }}</span>
             <span class="oh-badge oh-badge--neutral oh-tc-tree-count">{{ folderCount(row.folder.id) }}</span>
             <div class="oh-tc-tree-bar" *ngIf="folderCount(row.folder.id)">
               <div class="oh-tc-tree-bar-fill" [style.width.%]="folderPassRate(row.folder.id)"></div>
             </div>
             <span class="oh-tc-tree-actions" *ngIf="roleService.canCreateTestCase()">
-              <button type="button" (click)="startRename(row.folder, $event)" matTooltip="Rename folder">
-                <i class="bi bi-pencil"></i>
+              <button type="button" (click)="startRename(row.folder, $event, 'tree')" matTooltip="Rename folder">
+                <i class="bi bi-pencil-square"></i>
               </button>
               <button type="button" (click)="deleteFolder(row.folder, $event)" matTooltip="Delete folder">
                 <i class="bi bi-trash"></i>
@@ -118,7 +98,17 @@
           </ng-container>
           <ng-template #renameInput>
             <input class="oh-tc-tree-rename-input" [(ngModel)]="renameDraft"
-                   (click)="$event.stopPropagation()" (keyup.enter)="confirmRename()" (blur)="confirmRename()" />
+                   (click)="$event.stopPropagation()" (keyup.enter)="confirmRename()" (keyup.escape)="cancelRename()" />
+            <span class="oh-tc-tree-new-actions">
+              <button type="button" class="oh-tc-tree-save-btn" [disabled]="!renameDraft.trim()"
+                      (click)="confirmRename($event)" matTooltip="Save">
+                <i class="bi bi-check-lg"></i>
+              </button>
+              <button type="button" class="oh-tc-tree-cancel-btn"
+                      (click)="cancelRename($event)" matTooltip="Cancel">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </span>
           </ng-template>
         </div>
 
@@ -129,7 +119,7 @@
     </div>
 
     <!-- Right: Grid -->
-    <div class="col-md-8 col-lg-9">
+    <div class="oh-tc-grid-col">
       <!-- Breadcrumb -->
       <div class="oh-tc-breadcrumb mb-2">
         <a (click)="selectFolder(null)" [class.oh-tc-breadcrumb--current]="selectedFolderId() === null">Root</a>
@@ -139,123 +129,280 @@
         </ng-container>
       </div>
 
-      <!-- Search -->
-      <mat-form-field appearance="outline" class="w-100 oh-pool-search oh-compact-field bg-white mb-3" subscriptSizing="dynamic">
-        <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
-        <input matInput [(ngModel)]="searchTerm" placeholder="Search test cases in this folder..." />
-      </mat-form-field>
-
-      <div class="oh-tc-grid-wrap">
-        <!-- Child folder rows -->
-        <div class="oh-tc-grid-folder-row" *ngFor="let f of childFolders()" (click)="selectFolder(f.id)">
-          <i class="bi bi-folder2 text-teal me-2"></i>
-          <span class="flex-grow-1 font-weight-bold text-sm text-gray-800">{{ f.name }}</span>
-          <span class="oh-badge oh-badge--neutral text-xxs me-3">{{ folderCount(f.id) }} test case(s)</span>
-          <div class="oh-tc-tree-bar oh-tc-grid-folder-bar me-2" *ngIf="folderCount(f.id)">
-            <div class="oh-tc-tree-bar-fill" [style.width.%]="folderPassRate(f.id)"></div>
-          </div>
-          <i class="bi bi-chevron-right text-muted"></i>
+      <!-- Inline "new test case" creator — mirrors Spira's in-grid row creation -->
+      <div class="oh-tc-card oh-tc-card--new mb-3" *ngIf="showAddForm && roleService.canCreateTestCase()">
+        <div class="oh-tc-new-header">
+          <i class="bi bi-clipboard2-plus"></i>
+          <span>New Test Case in "{{ selectedFolderId() === null ? 'Root' : (breadcrumb() | slice:-1)[0]?.name }}"</span>
         </div>
 
-        <!-- Inline "new test case" creator — mirrors Spira's in-grid row creation -->
-        <div class="oh-tc-card oh-tc-card--new" *ngIf="showAddForm && roleService.canCreateTestCase()">
-          <div class="oh-tc-new-header">
-            <i class="bi bi-clipboard2-plus"></i>
-            <span>New Test Case in "{{ selectedFolderId() === null ? 'Root' : (breadcrumb() | slice:-1)[0]?.name }}"</span>
-          </div>
+        <div class="oh-field mb-2">
+          <label class="oh-label font-weight-bold mb-1">Title</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput [(ngModel)]="newTitle" #newTitleInput placeholder="e.g. Verify webhook retry does not duplicate payouts" />
+          </mat-form-field>
+        </div>
 
-          <div class="oh-field mb-2">
-            <label class="oh-label font-weight-bold mb-1 text-xxs">Title</label>
+        <div class="oh-field mb-2">
+          <label class="oh-label font-weight-bold mb-1">Steps / Expected Result</label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <textarea matInput [(ngModel)]="newDescription" rows="2" placeholder="Describe the steps to execute and what a passing result looks like..."></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="oh-label font-weight-bold mb-1">Link to Requirement</label>
             <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-              <input matInput [(ngModel)]="newTitle" #newTitleInput placeholder="e.g. Verify webhook retry does not duplicate payouts" />
+              <mat-select [(ngModel)]="newLinkedRequirementId">
+                <mat-option value="">No linked requirement</mat-option>
+                <mat-option *ngFor="let r of project.requirements" [value]="r.id">{{ r.id }} — {{ r.title }}</mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
-
-          <div class="oh-field mb-2">
-            <label class="oh-label font-weight-bold mb-1 text-xxs">Steps / Expected Result</label>
-            <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-              <textarea matInput [(ngModel)]="newDescription" rows="2" placeholder="Describe the steps to execute and what a passing result looks like..."></textarea>
+          <div class="col-md-6">
+            <label class="oh-label font-weight-bold mb-1">Priority</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+              <mat-select [(ngModel)]="newPriority">
+                <mat-option value="High">High</mat-option>
+                <mat-option value="Medium">Medium</mat-option>
+                <mat-option value="Low">Low</mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
+        </div>
 
-          <div class="row g-2 mb-3">
-            <div class="col-md-6">
-              <label class="oh-label font-weight-bold mb-1 text-xxs">Link to Requirement</label>
-              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <mat-select [(ngModel)]="newLinkedRequirementId">
-                  <mat-option value="">No linked requirement</mat-option>
-                  <mat-option *ngFor="let r of project.requirements" [value]="r.id">{{ r.id }} — {{ r.title }}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-            <div class="col-md-6">
-              <label class="oh-label font-weight-bold mb-1 text-xxs">Priority</label>
-              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <mat-select [(ngModel)]="newPriority">
-                  <mat-option value="High">High</mat-option>
-                  <mat-option value="Medium">Medium</mat-option>
-                  <mat-option value="Low">Low</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
+        <div class="oh-tc-new-actions">
+          <button mat-button (click)="cancelNewTestCase()">Cancel</button>
+          <button mat-stroked-button color="primary" [disabled]="!newTitle.trim()" (click)="addTestCase(true)" matTooltip="Save this test case and keep the form open to add another">
+            <i class="bi bi-plus-lg me-1"></i>Save &amp; New
+          </button>
+          <button mat-flat-button color="primary" [disabled]="!newTitle.trim()" (click)="addTestCase(false)">
+            <i class="bi bi-check-lg me-1"></i>Save
+          </button>
+        </div>
+      </div>
 
-          <div class="oh-tc-new-actions">
-            <button mat-button (click)="cancelNewTestCase()">Cancel</button>
-            <button mat-stroked-button color="primary" [disabled]="!newTitle.trim()" (click)="addTestCase(true)" matTooltip="Save this test case and keep the form open to add another">
-              <i class="bi bi-plus-lg me-1"></i>Save &amp; New
-            </button>
-            <button mat-flat-button color="primary" [disabled]="!newTitle.trim()" (click)="addTestCase(false)">
-              <i class="bi bi-check-lg me-1"></i>Save
+      <!-- Data table — mirrors the Employee Onboarding list's mat-table:
+           search row, uppercase header, and a paginated footer. Rows are
+           either a folder (drills in on click) or a test case. -->
+      <div class="oh-tc-table-card bg-white border rounded-3 shadow-sm">
+        <div class="oh-tc-list__search-row">
+          <div class="oh-tc-list__search">
+            <i class="bi bi-search oh-tc-list__search-icon" aria-hidden="true"></i>
+            <input
+              class="oh-input"
+              placeholder="Search test cases in this folder..."
+              [ngModel]="searchTerm"
+              (ngModelChange)="onSearchChange($event)"
+              aria-label="Search test cases"
+            />
+            <button *ngIf="searchTerm" type="button" class="oh-tc-list__search-clear" (click)="onSearchChange('')" aria-label="Clear search">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
             </button>
           </div>
         </div>
 
-        <!-- Direct test cases in this folder -->
-        <div cdkDropList id="tc-grid" [cdkDropListData]="directTestCases()" class="oh-tc-list">
-          <div class="oh-tc-card" *ngFor="let tc of directTestCases()" cdkDrag [cdkDragData]="tc">
-            <div class="d-flex justify-content-between align-items-start gap-3">
-              <div class="min-width-0 flex-grow-1">
-                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                  <span class="font-mono text-xxs text-muted">{{ tc.id }}</span>
-                  <span class="oh-badge oh-badge--xs" [ngClass]="priorityBadgeClass(tc.priority)">{{ tc.priority }}</span>
-                  <span class="oh-badge oh-badge--outline oh-badge--xs" *ngIf="tc.linkedRequirementId">
-                    <i class="bi bi-link-45deg me-1"></i>{{ linkedRequirementTitle(tc.linkedRequirementId) }}
-                  </span>
-                  <span class="text-xxs text-muted">by {{ tc.createdBy }}</span>
+        <table mat-table [dataSource]="pageRows()" class="oh-tc-table w-100" cdkDropList id="tc-grid" [cdkDropListData]="directTestCases()">
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <input type="checkbox" [checked]="allSelectedOnPage()" (change)="toggleSelectAll()" aria-label="Select all" />
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <input type="checkbox" [checked]="isSelected(row)" (change)="toggleSelect(row)"
+                     (click)="$event.stopPropagation()"
+                     [attr.aria-label]="'Select ' + (row.kind === 'folder' ? row.folder.name : row.testCase.title)" />
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container *ngIf="row.kind === 'folder'; else caseName">
+                <div class="d-flex align-items-center gap-2" *ngIf="!(renamingFolderId === row.folder.id && renameSource === 'table'); else tableRenameInput">
+                  <i class="bi bi-folder2 text-teal"></i>
+                  <span class="oh-tc-table__name">{{ row.folder.name }}</span>
                 </div>
-                <h4 class="oh-tc-title mb-1">{{ tc.title }}</h4>
-                <p class="oh-tc-description mb-0" *ngIf="tc.description">{{ tc.description }}</p>
-              </div>
+                <ng-template #tableRenameInput>
+                  <div class="d-flex align-items-center gap-2" (click)="$event.stopPropagation()">
+                    <input class="oh-tc-tree-rename-input" [(ngModel)]="renameDraft"
+                           (click)="$event.stopPropagation()" (keyup.enter)="confirmRename($event)" (keyup.escape)="cancelRename($event)" />
+                    <span class="oh-tc-tree-new-actions">
+                      <button type="button" class="oh-tc-tree-save-btn" [disabled]="!renameDraft.trim()" (click)="confirmRename($event)" matTooltip="Save">
+                        <i class="bi bi-check-lg"></i>
+                      </button>
+                      <button type="button" class="oh-tc-tree-cancel-btn" (click)="cancelRename($event)" matTooltip="Cancel">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </span>
+                  </div>
+                </ng-template>
+              </ng-container>
+              <ng-template #caseName>
+                <p class="font-mono text-xxs text-muted mb-0">{{ row.testCase.id }}</p>
+                <p class="oh-tc-table__name mb-0" [title]="row.testCase.description || row.testCase.title">{{ row.testCase.title }}</p>
+              </ng-template>
+            </td>
+          </ng-container>
 
-              <span class="oh-badge oh-tc-status-badge flex-shrink-0" [ngClass]="statusBadgeClass(tc.status)">
-                <i class="bi {{ statusIcon(tc.status) }} me-1"></i>{{ tc.status }}
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Priority</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="oh-badge oh-badge--xs" *ngIf="row.kind === 'testcase'" [ngClass]="priorityBadgeClass(row.testCase.priority)">{{ row.testCase.priority }}</span>
+              <span class="text-muted" *ngIf="row.kind === 'folder'">—</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="requirement">
+            <th mat-header-cell *matHeaderCellDef>Requirement</th>
+            <td mat-cell *matCellDef="let row">
+              <span *ngIf="row.kind === 'testcase'">{{ linkedRequirementTitle(row.testCase.linkedRequirementId) }}</span>
+              <span class="text-muted" *ngIf="row.kind === 'folder'">—</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="author">
+            <th mat-header-cell *matHeaderCellDef>Author</th>
+            <td mat-cell *matCellDef="let row">
+              <span *ngIf="row.kind === 'testcase'">{{ row.testCase.createdBy }}</span>
+              <span class="text-muted" *ngIf="row.kind === 'folder'">—</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="oh-badge oh-tc-status-badge" *ngIf="row.kind === 'testcase'" [ngClass]="statusBadgeClass(row.testCase.status)">
+                <i class="bi {{ statusIcon(row.testCase.status) }} me-1"></i>{{ row.testCase.status }}
               </span>
+              <ng-container *ngIf="row.kind === 'folder'">
+                <div class="d-flex align-items-center gap-2" *ngIf="row.count; else folderEmpty">
+                  <div class="oh-tc-tree-bar oh-tc-grid-folder-bar">
+                    <div class="oh-tc-tree-bar-fill" [style.width.%]="row.passRate"></div>
+                  </div>
+                  <span class="text-xxs text-muted">{{ row.count }} test case(s)</span>
+                </div>
+                <ng-template #folderEmpty><span class="text-xxs text-muted">Empty</span></ng-template>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="oh-tc-folder-actions" *ngIf="row.kind === 'folder' && roleService.canCreateTestCase() && !(renamingFolderId === row.folder.id && renameSource === 'table')">
+                <button class="oh-tc-folder-action oh-tc-folder-action--edit" (click)="startRename(row.folder, $event, 'table')" matTooltip="Rename folder">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="oh-tc-folder-action oh-tc-folder-action--delete" (click)="deleteFolder(row.folder, $event)" matTooltip="Delete folder">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+              <div class="oh-tc-folder-actions" *ngIf="row.kind === 'folder' && renamingFolderId === row.folder.id && renameSource === 'table'">
+                <button class="oh-tc-folder-action oh-tc-folder-action--delete" (click)="cancelRename($event)" matTooltip="Cancel">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <div class="oh-tc-quick-actions" *ngIf="row.kind === 'testcase' && roleService.canCreateTestCase()">
+                <button type="button" class="oh-tc-quick-btn oh-tc-quick-btn--passed" [class.oh-tc-quick-btn--current]="row.testCase.status === 'Passed'"
+                        (click)="setStatus(row.testCase, 'Passed')" matTooltip="Mark Passed">
+                  <i class="bi bi-check-circle-fill"></i>
+                </button>
+                <button type="button" class="oh-tc-quick-btn oh-tc-quick-btn--failed" [class.oh-tc-quick-btn--current]="row.testCase.status === 'Failed'"
+                        (click)="setStatus(row.testCase, 'Failed')" matTooltip="Mark Failed">
+                  <i class="bi bi-x-circle-fill"></i>
+                </button>
+                <button type="button" class="oh-tc-quick-btn oh-tc-quick-btn--blocked" [class.oh-tc-quick-btn--current]="row.testCase.status === 'Blocked'"
+                        (click)="setStatus(row.testCase, 'Blocked')" matTooltip="Mark Blocked">
+                  <i class="bi bi-slash-circle-fill"></i>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns; when: isFolderRow" class="oh-tc-table-row--folder" (click)="selectFolder(row.folder.id)"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns; when: isTestCaseRow" cdkDrag cdkDragPreviewContainer="global" [cdkDragData]="row.testCase"></tr>
+        </table>
+
+        <div *ngIf="!totalCount() && !showAddForm" class="oh-tc-empty py-5">
+          <i class="bi bi-clipboard2-check d-block mb-2"></i>
+          <ng-container *ngIf="selectedFolderId() === null; else emptyFolderMsg">
+            No folders here yet. {{ roleService.canCreateTestCase() ? 'Click "New Folder" to create one — test cases live inside folders.' : 'Only a Tester or Manager can add folders.' }}
+          </ng-container>
+          <ng-template #emptyFolderMsg>
+            Nothing here yet. {{ roleService.canCreateTestCase() ? 'Click "New Test Case" or "New Folder" to get started.' : 'Only a Tester or Manager can add test cases.' }}
+          </ng-template>
+        </div>
+
+        <!-- Footer Pagination -->
+        <div class="oh-tc-list__footer" *ngIf="totalCount() > 0">
+          <span class="oh-caption">
+            Showing <strong>{{ rangeStart() }}–{{ rangeEnd() }}</strong> of <strong>{{ totalCount() }}</strong>
+          </span>
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="oh-tc-list__page-size">
+              <span class="oh-caption">Rows:</span>
+              <select class="oh-select" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+              </select>
             </div>
 
-            <!-- Quick execution actions -->
-            <div class="oh-tc-actions mt-3 pt-3 border-top d-flex align-items-center gap-2" *ngIf="roleService.canCreateTestCase()">
-              <span class="text-xxs text-muted font-weight-bold me-1">Mark as:</span>
-              <button type="button" class="oh-tc-action-btn oh-tc-action-btn--passed" [class.oh-tc-action-btn--current]="tc.status === 'Passed'"
-                      (click)="setStatus(tc, 'Passed')" matTooltip="Mark Passed">
-                <i class="bi bi-check-circle-fill"></i>Passed
+            <div class="oh-tc-list__pager">
+              <button class="oh-tc-list__page-btn" [disabled]="pageIndex() === 0" (click)="prevPage()" aria-label="Previous page">
+                <i class="bi bi-chevron-left"></i>
               </button>
-              <button type="button" class="oh-tc-action-btn oh-tc-action-btn--failed" [class.oh-tc-action-btn--current]="tc.status === 'Failed'"
-                      (click)="setStatus(tc, 'Failed')" matTooltip="Mark Failed">
-                <i class="bi bi-x-circle-fill"></i>Failed
+              <button *ngFor="let page of pageNumbers()" class="oh-tc-list__page-btn" [class.oh-tc-list__page-btn--active]="page === pageIndex() + 1" (click)="goToPage(page)">
+                {{ page }}
               </button>
-              <button type="button" class="oh-tc-action-btn oh-tc-action-btn--blocked" [class.oh-tc-action-btn--current]="tc.status === 'Blocked'"
-                      (click)="setStatus(tc, 'Blocked')" matTooltip="Mark Blocked">
-                <i class="bi bi-slash-circle-fill"></i>Blocked
+              <span *ngIf="hasMorePages()" class="oh-tc-list__page-ellipsis">…</span>
+              <button class="oh-tc-list__page-btn" [disabled]="pageIndex() >= pageCount() - 1" (click)="nextPage()" aria-label="Next page">
+                <i class="bi bi-chevron-right"></i>
               </button>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <div *ngIf="!childFolders().length && !directTestCases().length && !showAddForm" class="oh-tc-empty">
-          <i class="bi bi-clipboard2-check d-block mb-2"></i>
-          No test cases here yet. {{ roleService.canCreateTestCase() ? 'Click "New Test Case" or "New Folder" to get started.' : 'Only a Tester or Manager can add test cases.' }}
+  <!-- Add Folder modal — mirrors Spira's "Add Folder" dialog: an explicit
+       Parent Folder picker lets a folder be nested under ANY existing
+       folder, so folders can be built arbitrarily deep. -->
+  <div class="oh-tc-folder-modal-backdrop" *ngIf="showNewFolderForm && roleService.canCreateTestCase()" (click)="cancelNewFolder()">
+    <div class="oh-tc-folder-modal" (click)="$event.stopPropagation()">
+      <div class="oh-tc-folder-modal-header">
+        <h4 class="mb-0 font-weight-bold text-sm">Add Folder</h4>
+        <button type="button" class="btn-close" (click)="cancelNewFolder()" aria-label="Close"></button>
+      </div>
+
+      <div class="oh-tc-folder-modal-body">
+        <div class="oh-field mb-3">
+          <label class="oh-label font-weight-bold mb-1">Parent Folder</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <mat-select [(ngModel)]="newFolderParentId" placeholder="Select">
+              <mat-option [value]="null">-- None -- (Root)</mat-option>
+              <mat-option *ngFor="let row of allFoldersFlattened()" [value]="row.folder.id">
+                <span [style.padding-left.px]="row.depth * 14">{{ row.folder.name }}</span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+
+        <div class="oh-field mb-0">
+          <label class="oh-label font-weight-bold mb-1">Folder Name</label>
+          <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+            <input matInput [(ngModel)]="newFolderName" #newFolderInput placeholder="e.g. Regression Suite" (keyup.enter)="addFolder()" (keyup.escape)="cancelNewFolder()" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="oh-tc-folder-modal-footer">
+        <button mat-button (click)="cancelNewFolder()">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="!newFolderName.trim()" (click)="addFolder()">
+          <i class="bi bi-check-lg me-1"></i>Add
+        </button>
       </div>
     </div>
   </div>

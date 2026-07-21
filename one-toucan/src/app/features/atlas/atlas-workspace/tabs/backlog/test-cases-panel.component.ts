@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { CurrentUserService } from '../../../../../core/auth/current-user.service';
@@ -22,6 +23,20 @@ interface FolderRow {
   hasChildren: boolean;
 }
 
+// Rows of the right-hand data table (mirrors the Employee Onboarding list's
+// mat-table) — a folder row (drills in on click) or a test case row.
+interface FolderTableRow {
+  kind: 'folder';
+  folder: TestCaseFolder;
+  count: number;
+  passRate: number;
+}
+interface TestCaseTableRow {
+  kind: 'testcase';
+  testCase: AtlasTestCase;
+}
+type TcTableRow = FolderTableRow | TestCaseTableRow;
+
 @Component({
   selector: 'oh-test-cases-panel',
   standalone: true,
@@ -33,12 +48,15 @@ interface FolderRow {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatTableModule,
     MatTooltipModule
   ],
   templateUrl: './test-cases-panel.component.html',
   styleUrl: './test-cases-panel.component.scss'
 })
 export class TestCasesPanelComponent {
+  private static readonly MAX_VISIBLE_PAGES = 4;
+
   private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
   private readonly currentUser = inject(CurrentUserService);
@@ -66,6 +84,7 @@ export class TestCasesPanelComponent {
   // recursive component — collapsed subtrees are simply skipped) ---
   readonly selectedFolderId = signal<string | null>(null);
   readonly collapsedFolderIds = signal<Set<string>>(new Set());
+  readonly rootCollapsed = signal(false);
   searchTerm = '';
 
   // Folder tree rows are drop-only targets (they never source a drag
@@ -73,9 +92,14 @@ export class TestCasesPanelComponent {
   // instead of inferring `never[]` from an inline `[]` literal.
   readonly emptyDropData: AtlasTestCase[] = [];
 
+  readonly rootHasChildren = computed(() => {
+    const project = this.project();
+    return !!project && project.testCaseFolders.some(f => f.parentId === null);
+  });
+
   readonly folderRows = computed<FolderRow[]>(() => {
     const project = this.project();
-    if (!project) return [];
+    if (!project || this.rootCollapsed()) return [];
     const folders = project.testCaseFolders;
     const collapsed = this.collapsedFolderIds();
     const rows: FolderRow[] = [];
@@ -87,6 +111,30 @@ export class TestCasesPanelComponent {
         if (!collapsed.has(folder.id)) {
           walk(folder.id, depth + 1);
         }
+      }
+    };
+    walk(null, 0);
+    return rows;
+  });
+
+  toggleRootCollapsed(event: Event): void {
+    event.stopPropagation();
+    this.rootCollapsed.update(v => !v);
+  }
+
+  // Full, always-expanded flattening of every folder — used by the "Add
+  // Folder" modal's Parent Folder picker, which (unlike the tree itself)
+  // must let you pick ANY folder as the parent regardless of collapse state.
+  readonly allFoldersFlattened = computed<FolderRow[]>(() => {
+    const project = this.project();
+    if (!project) return [];
+    const folders = project.testCaseFolders;
+    const rows: FolderRow[] = [];
+
+    const walk = (parentId: string | null, depth: number) => {
+      for (const folder of folders.filter(f => f.parentId === parentId)) {
+        rows.push({ folder, depth, hasChildren: false });
+        walk(folder.id, depth + 1);
       }
     };
     walk(null, 0);
@@ -122,6 +170,118 @@ export class TestCasesPanelComponent {
       .filter(tc => !term || tc.title.toLowerCase().includes(term));
   });
 
+  // --- Data table for the currently-selected folder (mirrors the Employee
+  // Onboarding list's mat-table: same columns pattern, search row, and
+  // pagination footer) — child folders first, then this folder's own test
+  // cases, exactly matching the ordering the card/list view used before.
+  readonly columns = ['select', 'name', 'priority', 'requirement', 'author', 'status', 'actions'];
+  readonly pageSizeOptions = [10, 15, 25, 50];
+  readonly pageSize = signal(15);
+  readonly pageIndex = signal(0);
+  readonly selectedRowKeys = signal<ReadonlySet<string>>(new Set());
+
+  // Root is a pure folder-navigation level — test cases only exist inside an
+  // actual folder, never directly at Root, so its table shows folders only.
+  readonly tableRows = computed<TcTableRow[]>(() => {
+    const folderRows: TcTableRow[] = this.childFolders().map(f => ({
+      kind: 'folder' as const,
+      folder: f,
+      count: this.folderCount(f.id),
+      passRate: this.folderPassRate(f.id)
+    }));
+    if (this.selectedFolderId() === null) {
+      return folderRows;
+    }
+    const caseRows: TcTableRow[] = this.directTestCases().map(tc => ({ kind: 'testcase' as const, testCase: tc }));
+    return [...folderRows, ...caseRows];
+  });
+
+  readonly totalCount = computed(() => this.tableRows().length);
+  readonly pageCount = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize())));
+
+  readonly pageRows = computed(() => {
+    const start = this.pageIndex() * this.pageSize();
+    return this.tableRows().slice(start, start + this.pageSize());
+  });
+
+  readonly rangeStart = computed(() => (this.totalCount() ? this.pageIndex() * this.pageSize() + 1 : 0));
+  readonly rangeEnd = computed(() => Math.min(this.rangeStart() + this.pageSize() - 1, this.totalCount()));
+
+  readonly pageNumbers = computed(() => {
+    const visible = Math.min(this.pageCount(), TestCasesPanelComponent.MAX_VISIBLE_PAGES);
+    return Array.from({ length: visible }, (_, i) => i + 1);
+  });
+
+  readonly hasMorePages = computed(() => this.pageCount() > TestCasesPanelComponent.MAX_VISIBLE_PAGES);
+
+  readonly isFolderRow = (_index: number, row: TcTableRow) => row.kind === 'folder';
+  readonly isTestCaseRow = (_index: number, row: TcTableRow) => row.kind === 'testcase';
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
+    this.pageIndex.set(0);
+  }
+
+  setPageSize(size: string): void {
+    this.pageSize.set(Number(size));
+    this.pageIndex.set(0);
+  }
+
+  goToPage(page: number): void {
+    this.pageIndex.set(page - 1);
+  }
+
+  prevPage(): void {
+    this.pageIndex.update(i => Math.max(0, i - 1));
+  }
+
+  nextPage(): void {
+    this.pageIndex.update(i => Math.min(this.pageCount() - 1, i + 1));
+  }
+
+  rowKey(row: TcTableRow): string {
+    return row.kind === 'folder' ? `folder:${row.folder.id}` : `testcase:${row.testCase.id}`;
+  }
+
+  isSelected(row: TcTableRow): boolean {
+    return this.selectedRowKeys().has(this.rowKey(row));
+  }
+
+  toggleSelect(row: TcTableRow): void {
+    const key = this.rowKey(row);
+    this.selectedRowKeys.update(set => {
+      const next = new Set(set);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }
+
+  readonly allSelectedOnPage = computed(() => {
+    const rows = this.pageRows();
+    return rows.length > 0 && rows.every(row => this.selectedRowKeys().has(this.rowKey(row)));
+  });
+
+  toggleSelectAll(): void {
+    const shouldSelect = !this.allSelectedOnPage();
+    const rows = this.pageRows();
+    this.selectedRowKeys.update(set => {
+      const next = new Set(set);
+      for (const row of rows) {
+        const key = this.rowKey(row);
+        if (shouldSelect) {
+          next.add(key);
+        } else {
+          next.delete(key);
+        }
+      }
+      return next;
+    });
+  }
+
   private descendantFolderIds(project: ActiveProject, folderId: string): string[] {
     const ids: string[] = [];
     const walk = (id: string) => {
@@ -155,6 +315,10 @@ export class TestCasesPanelComponent {
 
   selectFolder(folderId: string | null): void {
     this.selectedFolderId.set(folderId);
+    this.pageIndex.set(0);
+    if (folderId === null) {
+      this.cancelNewTestCase();
+    }
   }
 
   toggleCollapsed(folderId: string, event: Event): void {
@@ -171,8 +335,14 @@ export class TestCasesPanelComponent {
   }
 
   // --- Folder CRUD ---
+  // "Add Folder" is a modal (mirrors Spira's Add Folder dialog) with an
+  // explicit Parent Folder picker, so a folder can be nested under ANY
+  // existing folder — not just whichever one happens to be selected in the
+  // tree. It still defaults to the currently-selected folder for the common
+  // case of "I'm inside X, add a folder here."
   showNewFolderForm = false;
   newFolderName = '';
+  newFolderParentId: string | null = null;
 
   @ViewChild('newFolderInput') set newFolderInputRef(el: ElementRef<HTMLInputElement> | undefined) {
     if (el) {
@@ -184,38 +354,55 @@ export class TestCasesPanelComponent {
     if (this.showNewFolderForm) {
       this.cancelNewFolder();
     } else {
+      this.newFolderParentId = this.selectedFolderId();
       this.showNewFolderForm = true;
     }
   }
 
   cancelNewFolder(): void {
     this.newFolderName = '';
+    this.newFolderParentId = null;
     this.showNewFolderForm = false;
   }
 
   addFolder(): void {
     const project = this.project();
     if (!project || !this.newFolderName.trim() || !this.roleService.canCreateTestCase()) return;
-    this.projectState.addTestCaseFolder(project.id, this.newFolderName, this.selectedFolderId());
+    this.projectState.addTestCaseFolder(project.id, this.newFolderName, this.newFolderParentId);
     this.newFolderName = '';
+    this.newFolderParentId = null;
     this.showNewFolderForm = false;
   }
 
   renamingFolderId: string | null = null;
+  // Tracks which surface opened the rename input — the tree and the table
+  // both watch renamingFolderId, so without this both would flip into edit
+  // mode at once (and the narrow tree column renders badly squeezed).
+  renameSource: 'tree' | 'table' | null = null;
   renameDraft = '';
 
-  startRename(folder: TestCaseFolder, event: Event): void {
+  startRename(folder: TestCaseFolder, event: Event, source: 'tree' | 'table'): void {
     event.stopPropagation();
     if (!this.roleService.canCreateTestCase()) return;
     this.renamingFolderId = folder.id;
+    this.renameSource = source;
     this.renameDraft = folder.name;
   }
 
-  confirmRename(): void {
+  confirmRename(event?: Event): void {
+    event?.stopPropagation();
     const project = this.project();
     if (!project || !this.renamingFolderId) return;
     this.projectState.renameTestCaseFolder(project.id, this.renamingFolderId, this.renameDraft);
     this.renamingFolderId = null;
+    this.renameSource = null;
+  }
+
+  cancelRename(event?: Event): void {
+    event?.stopPropagation();
+    this.renamingFolderId = null;
+    this.renameSource = null;
+    this.renameDraft = '';
   }
 
   deleteFolder(folder: TestCaseFolder, event: Event): void {
@@ -259,7 +446,7 @@ export class TestCasesPanelComponent {
 
   addTestCase(keepFormOpen = false): void {
     const project = this.project();
-    if (!project || !this.newTitle.trim() || !this.roleService.canCreateTestCase()) return;
+    if (!project || !this.newTitle.trim() || !this.roleService.canCreateTestCase() || this.selectedFolderId() === null) return;
 
     this.projectState.addTestCase(project.id, {
       title: this.newTitle,
@@ -287,7 +474,8 @@ export class TestCasesPanelComponent {
   onDropOnFolder(folderId: string | null, event: CdkDragDrop<AtlasTestCase[]>): void {
     const project = this.project();
     const testCase: AtlasTestCase | undefined = event.item.data;
-    if (!project || !testCase || !this.roleService.canCreateTestCase() || testCase.folderId === folderId) return;
+    // Root is folders-only — a test case can never be dropped back onto it.
+    if (!project || !testCase || folderId === null || !this.roleService.canCreateTestCase() || testCase.folderId === folderId) return;
     this.projectState.moveTestCase(project.id, testCase.id, folderId);
   }
 
