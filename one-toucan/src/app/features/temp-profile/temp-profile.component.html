@@ -1,4 +1,4 @@
-<!-- TEMP: basic-profile-only scaffold, editable directly here. -->
+<!-- TEMP: sidebar + General Information panel layout. -->
 <div class="oh-temp-profile-container pb-5">
 
   <div class="oh-toast-alert position-fixed bottom-0 end-0 m-4 p-3 rounded-lg shadow-lg d-flex align-items-center gap-3 text-white"
@@ -8,152 +8,103 @@
     <span class="fw-semibold">{{ alertMessage() }}</span>
   </div>
 
-  <mat-card appearance="outlined" class="oh-panel mb-4">
-    <mat-card-content class="d-flex align-items-center gap-3 p-3">
-      <span class="oh-avatar rounded-circle"
-            style="width: 64px; height: 64px; font-size: 22px; background-color: var(--oh-primary-soft); color: var(--oh-primary); font-weight: 700;">
-        {{ initials() }}
-      </span>
-      <div>
-        <h2 class="oh-heading-h3 mb-1">{{ displayName() }}</h2>
-        <p class="oh-caption mb-0 text-muted">{{ workEmail() }}</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
+  <div class="row g-4">
 
-  <mat-card appearance="outlined" class="oh-panel">
-    <mat-card-content class="p-4">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <h3 class="oh-dashboard-section-title mb-0">Basic Profile Details</h3>
-        <button mat-stroked-button color="primary" class="oh-btn-small" (click)="startEdit()" *ngIf="!editing()">
-          <i class="bi bi-pencil me-1"></i>Edit
-        </button>
-      </div>
-      <hr class="oh-section-divider mb-3">
+    <!-- Left: Avatar card + section nav -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content class="p-4 d-flex flex-column align-items-center text-center">
+          <div class="oh-temp-profile__avatar position-relative mb-3">
+            <span class="oh-avatar rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 88px; height: 88px; font-size: 28px; background-color: var(--oh-primary-soft); color: var(--oh-primary); font-weight: 700;">
+              <ng-container *ngIf="!profileImage()">{{ initials() }}</ng-container>
+              <img *ngIf="profileImage()" [src]="profileImage()" alt="" class="w-100 h-100 rounded-circle" style="object-fit: cover;" />
+            </span>
+            <label class="oh-temp-profile__avatar-upload" for="tempProfileAvatarInput" aria-label="Change photo">
+              <i class="bi bi-camera-fill"></i>
+            </label>
+            <input id="tempProfileAvatarInput" type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)" />
+          </div>
 
-      <!-- READ-ONLY VIEW -->
-      <div class="row g-3" *ngIf="!editing()">
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">First Name</span>
-          <span class="oh-field-value">{{ firstName() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Last Name</span>
-          <span class="oh-field-value">{{ lastName() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Display Name</span>
-          <span class="oh-field-value">{{ displayName() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Gender</span>
-          <span class="oh-field-value">{{ gender() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Date of Birth</span>
-          <span class="oh-field-value">{{ dob() | date:'mediumDate' }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Marital Status</span>
-          <span class="oh-field-value">{{ maritalStatus() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Blood Group</span>
-          <span class="oh-field-value">{{ bloodGroup() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Nationality</span>
-          <span class="oh-field-value">{{ nationality() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Work Email</span>
-          <span class="oh-field-value">{{ workEmail() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Personal Email</span>
-          <span class="oh-field-value">{{ personalEmail() }}</span>
-        </div>
-        <div class="col-12 col-md-4">
-          <span class="oh-field-label">Mobile Number</span>
-          <span class="oh-field-value">{{ mobileNumber() }}</span>
-        </div>
-      </div>
+          <h3 class="oh-heading-h3 mb-0">{{ fullName() }}</h3>
+          <p class="oh-caption text-muted mb-2">{{ role() }}</p>
+          <span class="oh-badge oh-badge--success mb-3">
+            <i class="bi bi-dot"></i>{{ status() }}
+          </span>
 
-      <!-- EDIT VIEW -->
-      <div class="row g-3" *ngIf="editing()">
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>First Name</mat-label>
-            <input matInput [(ngModel)]="form.firstName" name="firstName" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Last Name</mat-label>
-            <input matInput [(ngModel)]="form.lastName" name="lastName" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Display Name</mat-label>
-            <input matInput [(ngModel)]="form.displayName" name="displayName" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Gender</mat-label>
-            <mat-select [(ngModel)]="form.gender" name="gender">
-              <mat-option value="Male">Male</mat-option>
-              <mat-option value="Female">Female</mat-option>
-              <mat-option value="Other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Date of Birth</mat-label>
-            <input matInput type="date" [(ngModel)]="form.dob" name="dob" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Marital Status</mat-label>
-            <mat-select [(ngModel)]="form.maritalStatus" name="maritalStatus">
-              <mat-option value="Single">Single</mat-option>
-              <mat-option value="Married">Married</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Blood Group</mat-label>
-            <input matInput [(ngModel)]="form.bloodGroup" name="bloodGroup" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Nationality</mat-label>
-            <input matInput [(ngModel)]="form.nationality" name="nationality" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Personal Email</mat-label>
-            <input matInput [(ngModel)]="form.personalEmail" name="personalEmail" />
-          </mat-form-field>
-        </div>
-        <div class="col-12 col-md-4">
-          <mat-form-field appearance="outline" class="w-100">
-            <mat-label>Mobile Number</mat-label>
-            <input matInput [(ngModel)]="form.mobileNumber" name="mobileNumber" />
-          </mat-form-field>
-        </div>
+          <hr class="w-100 my-2">
 
-        <div class="col-12 d-flex gap-2 mt-2">
-          <button mat-flat-button color="primary" class="oh-btn-small" (click)="save()">Save</button>
-          <button mat-stroked-button class="oh-btn-small" (click)="cancelEdit()">Cancel</button>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
+          <nav class="oh-temp-profile__nav w-100 text-start">
+            <button type="button" class="oh-temp-profile__nav-item" [class.oh-temp-profile__nav-item--active]="activeTab() === 'general'" (click)="selectTab('general')">
+              <i class="bi bi-person"></i>General Information
+            </button>
+            <button type="button" class="oh-temp-profile__nav-item" [class.oh-temp-profile__nav-item--active]="activeTab() === 'security'" (click)="selectTab('security')">
+              <i class="bi bi-shield-lock"></i>Security & Password
+            </button>
+            <button type="button" class="oh-temp-profile__nav-item" [class.oh-temp-profile__nav-item--active]="activeTab() === 'notifications'" (click)="selectTab('notifications')">
+              <i class="bi bi-bell"></i>Notifications
+            </button>
+          </nav>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Right: Content panel -->
+    <div class="col-12 col-md-8 col-lg-9">
+      <mat-card appearance="outlined" class="oh-panel">
+        <mat-card-content class="p-4">
+
+          <ng-container *ngIf="activeTab() === 'general'">
+            <h3 class="oh-heading-h3 mb-1">General Information</h3>
+            <p class="oh-caption text-muted mb-4">Update your basic profile details.</p>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label" for="tempProfileFullName">Full Name *</label>
+                  <input id="tempProfileFullName" class="oh-input" [(ngModel)]="form.fullName" name="fullName" required />
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label" for="tempProfileEmail">Email Address *</label>
+                  <input id="tempProfileEmail" class="oh-input" type="email" [(ngModel)]="form.emailAddress" name="emailAddress" required />
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label" for="tempProfilePhone">Phone Number</label>
+                  <input id="tempProfilePhone" class="oh-input" [(ngModel)]="form.phoneNumber" name="phoneNumber" />
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="oh-field">
+                  <label class="oh-label" for="tempProfileRole">Role</label>
+                  <input id="tempProfileRole" class="oh-input" [value]="role()" disabled />
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <div class="d-flex justify-content-end gap-2">
+              <button mat-stroked-button (click)="cancel()">Cancel</button>
+              <button mat-flat-button color="primary" (click)="save()">Save Changes</button>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="activeTab() === 'security'">
+            <h3 class="oh-heading-h3 mb-1">Security & Password</h3>
+            <p class="oh-caption text-muted mb-0">Coming soon.</p>
+          </ng-container>
+
+          <ng-container *ngIf="activeTab() === 'notifications'">
+            <h3 class="oh-heading-h3 mb-1">Notifications</h3>
+            <p class="oh-caption text-muted mb-0">Coming soon.</p>
+          </ng-container>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
 </div>
