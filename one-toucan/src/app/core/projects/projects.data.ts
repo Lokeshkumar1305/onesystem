@@ -75,6 +75,12 @@ export interface AtlasTask {
   status: 'To Do' | 'In Progress' | 'Done';
 }
 
+export interface TestCaseFolder {
+  id: string;
+  name: string;
+  parentId: string | null; // null = top-level folder, sits directly under Root
+}
+
 export interface AtlasTestCase {
   id: string;
   title: string;
@@ -82,6 +88,8 @@ export interface AtlasTestCase {
   linkedRequirementId?: string;
   priority: 'High' | 'Medium' | 'Low';
   status: 'Not Run' | 'Passed' | 'Failed' | 'Blocked';
+  folderId: string | null; // null = sits directly in Root
+  createdBy: string;
 }
 
 export interface AtlasBug {
@@ -160,6 +168,7 @@ export interface ActiveProject {
   requirements: AtlasRequirement[];
   userStories: AtlasUserStory[];
   tasks: AtlasTask[];
+  testCaseFolders: TestCaseFolder[];
   testCases: AtlasTestCase[];
   bugs: AtlasBug[];
 }
@@ -299,9 +308,13 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
       { id: 'TSK-002', title: 'Implement SAML assertion parser unit tests', assignee: 'Sneha Kulkarni', status: 'In Progress' },
       { id: 'TSK-003', title: 'Configure retention properties in Kafka topics', assignee: 'Rahul Menon', status: 'To Do' }
     ],
+    testCaseFolders: [
+      { id: 'TCF-ATL-1', name: 'Regression Suite', parentId: null },
+      { id: 'TCF-ATL-2', name: 'Smoke Suite', parentId: null }
+    ],
     testCases: [
-      { id: 'TC-ATL-1', title: 'Verify CSV export includes all dynamic columns', description: 'Export a settlement report and confirm every configured column appears with correct values.', linkedRequirementId: 'REQ-001', priority: 'High', status: 'Passed' },
-      { id: 'TC-ATL-2', title: 'SAML SSO login rejects expired assertions', description: 'Attempt login with an expired SAML assertion and confirm the request is rejected with a clear error.', linkedRequirementId: 'REQ-002', priority: 'High', status: 'Failed' }
+      { id: 'TC-ATL-1', title: 'Verify CSV export includes all dynamic columns', description: 'Export a settlement report and confirm every configured column appears with correct values.', linkedRequirementId: 'REQ-001', priority: 'High', status: 'Passed', folderId: 'TCF-ATL-1', createdBy: 'Arman Khan' },
+      { id: 'TC-ATL-2', title: 'SAML SSO login rejects expired assertions', description: 'Attempt login with an expired SAML assertion and confirm the request is rejected with a clear error.', linkedRequirementId: 'REQ-002', priority: 'High', status: 'Failed', folderId: null, createdBy: 'Arman Khan' }
     ],
     bugs: [
       { id: 'BUG-ATL-1', title: 'Settlement total off by rounding paise', severity: 'Critical', priority: 'High', status: 'In Progress', reportedBy: 'Arman Khan' },
@@ -381,8 +394,9 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     tasks: [
       { id: 'TSK-011', title: 'Style the invoice PDF using pdf-lib', assignee: 'Prerna Nair', status: 'In Progress' }
     ],
+    testCaseFolders: [],
     testCases: [
-      { id: 'TC-BIL-1', title: 'Invoice PDF renders correct line items and totals', description: 'Generate an invoice PDF for a multi-line subscription and verify totals match the billing ledger.', linkedRequirementId: 'REQ-011', priority: 'Medium', status: 'Not Run' }
+      { id: 'TC-BIL-1', title: 'Invoice PDF renders correct line items and totals', description: 'Generate an invoice PDF for a multi-line subscription and verify totals match the billing ledger.', linkedRequirementId: 'REQ-011', priority: 'Medium', status: 'Not Run', folderId: null, createdBy: 'Karthik Iyer' }
     ],
     bugs: [
       { id: 'BUG-BIL-1', title: 'CSV export truncates merchant names with commas', severity: 'Major', priority: 'Medium', status: 'Fixed', reportedBy: 'Karthik Iyer' }
@@ -431,6 +445,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     requirements: [],
     userStories: [],
     tasks: [],
+    testCaseFolders: [],
     testCases: [],
     bugs: []
   }

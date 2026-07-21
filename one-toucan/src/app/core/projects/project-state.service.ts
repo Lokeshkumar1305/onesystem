@@ -14,6 +14,7 @@ import {
   ProjectCard,
   ProjectProposal,
   TeamMember,
+  TestCaseFolder,
   INITIAL_ACTIVE_PROJECTS,
   INITIAL_PROPOSALS
 } from './projects.data';
@@ -111,6 +112,7 @@ export class ProjectStateService {
       requirements: [],
       userStories: [],
       tasks: [],
+      testCaseFolders: [],
       testCases: [],
       bugs: []
     };
@@ -190,6 +192,50 @@ export class ProjectStateService {
     this.updateProject(projectId, p => ({
       ...p,
       testCases: p.testCases.map(tc => (tc.id === testCaseId ? { ...tc, status } : tc))
+    }));
+  }
+
+  moveTestCase(projectId: string, testCaseId: string, folderId: string | null): void {
+    this.updateProject(projectId, p => ({
+      ...p,
+      testCases: p.testCases.map(tc => (tc.id === testCaseId ? { ...tc, folderId } : tc))
+    }));
+  }
+
+  addTestCaseFolder(projectId: string, name: string, parentId: string | null): void {
+    const project = this.getProject(projectId);
+    if (!project || !name.trim()) return;
+
+    const newFolder: TestCaseFolder = {
+      id: `TCF-${project.key}-${project.testCaseFolders.length + 1}-${Date.now().toString(36)}`,
+      name: name.trim(),
+      parentId
+    };
+    this.updateProject(projectId, p => ({ ...p, testCaseFolders: [...p.testCaseFolders, newFolder] }));
+  }
+
+  renameTestCaseFolder(projectId: string, folderId: string, name: string): void {
+    if (!name.trim()) return;
+    this.updateProject(projectId, p => ({
+      ...p,
+      testCaseFolders: p.testCaseFolders.map(f => (f.id === folderId ? { ...f, name: name.trim() } : f))
+    }));
+  }
+
+  // Non-destructive: reparents child folders and test cases up to the
+  // deleted folder's own parent instead of cascading the delete.
+  deleteTestCaseFolder(projectId: string, folderId: string): void {
+    const project = this.getProject(projectId);
+    const folder = project?.testCaseFolders.find(f => f.id === folderId);
+    if (!project || !folder) return;
+
+    const parentId = folder.parentId;
+    this.updateProject(projectId, p => ({
+      ...p,
+      testCaseFolders: p.testCaseFolders
+        .filter(f => f.id !== folderId)
+        .map(f => (f.parentId === folderId ? { ...f, parentId } : f)),
+      testCases: p.testCases.map(tc => (tc.folderId === folderId ? { ...tc, folderId: parentId } : tc))
     }));
   }
 
