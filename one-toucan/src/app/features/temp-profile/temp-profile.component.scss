@@ -1,0 +1,48 @@
+// Minimal local copies of the shared oh-* helper classes used here — see
+// features/profile/profile.component.scss for the canonical versions.
+.oh-panel {
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-xl);
+  box-shadow: var(--oh-shadow-sm);
+}
+
+.oh-field-label {
+  display: block;
+  font-family: var(--oh-font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--oh-gray-500);
+  margin-bottom: var(--oh-1);
+}
+
+.oh-field-value {
+  font-family: var(--oh-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oh-gray-900);
+}
+
+.oh-btn-small {
+  height: 36px !important;
+  min-height: 36px !important;
+  line-height: 34px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 4px !important;
+}
+
+.oh-toast-alert {
+  z-index: 1100;
+  border-radius: var(--oh-radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.15);
+}
+
+:host {
+  display: block;
+}

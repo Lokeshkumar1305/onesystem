@@ -40,6 +40,10 @@ export class HeaderComponent {
 
   searchQuery = '';
 
+  // TEMP: hides the App Launcher grid button while keeping its markup intact.
+  // Flip back to false to restore it.
+  readonly hideAppLauncherTemp = true;
+
   readonly userRole = 'CTO · Admin';
   readonly notificationCount = 4;
 
@@ -82,7 +86,9 @@ export class HeaderComponent {
   }
 
   goToProfile(): void {
-    this.router.navigateByUrl('/profile');
+    // TEMP: open the temp-profile scaffold instead. Original line kept below for easy revert.
+    // this.router.navigateByUrl('/profile');
+    this.router.navigateByUrl('/temp-profile');
   }
 
   logout(): void {

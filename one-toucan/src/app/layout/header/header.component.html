@@ -15,8 +15,8 @@
       <span class="oh-header__badge-count" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
     </button>
 
-    <!-- App Launcher Grid Button -->
-    <button mat-icon-button class="oh-header__apps" [matMenuTriggerFor]="appsMenu" matTooltip="App Launcher" aria-label="App Launcher">
+    <!-- App Launcher Grid Button (TEMP: hidden via hideAppLauncherTemp; markup untouched) -->
+    <button *ngIf="!hideAppLauncherTemp" mat-icon-button class="oh-header__apps" [matMenuTriggerFor]="appsMenu" matTooltip="App Launcher" aria-label="App Launcher">
       <mat-icon>apps</mat-icon>
     </button>
 
