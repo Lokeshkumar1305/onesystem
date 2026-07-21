@@ -1,0 +1,7 @@
+// Shared card/badge/avatar visual classes — same partial ProjectsComponent uses,
+// so this stays pixel-identical. See core/projects/_project-visuals.scss.
+@use '../../core/projects/project-visuals';
+
+:host {
+  display: block;
+}

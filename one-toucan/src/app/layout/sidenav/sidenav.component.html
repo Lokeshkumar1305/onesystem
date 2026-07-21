@@ -4,22 +4,40 @@
   </div>
 
   <mat-nav-list class="oh-nav" dense>
-    <ng-container *ngIf="activeModule() as module">
-      <ng-container *ngFor="let group of groups()">
-        <h3 matSubheader class="oh-nav__group-title">{{ group.title }}</h3>
-        <button
-          mat-list-item
-          *ngFor="let item of group.items"
-          class="oh-nav__item"
-          [activated]="isActive(item)"
-          [class.oh-nav__item--active]="isActive(item)"
-          [disabled]="!item.route"
-          (click)="select(item)"
-        >
-          <i matListItemIcon class="bi bi-{{ item.icon }} oh-nav__item-icon" aria-hidden="true"></i>
-          <span matListItemTitle class="oh-nav__item-label">{{ item.label }}</span>
-        </button>
+    <!-- TEMP: full module-driven nav list hidden via hideNavListTemp; markup untouched below. -->
+    <ng-container *ngIf="!hideNavListTemp">
+      <ng-container *ngIf="activeModule() as module">
+        <ng-container *ngFor="let group of groups()">
+          <h3 matSubheader class="oh-nav__group-title">{{ group.title }}</h3>
+          <button
+            mat-list-item
+            *ngFor="let item of group.items"
+            class="oh-nav__item"
+            [activated]="isActive(item)"
+            [class.oh-nav__item--active]="isActive(item)"
+            [disabled]="!item.route"
+            (click)="select(item)"
+          >
+            <i matListItemIcon class="bi bi-{{ item.icon }} oh-nav__item-icon" aria-hidden="true"></i>
+            <span matListItemTitle class="oh-nav__item-label">{{ item.label }}</span>
+          </button>
+        </ng-container>
       </ng-container>
+    </ng-container>
+
+    <!-- TEMP: minimal stand-in list — Dashboard + Project (Project opens temp-project). -->
+    <ng-container *ngIf="hideNavListTemp">
+      <button
+        mat-list-item
+        *ngFor="let item of tempNavItems"
+        class="oh-nav__item"
+        [activated]="isActive(item)"
+        [class.oh-nav__item--active]="isActive(item)"
+        (click)="select(item)"
+      >
+        <i matListItemIcon class="bi bi-{{ item.icon }} oh-nav__item-icon" aria-hidden="true"></i>
+        <span matListItemTitle class="oh-nav__item-label">{{ item.label }}</span>
+      </button>
     </ng-container>
   </mat-nav-list>
 

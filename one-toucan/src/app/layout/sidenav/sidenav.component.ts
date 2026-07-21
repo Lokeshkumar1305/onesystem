@@ -34,6 +34,16 @@ export class SidenavComponent implements OnInit, OnDestroy {
   private readonly projectState = inject(ProjectStateService);
   private routerSub?: Subscription;
 
+  // TEMP: hides the module-driven nav list while keeping the template markup intact,
+  // showing this minimal stand-in list instead. "Project" opens the temp-project
+  // dashboard rather than the regular /projects list. Flip hideNavListTemp back to
+  // false to restore the original module-driven list.
+  readonly hideNavListTemp = true;
+  readonly tempNavItems: NavItem[] = [
+    { label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' },
+    { label: 'Project', icon: 'folder', route: '/temp-project' }
+  ];
+
   readonly activeModule = this.workspaceModules.activeModule;
 
   // When inside a specific Atlas project's workspace, the sidenav swaps its

@@ -46,6 +46,10 @@ export class LoginComponent {
     if (email) {
       this.currentUser.setEmail(email);
     }
-    this.router.navigateByUrl('/home');
+    // TEMP: skip the OneHR/Atlas/Project-Management picker at /home and land
+    // directly on the project-only dashboard. Original line kept below for
+    // easy revert.
+    // this.router.navigateByUrl('/home');
+    this.router.navigateByUrl('/temp-project');
   }
 }

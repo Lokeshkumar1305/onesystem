@@ -18,6 +18,13 @@ export const routes: Routes = [
     path: '',
     loadComponent: () => import('./layout/shell/shell.component').then(m => m.ShellComponent),
     children: [
+      // TEMP: added so login can land directly on a project-only dashboard,
+      // skipping the OneHR/Atlas/Project-Management picker at /home.
+      {
+        path: 'temp-project',
+        loadComponent: () => import('./features/temp-project/temp-project.component').then(m => m.TempProjectComponent),
+        data: { title: 'Projects', subtitle: 'Analytics & Reporting · CTO View' }
+      },
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
