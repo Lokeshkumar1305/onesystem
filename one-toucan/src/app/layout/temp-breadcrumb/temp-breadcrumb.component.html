@@ -1,0 +1,17 @@
+<!-- TEMP: stand-in sub-header tabs row for /temp-project & /temp-profile, with real routing. -->
+<div class="oh-sub-header shadow-sm bg-white">
+  <div class="px-4 d-flex align-items-center gap-3 oh-sub-tabs" style="overflow-x: auto;">
+    <ng-container *ngFor="let tab of tabs; let isLast = last">
+      <button
+        type="button"
+        class="btn p-0 border-0 oh-sub-tab d-flex flex-column align-items-center position-relative text-uppercase"
+        [class.oh-sub-tab--active]="isActive(tab)"
+        (click)="navigate(tab)"
+      >
+        <span class="oh-sub-tab-text">{{ tab.label }}</span>
+        <span class="oh-sub-tab-arrow" *ngIf="isActive(tab)"></span>
+      </button>
+      <i *ngIf="!isLast" class="bi bi-chevron-right" style="font-size: 9px; color: var(--oh-gray-300); margin-top: -2px;"></i>
+    </ng-container>
+  </div>
+</div>

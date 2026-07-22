@@ -37,6 +37,8 @@ import { WorkspaceModule, WorkspaceModuleService } from '../../core/workspace/wo
 export class HeaderComponent {
   @Input() pageTitle = '';
   @Input() pageSubtitle = '';
+  // TEMP: hides the page-title h1 (bound from shell on temp routes).
+  @Input() hideTitle = false;
 
   searchQuery = '';
 

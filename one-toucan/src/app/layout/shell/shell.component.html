@@ -4,10 +4,13 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="oh-shell__content-wrap">
-    <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" />
+    <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" [hideTitle]="isTempRoute" />
+
+    <!-- TEMP: stand-in tabs row (with working routing) for /temp-project & /temp-profile -->
+    <oh-temp-breadcrumb *ngIf="isTempRoute" />
 
     <!-- Sub-Header Breadcrumb and Screen Tabs Card -->
-    <div class="oh-sub-header shadow-sm bg-white" *ngIf="pageTitle">
+    <div class="oh-sub-header shadow-sm bg-white" *ngIf="pageTitle && !isTempRoute">
 
       <!-- Horizontal Tabs Row -->
       <div class="px-4 d-flex align-items-center gap-3 oh-sub-tabs" style="overflow-x: auto;">

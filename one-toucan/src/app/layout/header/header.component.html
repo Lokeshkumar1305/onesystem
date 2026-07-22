@@ -1,5 +1,6 @@
 <mat-toolbar class="oh-header d-flex align-items-center gap-3 px-4">
-  <div class="oh-header__page text-truncate">
+  <!-- TEMP: hidden via hideTitle input (bound from shell on temp routes); markup untouched -->
+  <div class="oh-header__page text-truncate" *ngIf="!hideTitle">
     <h1 class="oh-header__title mb-0 text-truncate">{{ activeModuleLabel || pageTitle }}</h1>
   </div>
 

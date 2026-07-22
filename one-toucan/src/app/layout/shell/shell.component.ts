@@ -6,12 +6,13 @@ import { filter } from 'rxjs/operators';
 
 import { HeaderComponent } from '../header/header.component';
 import { SidenavComponent } from '../sidenav/sidenav.component';
+import { TempBreadcrumbComponent } from '../temp-breadcrumb/temp-breadcrumb.component';
 import { WorkspaceModuleService } from '../../core/workspace/workspace-module.service';
 
 @Component({
   selector: 'oh-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MatSidenavModule, HeaderComponent, SidenavComponent],
+  imports: [CommonModule, RouterOutlet, MatSidenavModule, HeaderComponent, SidenavComponent, TempBreadcrumbComponent],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss'
 })
@@ -28,6 +29,13 @@ export class ShellComponent implements OnInit {
   ngOnInit(): void {
     this.updatePageMeta();
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => this.updatePageMeta());
+  }
+
+  // TEMP: true on /temp-project or /temp-profile — the routes the real
+  // WorkspaceModuleService-driven tabs below don't know about.
+  get isTempRoute(): boolean {
+    const path = this.router.url.split('?')[0].split('#')[0];
+    return path.startsWith('/temp-project') || path.startsWith('/temp-profile');
   }
 
   get activeModuleLabel(): string {
