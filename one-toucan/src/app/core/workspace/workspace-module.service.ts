@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-export type ModuleId = 'onehr' | 'project-management' | 'atlas';
+export type ModuleId = 'onehr' | 'project-management' | 'atlas' | 'users-roles';
 
 export interface WorkspaceNavItem {
   label: string;
@@ -78,10 +78,10 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     icon: 'kanban',
     tagline: 'Plan & Deliver',
     description: 'Create and run projects, allocate resources and track delivery health.',
-    homeRoute: '/dashboard',
+    homeRoute: '/project-dashboard',
     accent: 'teal',
     groups: [
-      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
+      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/project-dashboard' }] },
       {
         title: 'Execution',
         items: [
@@ -112,11 +112,29 @@ export const WORKSPACE_MODULES: WorkspaceModule[] = [
     homeRoute: '/atlas/projects',
     accent: 'amber',
     groups: [
-      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' }] },
+      { title: 'Workspace', items: [{ label: 'Dashboard', icon: 'grid-1x2', route: '/project-dashboard' }] },
       {
         title: 'Delivery Board',
         items: [
           { label: 'Projects', icon: 'folder', route: '/atlas/projects' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'users-roles',
+    label: '', // Empty label so it falls back to pageTitle in the main header
+    icon: 'people',
+    tagline: 'Manage access control',
+    description: 'Manage users and assign roles/permissions.',
+    homeRoute: '/users',
+    accent: 'teal',
+    groups: [
+      {
+        title: 'Access Control',
+        items: [
+          { label: 'Users', icon: 'people', route: '/users' },
+          { label: 'Roles', icon: 'shield-lock', route: '/roles' }
         ]
       }
     ]

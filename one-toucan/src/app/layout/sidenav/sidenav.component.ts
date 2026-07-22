@@ -40,7 +40,7 @@ export class SidenavComponent implements OnInit, OnDestroy {
   // false to restore the original module-driven list.
   readonly hideNavListTemp = true;
   readonly tempNavItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' },
+    { label: 'Dashboard', icon: 'grid-1x2', route: '/project-dashboard' },
     { label: 'Project', icon: 'folder', route: '/temp-project' },
     { label: 'Users', icon: 'people', route: '/users' },
     { label: 'Roles', icon: 'shield-lock', route: '/roles' }

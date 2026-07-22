@@ -4,7 +4,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="oh-shell__content-wrap">
-    <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" [hideTitle]="isTempRoute" />
+    <oh-header [pageTitle]="pageTitle" [pageSubtitle]="pageSubtitle" [hideTitle]="hideHeaderTitle" />
 
     <!-- TEMP: stand-in tabs row (with working routing) for /temp-project & /temp-profile -->
     <oh-temp-breadcrumb *ngIf="isTempRoute" />

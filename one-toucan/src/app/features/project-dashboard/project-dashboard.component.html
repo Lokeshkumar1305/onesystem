@@ -1,0 +1,173 @@
+<div class="container-fluid oh-dashboard">
+  <div class="row align-items-center mb-4 g-3">
+    <div class="col-auto">
+      <mat-button-toggle-group [(value)]="activeRange" class="oh-segmented">
+        <mat-button-toggle *ngFor="let tab of rangeTabs" [value]="tab">{{ tab }}</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <div class="col d-flex justify-content-end gap-2">
+      <button mat-stroked-button>
+        <i class="bi bi-download" aria-hidden="true"></i>
+        Export
+      </button>
+      <button mat-stroked-button>
+        <i class="bi bi-sliders" aria-hidden="true"></i>
+        Customize
+      </button>
+    </div>
+  </div>
+
+  <!-- Row 1: greeting hero, headline metric, allocation breakdown -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-5">
+      <mat-card appearance="outlined" class="oh-panel oh-hero h-100">
+        <mat-card-content class="d-flex align-items-center justify-content-between h-100">
+          <div class="oh-hero__body">
+            <h2 class="oh-heading-h3 mb-2">{{ greeting }}, {{ userFirstName }}</h2>
+            <div class="oh-hero__meta mb-3">
+              <span class="oh-hero__meta-item"><i class="bi bi-calendar3" aria-hidden="true"></i>{{ greetingDate }}</span>
+              <span class="oh-hero__meta-item"><i class="bi bi-clock" aria-hidden="true"></i>{{ greetingTime }}</span>
+            </div>
+            <p class="oh-body oh-hero__desc mb-3">
+              Your workspaces dashboard is ready. Review delivery leadership, check owner allocations, and monitor document uploads at a glance.
+            </p>
+            <button mat-stroked-button>Executive Report</button>
+          </div>
+          <div class="oh-hero__illustration d-none d-xl-flex">
+            <i class="bi bi-rocket-takeoff" aria-hidden="true"></i>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-3">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <p class="oh-caption mb-1">Document Assets Growth (MTD)</p>
+          <span class="oh-kpi__value d-block mb-3">{{ totalAllocationsCount }} assets</span>
+          <oh-area-chart [labels]="headlineAreaLabels" [series]="headlineAreaSeries" />
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-4">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <div class="mb-3">
+            <h2 class="oh-heading-h3 mb-1">Roster Roles Allocation</h2>
+            <p class="oh-caption mb-0">{{ totalAllocationsCount }} assigned roles</p>
+          </div>
+          <oh-donut-chart
+            [segments]="resourceAllocation"
+            [centerValue]="totalAllocationsCount.toString()"
+            [centerLabel]="'Roles'"
+            [absoluteTotal]="totalAllocationsCount"
+          />
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Row 2: KPI icon-grid, projects table, delivery vs target -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-3">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <h2 class="oh-heading-h3 mb-3">Key Performance Indicators</h2>
+          <div class="oh-kpi-grid">
+            <div class="oh-kpi-grid__item" *ngFor="let card of kpiCards" [style.background]="'var(' + card.cardBgVar + ')'">
+              <span class="oh-kpi-grid__icon" [style.background]="'var(' + card.iconBgVar + ')'">
+                <i class="bi bi-{{ card.icon }}" aria-hidden="true"></i>
+              </span>
+              <span class="oh-kpi-grid__label">{{ card.label }}</span>
+              <span class="oh-kpi-grid__value">{{ card.value }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-5">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="oh-heading-h3 mb-0">Active Project Workspaces</h2>
+          </div>
+
+          <table mat-table [dataSource]="activeProjectsData" class="oh-risk-table w-100">
+            <ng-container matColumnDef="project">
+              <th mat-header-cell *matHeaderCellDef>Project</th>
+              <td mat-cell *matCellDef="let project">
+                <p class="oh-risk-table__name mb-0" style="font-size: 13px;">{{ project.name }}</p>
+                <p class="oh-caption mb-0">{{ project.client }}</p>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="pm">
+              <th mat-header-cell *matHeaderCellDef>Manager</th>
+              <td mat-cell *matCellDef="let project" style="font-size: 12px; color: #475569;">{{ project.pm }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="techLead">
+              <th mat-header-cell *matHeaderCellDef>Tech Lead</th>
+              <td mat-cell *matCellDef="let project" style="font-size: 12px; color: #475569;">{{ project.techLead }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="ba">
+              <th mat-header-cell *matHeaderCellDef>BA</th>
+              <td mat-cell *matCellDef="let project" style="font-size: 12px; color: #475569;">{{ project.ba }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="owners">
+              <th mat-header-cell *matHeaderCellDef>Owners</th>
+              <td mat-cell *matCellDef="let project" style="font-size: 11px; max-width: 120px;" class="text-truncate" [matTooltip]="project.owners">{{ project.owners }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let project">
+                <span class="oh-badge" [class]="statusBadgeClass(project.status)">{{ project.status }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="projectColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: projectColumns"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-lg-4">
+      <mat-card appearance="outlined" class="oh-panel h-100">
+        <mat-card-content>
+          <h2 class="oh-heading-h3 mb-3">Recently Added Documents</h2>
+
+          <table mat-table [dataSource]="recentDocuments" class="oh-risk-table w-100">
+            <ng-container matColumnDef="document">
+              <th mat-header-cell *matHeaderCellDef>Document Name</th>
+              <td mat-cell *matCellDef="let row">
+                <p class="oh-risk-table__name mb-0" style="font-size: 13px;">{{ row.docName }}</p>
+                <p class="oh-caption mb-0">{{ row.projName }}</p>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <td mat-cell *matCellDef="let row">
+                <span class="oh-badge" [class]="categoryBadgeClass(row.category)">{{ row.category }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>Added Date</th>
+              <td mat-cell *matCellDef="let row" class="oh-mono-data" style="font-size: 11px; color: #64748b;">{{ row.date }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="documentColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: documentColumns"></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

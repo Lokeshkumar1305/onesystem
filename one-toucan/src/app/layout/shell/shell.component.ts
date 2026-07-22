@@ -38,6 +38,15 @@ export class ShellComponent implements OnInit {
     return path.startsWith('/temp-project') || path.startsWith('/temp-profile');
   }
 
+  get hideHeaderTitle(): boolean {
+    if (this.isTempRoute) {
+      return true;
+    }
+    const mod = this.workspaceModules.activeModule();
+    return mod?.id === 'users-roles' || mod?.id === 'project-management';
+  }
+
+
   get activeModuleLabel(): string {
     return this.workspaceModules.activeModule()?.label ?? 'Workspace';
   }
@@ -45,6 +54,16 @@ export class ShellComponent implements OnInit {
   get activeModuleTabs(): { label: string; route: string }[] {
     const mod = this.workspaceModules.activeModule();
     if (!mod) return [];
+
+    if (mod.id === 'users-roles') {
+      const currentUrlPath = this.router.url.split('?')[0].split('#')[0];
+      if (currentUrlPath.startsWith('/users')) {
+        return [{ label: 'Users', route: '/users' }];
+      }
+      if (currentUrlPath.startsWith('/roles')) {
+        return [{ label: 'Roles', route: '/roles' }];
+      }
+    }
 
     if (mod.id === 'onehr') {
       const currentUrlPath = this.router.url.split('?')[0].split('#')[0];

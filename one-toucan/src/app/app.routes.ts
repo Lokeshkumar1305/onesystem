@@ -58,7 +58,12 @@ export const routes: Routes = [
       },
       {
         path: 'dashboard',
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        loadComponent: () => import('./features/project-dashboard/project-dashboard.component').then(m => m.ProjectDashboardComponent),
+        data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
+      },
+      {
+        path: 'project-dashboard',
+        loadComponent: () => import('./features/project-dashboard/project-dashboard.component').then(m => m.ProjectDashboardComponent),
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }
       },
       {
