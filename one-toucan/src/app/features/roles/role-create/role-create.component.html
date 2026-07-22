@@ -1,0 +1,124 @@
+<div class="container-fluid oh-onboarding-list py-4">
+  <!-- Main Outer Card wrapping Header, Inputs, and Accordions -->
+  <mat-card appearance="outlined" class="oh-panel mb-4">
+    <!-- Header Section Inside Card -->
+    <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom">
+      <button type="button" class="oh-back-btn" (click)="goBack()" aria-label="Go back">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      </button>
+      <div>
+        <h2 class="oh-heading-h3 mb-1" style="font-weight: 600; color: #0f172a;">Roles Details</h2>
+        <p class="oh-caption mb-0 text-muted" style="font-size: 12px; color: #64748b;">Define role name and its description.</p>
+      </div>
+    </div>
+
+    <!-- Card Content Wrapper -->
+    <mat-card-content class="p-4">
+      <!-- Inputs Row -->
+      <div class="row g-4 mb-4">
+        <!-- Role Name input -->
+        <div class="col-md-6">
+          <label class="oh-form-label font-weight-bold mb-2">Role Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="oh-input"
+            placeholder="Enter role name (e.g. SUPER_ADMIN)"
+            [ngModel]="roleName()"
+            (ngModelChange)="roleName.set($event)"
+            required
+          />
+        </div>
+
+        <!-- Description text area -->
+        <div class="col-md-6">
+          <label class="oh-form-label font-weight-bold mb-2">Description</label>
+          <div>
+            <textarea
+              class="oh-input oh-textarea"
+              placeholder="Enter role description"
+              maxlength="160"
+              style="height: 80px; resize: vertical;"
+              [ngModel]="description()"
+              (ngModelChange)="description.set($event)"
+            ></textarea>
+            <div class="text-end">
+              <span class="text-muted text-xs" style="font-size: 12px; font-family: sans-serif;">
+                {{ charCount() }}/160
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider line touching card edges -->
+      <div class="border-top my-4" style="margin-left: -1.5rem; margin-right: -1.5rem;"></div>
+
+      <!-- Feature Privileges Section Header inside Card -->
+      <div class="mb-3">
+        <h3 class="font-weight-bold mb-1" style="color: #475569; text-transform: uppercase; letter-spacing: 0.05em; font-size: 12px;">Feature Privileges</h3>
+      </div>
+
+      <!-- Privilege Accordion Panels inside Card -->
+      <div class="border rounded-3 overflow-hidden mb-2" style="border-color: var(--oh-border) !important;">
+        <div *ngFor="let sec of sections(); let sIdx = index" class="oh-accordion-section" [class.border-top]="sIdx > 0">
+          <!-- Dark Teal Header bar -->
+          <div class="oh-accordion-header d-flex justify-content-between align-items-center px-4 py-3" (click)="toggleSectionExpand(sIdx)" style="cursor: pointer;">
+            <span class="oh-accordion-title text-uppercase font-weight-bold">{{ sec.title }}</span>
+            <i class="bi" [class.bi-chevron-up]="sec.expanded" [class.bi-chevron-down]="!sec.expanded" aria-hidden="true"></i>
+          </div>
+
+          <!-- Accordion Body Content -->
+          <div class="oh-accordion-body p-4 border-top" *ngIf="sec.expanded">
+            <!-- Select All toggle checkbox -->
+            <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+              <label class="oh-checkbox-container">
+                <input
+                  type="checkbox"
+                  [checked]="isAllSelected(sec)"
+                  (change)="toggleSelectAll(sIdx)"
+                />
+                <span class="oh-checkbox-checkmark"></span>
+              </label>
+              <span class="oh-form-label font-weight-bold mb-0 text-muted" style="font-size: 11px;">Select All Module Privileges</span>
+            </div>
+
+            <!-- Privilege cards row grid -->
+            <div class="row g-3">
+              <div *ngFor="let item of sec.items; let iIdx = index" class="col-md-6 col-lg-4">
+                <div
+                  class="oh-privilege-card p-3 border rounded-3 d-flex align-items-start gap-3 h-100"
+                  [class.oh-privilege-card--active]="item.selected"
+                  (click)="toggleItemSelection(sIdx, iIdx)"
+                >
+                  <label class="oh-checkbox-container mt-1" (click)="$event.stopPropagation()">
+                    <input
+                      type="checkbox"
+                      [checked]="item.selected"
+                      (change)="toggleItemSelection(sIdx, iIdx)"
+                    />
+                    <span class="oh-checkbox-checkmark"></span>
+                  </label>
+                  <div>
+                    <p class="mb-1 font-weight-semibold" style="color: #1e293b; line-height: 1.4; font-size: 11px;">{{ item.name }}</p>
+                    <p class="mb-0 text-muted" style="word-break: break-all; font-family: monospace; font-size: 9px;">{{ item.subLabel }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Bottom Actions Footer Bar -->
+  <div class="oh-panel p-3 d-flex justify-content-between align-items-center bg-white" style="flex-direction: row !important; border: 1px solid var(--oh-border); border-radius: var(--oh-radius-lg);">
+    <span class="text-muted text-sm font-weight-semibold ps-2">
+      Total Privileges Selected: <strong class="text-teal">{{ totalPrivilegesCount() }}</strong>
+    </span>
+    <div class="d-flex align-items-center gap-3" style="flex-direction: row !important;">
+      <button mat-stroked-button (click)="goBack()">Cancel</button>
+      <button mat-flat-button color="primary" [disabled]="!roleName()" (click)="onSubmit()">Save & Create</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,150 @@
+@import '../onboarding/onboarding-list/onboarding-list.component.scss';
+
+// Add customized overrides for roles table layout
+.oh-onboarding-table th {
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
+  height: 52px !important;
+}
+
+// Overrides and custom styles for roles view
+.oh-header-card {
+  border-left: 4px solid #0f766e !important;
+}
+
+.oh-header-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-teal-light {
+  background-color: rgba(15, 118, 110, 0.08);
+}
+
+.text-teal {
+  color: #0f766e;
+}
+
+.bg-blue-light {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.text-blue {
+  color: #2563eb;
+}
+
+// Badges
+.oh-privilege-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--oh-radius-full);
+  font-size: 11px;
+  font-weight: 650;
+  background-color: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  letter-spacing: 0.01em;
+}
+
+// Side drawer details styling (Unified details drawer)
+.oh-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.oh-temp-project-modal-dialog {
+  width: 100%;
+  max-width: 550px;
+  background: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  animation: oh-drawer-slide-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes oh-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.oh-temp-modal-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.oh-temp-modal-header {
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    opacity: 0.65;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #e2e8f0;
+      opacity: 0.9;
+    }
+  }
+}
+
+.oh-meta-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.oh-meta-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.oh-perm-tag {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #1e293b;
+  }
+}

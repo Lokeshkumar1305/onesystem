@@ -37,6 +37,26 @@ export const routes: Routes = [
         data: { title: 'Profile', subtitle: 'Manage your personal & professional information' }
       },
       {
+        path: 'users',
+        loadComponent: () => import('./features/users/users.component').then(m => m.UsersComponent),
+        data: { title: 'User Management', subtitle: 'View registered users, scopes, and manage access statuses' }
+      },
+      {
+        path: 'users/create',
+        loadComponent: () => import('./features/users/user-create/user-create.component').then(m => m.UserCreateComponent),
+        data: { title: 'User Details', subtitle: 'Enter user\'s account information' }
+      },
+      {
+        path: 'roles',
+        loadComponent: () => import('./features/roles/roles.component').then(m => m.RolesComponent),
+        data: { title: 'Role Management', subtitle: 'Configure user access group profiles and system scopes' }
+      },
+      {
+        path: 'roles/create',
+        loadComponent: () => import('./features/roles/role-create/role-create.component').then(m => m.RoleCreateComponent),
+        data: { title: 'Roles Details', subtitle: 'Define role name and its description' }
+      },
+      {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
         data: { title: 'Executive Dashboard', subtitle: 'Analytics & Reporting · CTO View' }

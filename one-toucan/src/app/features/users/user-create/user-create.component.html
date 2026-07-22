@@ -1,0 +1,186 @@
+<div class="container-fluid oh-onboarding-list py-4">
+  <!-- Main Outer Card wrapping Header, Inputs, and Tables -->
+  <mat-card appearance="outlined" class="oh-panel mb-4">
+    <!-- Header Section Inside Card -->
+    <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom">
+      <button type="button" class="oh-back-btn" (click)="goBack()" aria-label="Go back">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+      </button>
+      <div>
+        <h2 class="oh-heading-h3 mb-1" style="font-weight: 600; color: #0f172a;">User Details</h2>
+        <p class="oh-caption mb-0 text-muted" style="font-size: 12px; color: #64748b;">Enter user's account information.</p>
+      </div>
+    </div>
+
+    <!-- Card Content Wrapper -->
+    <mat-card-content class="p-4">
+      <!-- Inputs Row -->
+      <div class="row g-4 mb-4">
+        <!-- Username input -->
+        <div class="col-md-6">
+          <label class="oh-form-label font-weight-bold mb-2">Username <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="oh-input"
+            placeholder="Enter username"
+            [ngModel]="username()"
+            (ngModelChange)="username.set($event)"
+            required
+          />
+        </div>
+
+        <!-- Email input -->
+        <div class="col-md-6">
+          <label class="oh-form-label font-weight-bold mb-2">Email ID <span class="text-danger">*</span></label>
+          <div class="position-relative">
+            <input
+              type="email"
+              class="oh-input pe-5"
+              placeholder="Enter email address"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              required
+            />
+            <i class="bi bi-envelope text-muted position-absolute end-0 top-50 translate-middle-y me-3" style="font-size: 16px;"></i>
+          </div>
+        </div>
+
+        <!-- Client ID input -->
+        <div class="col-md-6">
+          <label class="oh-form-label font-weight-bold mb-2">Client ID <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="oh-input bg-light text-muted"
+            [value]="clientId"
+            disabled
+          />
+        </div>
+
+        <!-- Active Toggle switch -->
+        <div class="col-md-6 d-flex align-items-end justify-content-end pb-2">
+          <div class="d-flex align-items-center gap-3">
+            <span class="oh-form-label font-weight-bold mb-0">Active Account</span>
+            <label class="oh-status-switch">
+              <input
+                type="checkbox"
+                [checked]="activeAccount()"
+                (change)="activeAccount.set(!activeAccount())"
+              />
+              <span class="oh-status-slider">
+                <i class="bi bi-check-lg" aria-hidden="true"></i>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider line touching card edges -->
+      <div class="border-top my-4" style="margin-left: -1.5rem; margin-right: -1.5rem;"></div>
+
+      <!-- Bottom Split Columns (Assign Role & Permissions) inside the main card -->
+      <div class="row g-4">
+        <!-- Left Panel: Assign Role -->
+        <div class="col-lg-6">
+          <div class="d-flex flex-column h-100">
+            <h3 class="oh-heading-h3 mb-1" style="font-weight: 700; color: #1e293b; font-size: 13px;">Assign Role</h3>
+            <p class="oh-caption text-muted mb-3">Select one or more roles to assign to this user.</p>
+
+            <div class="table-responsive border rounded-3 overflow-hidden flex-grow-1" style="border-color: var(--oh-border) !important;">
+              <table class="oh-onboarding-table table mb-0 align-middle w-100">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 15%">SELECT</th>
+                    <th scope="col" style="width: 25%">ROLE</th>
+                    <th scope="col" style="width: 60%">FUNCTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="let role of roles()"
+                    [class.oh-row-selected]="isRoleSelected(role.name)"
+                    (click)="onRoleToggle(role.name)"
+                    style="cursor: pointer;"
+                  >
+                    <td>
+                      <!-- Custom Checkbox -->
+                      <label class="oh-checkbox-container" (click)="$event.stopPropagation()">
+                        <input
+                          type="checkbox"
+                          [checked]="isRoleSelected(role.name)"
+                          (change)="onRoleToggle(role.name)"
+                        />
+                        <span class="oh-checkbox-checkmark"></span>
+                      </label>
+                    </td>
+                    <td>
+                      <span class="font-weight-bold" style="color: #1e293b; font-size: 13px;">{{ role.name }}</span>
+                    </td>
+                    <td>
+                      <span class="text-muted text-sm">{{ getRoleFunctionLabel(role.name) }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pt-3">
+              <span class="text-muted text-sm">Didn't find a relevant role? </span>
+              <a href="#" class="oh-create-role-link font-weight-bold text-teal" (click)="onCreateNewRole($event)">
+                Create New Role
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Permissions -->
+        <div class="col-lg-6">
+          <div class="d-flex flex-column h-100">
+            <h3 class="oh-heading-h3 mb-1" style="font-weight: 700; color: #1e293b; font-size: 13px;">Permissions</h3>
+            <p class="oh-caption text-muted mb-3">Below shows combined permission with multiple roles selected.</p>
+
+            <div class="table-responsive border rounded-3 overflow-hidden" style="border-color: var(--oh-border) !important;">
+              <table class="oh-onboarding-table table mb-0 align-middle w-100">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 50%">FUNCTION</th>
+                    <th scope="col" style="width: 25%">CREATE</th>
+                    <th scope="col" style="width: 25%">EDIT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let perm of permissions()" class="oh-table-row">
+                    <td>
+                      <span class="font-weight-bold" style="color: #1e293b; font-size: 13px;">{{ perm.functionName }}</span>
+                    </td>
+                    <td>
+                      <label class="oh-status-switch">
+                        <input type="checkbox" [(ngModel)]="perm.create" />
+                        <span class="oh-status-slider">
+                          <i class="bi bi-check-lg" aria-hidden="true"></i>
+                        </span>
+                      </label>
+                    </td>
+                    <td>
+                      <label class="oh-status-switch">
+                        <input type="checkbox" [(ngModel)]="perm.edit" />
+                        <span class="oh-status-slider">
+                          <i class="bi bi-check-lg" aria-hidden="true"></i>
+                        </span>
+                      </label>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Bottom Actions Footer Bar -->
+  <div class="oh-panel p-3 d-flex justify-content-end align-items-center gap-3 bg-white" style="flex-direction: row !important; border: 1px solid var(--oh-border); border-radius: var(--oh-radius-lg);">
+    <button mat-stroked-button (click)="goBack()">Cancel</button>
+    <button mat-flat-button color="primary" [disabled]="!username() || !email()" (click)="onSubmit()">Save & Create</button>
+  </div>
+</div>

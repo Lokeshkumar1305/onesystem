@@ -41,7 +41,9 @@ export class SidenavComponent implements OnInit, OnDestroy {
   readonly hideNavListTemp = true;
   readonly tempNavItems: NavItem[] = [
     { label: 'Dashboard', icon: 'grid-1x2', route: '/dashboard' },
-    { label: 'Project', icon: 'folder', route: '/temp-project' }
+    { label: 'Project', icon: 'folder', route: '/temp-project' },
+    { label: 'Users', icon: 'people', route: '/users' },
+    { label: 'Roles', icon: 'shield-lock', route: '/roles' }
   ];
 
   readonly activeModule = this.workspaceModules.activeModule;

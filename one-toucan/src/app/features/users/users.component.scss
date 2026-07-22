@@ -1,0 +1,202 @@
+@import '../onboarding/onboarding-list/onboarding-list.component.scss';
+
+// Add customized overrides for users table layout
+.oh-onboarding-table th {
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
+  height: 52px !important;
+}
+
+.oh-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--oh-radius-full);
+}
+
+.bg-blue-light {
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.text-blue {
+  color: #2563eb;
+}
+
+// Badges
+.oh-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--oh-radius-full);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge-admin {
+  background-color: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+.badge-super-admin {
+  background-color: rgba(245, 158, 11, 0.08);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+.badge-tenant {
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.badge-vendor {
+  background-color: rgba(99, 102, 241, 0.08);
+  color: #4f46e5;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+// Custom status toggle switch matching screenshot (yellow/orange with checkmark)
+.oh-status-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  cursor: pointer;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .oh-status-slider {
+      background-color: #f59e0b; // orange/yellow pill
+      &::before {
+        transform: translateX(24px);
+      }
+      i {
+        opacity: 1;
+        transform: scale(1) translateX(24px);
+      }
+    }
+  }
+
+  .oh-status-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &::before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+    }
+
+    i {
+      position: absolute;
+      left: 7px;
+      top: 5px;
+      font-size: 10px;
+      color: #f59e0b;
+      font-weight: 700;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+    }
+  }
+}
+
+// Side drawer details styling (Unified details drawer)
+.oh-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.oh-temp-project-modal-dialog {
+  width: 100%;
+  max-width: 550px;
+  background: #ffffff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  animation: oh-drawer-slide-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes oh-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.oh-temp-modal-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.oh-temp-modal-header {
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    background-color: transparent;
+    opacity: 0.65;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #e2e8f0;
+      opacity: 0.9;
+    }
+  }
+}
+
+.oh-meta-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.oh-meta-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+  margin-bottom: 0;
+}

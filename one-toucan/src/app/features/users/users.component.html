@@ -1,0 +1,252 @@
+<div class="container-fluid oh-onboarding-list py-4">
+  <!-- Header Card -->
+  <mat-card appearance="outlined" class="oh-panel oh-onboarding-list__head mb-4">
+    <mat-card-content class="d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-onboarding-list__head-icon">
+          <i class="bi bi-people" aria-hidden="true"></i>
+        </span>
+        <div>
+          <h2 class="oh-heading-h3 mb-1">User management</h2>
+          <p class="oh-caption mb-0">{{ usersList().length }} users registered</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button mat-flat-button color="primary" (click)="createUser()">
+          <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+          Add User
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table Card -->
+  <mat-card appearance="outlined" class="oh-panel">
+    <mat-card-content class="p-0">
+      <!-- Search & Filter Row -->
+      <div class="oh-onboarding-list__search-row">
+        <div class="oh-onboarding-list__search">
+          <i class="bi bi-search oh-onboarding-list__search-icon" aria-hidden="true"></i>
+          <input
+            class="oh-input"
+            placeholder="Search users by username..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="onSearchChange($event)"
+            aria-label="Search users"
+          />
+          <button
+            *ngIf="searchQuery()"
+            type="button"
+            class="oh-onboarding-list__search-clear"
+            (click)="onSearchChange('')"
+            aria-label="Clear search"
+          >
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button mat-stroked-button class="oh-onboarding-list__filter-btn">
+          <i class="bi bi-filter" aria-hidden="true"></i>
+          Filter
+        </button>
+      </div>
+
+      <!-- Users Table -->
+      <div class="table-responsive">
+        <table class="oh-onboarding-table table mb-0 align-middle w-100">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 25%">USERNAME</th>
+              <th scope="col" style="width: 25%">EMAIL</th>
+              <th scope="col" style="width: 15%">ROLES</th>
+              <th scope="col" style="width: 15%">REGISTERED ON</th>
+              <th scope="col" style="width: 10%">STATUS</th>
+              <th scope="col" style="width: 10%">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of pageRows()" class="oh-table-row">
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="oh-avatar oh-avatar--sm bg-blue-light text-blue text-xs font-weight-bold">
+                    {{ initials(row.username) }}
+                  </span>
+                  <div>
+                    <p class="oh-onboarding-table__name mb-0">{{ row.username }}</p>
+                    <p class="oh-caption mb-0 text-muted">{{ row.email }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="text-muted text-sm">{{ row.email }}</td>
+              <td>
+                <span class="oh-badge text-xxs font-weight-bold" [class]="roleBadgeClass(row.role)">
+                  {{ row.role }}
+                </span>
+              </td>
+              <td class="text-muted text-sm">{{ row.registeredOn }}</td>
+              <td>
+                <!-- Custom status slider with checkmark matching image -->
+                <label class="oh-status-switch">
+                  <input type="checkbox" [checked]="row.status" (change)="toggleStatus(row)">
+                  <span class="oh-status-slider">
+                    <i class="bi bi-check-lg" aria-hidden="true"></i>
+                  </span>
+                </label>
+              </td>
+              <td>
+                <div class="oh-onboarding-table__actions">
+                  <button
+                    class="oh-onboarding-table__action oh-onboarding-table__action--edit"
+                    (click)="openDetails(row, $event)"
+                    matTooltip="Edit user"
+                  >
+                    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    class="oh-onboarding-table__action oh-onboarding-table__action--delete"
+                    (click)="deleteUser(row, $event)"
+                    matTooltip="Delete user"
+                  >
+                    <i class="bi bi-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="oh-onboarding-list__empty py-5 text-center" *ngIf="totalCount() === 0">
+        <i class="bi bi-people-fill text-muted fs-2 d-block mb-2" aria-hidden="true"></i>
+        <p class="oh-body text-muted mb-0">No users found matching the filters.</p>
+      </div>
+
+      <!-- Footer Pagination -->
+      <div class="oh-onboarding-list__footer" *ngIf="totalCount() > 0">
+        <span class="oh-caption">
+          Showing <strong>{{ rangeStart() }}–{{ rangeEnd() }}</strong> of <strong>{{ totalCount() }}</strong>
+        </span>
+
+        <div class="d-flex align-items-center gap-3">
+          <div class="oh-onboarding-list__page-size">
+            <span class="oh-caption">Rows:</span>
+            <select class="oh-select" [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+              <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+            </select>
+          </div>
+
+          <div class="oh-onboarding-list__pager">
+            <button
+              class="oh-onboarding-list__page-btn"
+              [disabled]="pageIndex() === 0"
+              (click)="prevPage()"
+              aria-label="Previous page"
+            >
+              <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+            <button
+              *ngFor="let page of pageNumbers()"
+              class="oh-onboarding-list__page-btn"
+              [class.oh-onboarding-list__page-btn--active]="page === pageIndex() + 1"
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+            <button
+              class="oh-onboarding-list__page-btn"
+              [disabled]="pageIndex() >= pageCount() - 1"
+              (click)="nextPage()"
+              aria-label="Next page"
+            >
+              <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Detailed View Right Drawer (unified with temp-project styling) -->
+  <div class="oh-modal-backdrop" *ngIf="selectedUser()" (click)="closeDetails()">
+    <div class="oh-temp-project-modal-dialog" (click)="$event.stopPropagation()">
+      <div class="oh-temp-modal-content">
+        <!-- Header -->
+        <div class="oh-temp-modal-header d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-light">
+          <div>
+            <h2 class="oh-display-h2 mb-0">User Account Details</h2>
+            <p class="oh-caption mb-0 text-muted">ID: {{ selectedUser()?.id }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="closeDetails()" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="oh-temp-modal-body p-4 overflow-y-auto">
+          <!-- User Profile Section -->
+          <div class="d-flex align-items-center gap-4 mb-4 pb-4 border-bottom">
+            <span class="oh-avatar oh-avatar--lg bg-blue-light text-blue fs-4 font-weight-bold">
+              {{ initials(selectedUser()?.username || '') }}
+            </span>
+            <div>
+              <h3 class="font-weight-bold mb-1" style="font-size: 1.15rem; color: #1e293b;">
+                {{ selectedUser()?.username }}
+              </h3>
+              <p class="text-muted text-sm mb-2">{{ selectedUser()?.email }}</p>
+              <span class="oh-badge text-xxs font-weight-bold" [class]="roleBadgeClass(selectedUser()?.role || '')">
+                {{ selectedUser()?.role }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Metadata Fields -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="oh-meta-label">Username</label>
+              <p class="oh-meta-value">{{ selectedUser()?.username }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="oh-meta-label">Email Address</label>
+              <p class="oh-meta-value">{{ selectedUser()?.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="oh-meta-label">Assigned System Role</label>
+              <p class="oh-meta-value">{{ selectedUser()?.role }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="oh-meta-label">Registration Date</label>
+              <p class="oh-meta-value">{{ selectedUser()?.registeredOn }}</p>
+            </div>
+            <div class="col-md-6">
+              <label class="oh-meta-label">Account Status</label>
+              <div class="d-flex align-items-center gap-2 mt-1">
+                <span class="oh-badge text-xxs" [class]="selectedUser()?.status ? 'oh-badge--success' : 'oh-badge--warning'">
+                  {{ selectedUser()?.status ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="oh-temp-modal-footer d-flex justify-content-end align-items-center px-4 py-3 border-top bg-light">
+          <button mat-stroked-button class="me-2" (click)="closeDetails()">Cancel</button>
+          <button mat-flat-button color="primary" (click)="toggleStatus(selectedUser()!)">
+            Toggle Status
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1200;" *ngIf="toastMessage()">
+    <div class="toast show align-items-center text-white bg-dark border-0 shadow-lg p-2 rounded-3" role="alert">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2 text-xs font-weight-semibold">
+          <i class="bi bi-check-circle text-success fs-5"></i>
+          <span>{{ toastMessage() }}</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastMessage.set(null)"></button>
+      </div>
+    </div>
+  </div>
+</div>
