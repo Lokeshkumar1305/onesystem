@@ -4,10 +4,13 @@
   <!-- Top bar -->
   <div class="oh-wizard-topbar d-flex align-items-center justify-content-between px-4 py-3 border-bottom bg-white">
     <div class="d-flex align-items-center gap-3">
-      <span class="oh-wizard-topbar__icon"><i class="bi bi-folder-plus"></i></span>
+      <span class="oh-wizard-topbar__icon"><i class="bi" [ngClass]="isEditMode() ? 'bi-pencil-square' : 'bi-folder-plus'"></i></span>
       <div>
-        <h2 class="oh-heading-h3 mb-0">Create Project or Sub-Module</h2>
-        <p class="oh-caption text-muted mb-0">Step {{ currentStep() }} of {{ steps.length }} · {{ activeStepDef.title }}</p>
+        <h2 class="oh-heading-h3 mb-0">{{ isEditMode() ? 'Edit ' + formName() : 'Create Project or Sub-Module' }}</h2>
+        <p class="oh-caption text-muted mb-0">
+          Step {{ currentStep() }} of {{ steps.length }} · {{ activeStepDef.title }}
+          <span *ngIf="isEditMode()"> · Only Ownership, PM/Tech Lead/BA & Documents are editable</span>
+        </p>
       </div>
     </div>
     <button mat-stroked-button type="button" (click)="goBack()">Cancel</button>
@@ -41,7 +44,7 @@
     <div class="oh-wizard-content flex-grow-1">
 
       <div class="alert alert-danger text-sm p-3 mb-3 d-flex align-items-center gap-2 rounded-3 shadow-sm" *ngIf="errorMessage()">
-        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <i class="bi bi-exclamation-triangle fs-5"></i>
         <span>{{ errorMessage() }}</span>
       </div>
 
@@ -53,7 +56,7 @@
           <p class="oh-caption text-muted mb-3">Choose whether this is a top-level project or a sub-module under an existing active project.</p>
           <hr class="oh-wizard-divider mb-4">
 
-          <mat-radio-group [ngModel]="formIsModule()" (ngModelChange)="formIsModule.set($event)" name="entityType" class="d-flex align-items-center gap-4 mb-3">
+          <mat-radio-group [ngModel]="formIsModule()" (ngModelChange)="formIsModule.set($event)" name="entityType" class="d-flex align-items-center gap-4 mb-3" [disabled]="isEditMode()">
             <mat-radio-button [value]="false" color="primary">
               <span class="font-weight-semibold text-dark"><i class="bi bi-folder me-1 text-teal"></i> Standalone Project</span>
             </mat-radio-button>
@@ -65,7 +68,7 @@
           <div class="mt-1 p-3 bg-light rounded-3 border" *ngIf="formIsModule()">
             <label class="oh-label" for="parentProject">Select Parent Project</label>
             <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-              <mat-select id="parentProject" [ngModel]="formParentProjectName()" (ngModelChange)="formParentProjectName.set($event)" name="parentProject">
+              <mat-select id="parentProject" [ngModel]="formParentProjectName()" (ngModelChange)="formParentProjectName.set($event)" name="parentProject" [disabled]="isEditMode()">
                 <mat-option *ngFor="let p of parentProjects()" [value]="p.name">
                   <i class="bi bi-folder me-2 text-teal"></i>{{ p.name }} ({{ p.key }})
                 </mat-option>
@@ -84,21 +87,21 @@
             <div class="col-md-9">
               <label class="oh-label" for="projectName"><span>{{ formIsModule() ? 'Module Name' : 'Project Name' }}<span class="oh-label__required">*</span></span></label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <input id="projectName" matInput [ngModel]="formName()" (ngModelChange)="onNameChange($event)" name="projectName" placeholder="e.g. Payment Gateway Service" required />
+                <input id="projectName" matInput [ngModel]="formName()" (ngModelChange)="onNameChange($event)" name="projectName" placeholder="e.g. Payment Gateway Service" required [disabled]="isEditMode()" />
               </mat-form-field>
             </div>
 
             <div class="col-md-3">
               <label class="oh-label" for="projectKey"><span>Key<span class="oh-label__required">*</span></span></label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <input id="projectKey" matInput [ngModel]="formKey()" (ngModelChange)="formKey.set($event)" name="projectKey" placeholder="PGS" maxlength="6" style="text-transform: uppercase;" required />
+                <input id="projectKey" matInput [ngModel]="formKey()" (ngModelChange)="formKey.set($event)" name="projectKey" placeholder="PGS" maxlength="6" style="text-transform: uppercase;" required [disabled]="isEditMode()" />
               </mat-form-field>
             </div>
 
             <div class="col-12">
               <label class="oh-label" for="description">Description & Scope</label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field-textarea" subscriptSizing="dynamic">
-                <textarea id="description" matInput rows="3" [ngModel]="formDescription()" (ngModelChange)="formDescription.set($event)" name="description" placeholder="Describe scope, requirements, and target outcomes..."></textarea>
+                <textarea id="description" matInput rows="3" [ngModel]="formDescription()" (ngModelChange)="formDescription.set($event)" name="description" placeholder="Describe scope, requirements, and target outcomes..." [disabled]="isEditMode()"></textarea>
               </mat-form-field>
             </div>
           </div>
@@ -114,20 +117,38 @@
             <!-- Primary Owners Column -->
             <div class="col-md-6">
               <div class="oh-owner-panel oh-owner-panel--teal">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                  <label class="oh-label mb-0"><i class="bi bi-person-fill text-teal me-1"></i> Primary Owners</label>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                  <label class="oh-label mb-0"><i class="bi bi-person text-teal me-1"></i> Primary Owners</label>
                   <span class="oh-badge oh-badge--success text-xxs">Multiple Allowed</span>
                 </div>
 
                 <div class="d-flex align-items-start gap-2 mb-2">
                   <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
-                    <mat-select [ngModel]="primaryOwnerInput()" (ngModelChange)="primaryOwnerInput.set($event)" name="pInput" placeholder="Select owner...">
-                      <mat-option *ngFor="let member of availablePrimaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                    <mat-select [ngModel]="primaryOwnerInput()" (ngModelChange)="addPrimaryOwner($event)" name="pInput" placeholder="Select owner..." panelClass="oh-owner-select-panel">
+                      <div class="oh-select-search-container border-bottom d-flex align-items-center gap-2">
+                        <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field-sm bg-white" subscriptSizing="dynamic" style="width: 100%;">
+                          <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                          <input matInput 
+                                 type="text" 
+                                 placeholder="Search owner..." 
+                                 [ngModel]="primaryOwnerSearchQuery()" 
+                                 (ngModelChange)="primaryOwnerSearchQuery.set($event)"
+                                 (keydown)="$event.stopPropagation()">
+                          <button matSuffix 
+                                  *ngIf="primaryOwnerSearchQuery()" 
+                                  mat-icon-button 
+                                  type="button" 
+                                  (click)="primaryOwnerSearchQuery.set(''); $event.stopPropagation();"
+                                  style="border: none; background: transparent; padding: 0; min-width: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                                  aria-label="Clear search">
+                            <i class="bi bi-x text-muted fs-6"></i>
+                          </button>
+                        </mat-form-field>
+                      </div>
+                      <mat-option *ngFor="let member of filteredPrimaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                      <mat-option *ngIf="!filteredPrimaryOwnerOptions().length" disabled class="text-muted text-xs">No owners found</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addPrimaryOwner()">
-                    <i class="bi bi-plus-lg me-1"></i>Add
-                  </button>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-1 mb-3">
@@ -141,7 +162,7 @@
 
                 <mat-chip-set class="oh-owner-chip-set" aria-label="Primary owners">
                   <mat-chip *ngFor="let pOwner of primaryOwners()" [removable]="true" (removed)="removePrimaryOwner(pOwner)" class="oh-owner-chip">
-                    <i class="bi bi-person-fill me-1"></i>{{ pOwner }}
+                    <i class="bi bi-person me-1"></i>{{ pOwner }}
                     <button matChipRemove aria-label="Remove owner"><mat-icon>cancel</mat-icon></button>
                   </mat-chip>
                 </mat-chip-set>
@@ -152,20 +173,38 @@
             <!-- Secondary Owners Column -->
             <div class="col-md-6">
               <div class="oh-owner-panel oh-owner-panel--purple">
-                <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
                   <label class="oh-label mb-0"><i class="bi bi-person text-orange me-1"></i> Secondary Owners</label>
                   <span class="oh-badge oh-badge--warning text-xxs">Multiple Allowed</span>
                 </div>
 
                 <div class="d-flex align-items-start gap-2 mb-2">
                   <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
-                    <mat-select [ngModel]="secondaryOwnerInput()" (ngModelChange)="secondaryOwnerInput.set($event)" name="sInput" placeholder="Select owner...">
-                      <mat-option *ngFor="let member of availableSecondaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                    <mat-select [ngModel]="secondaryOwnerInput()" (ngModelChange)="addSecondaryOwner($event)" name="sInput" placeholder="Select owner..." panelClass="oh-owner-select-panel">
+                      <div class="oh-select-search-container border-bottom d-flex align-items-center gap-2">
+                        <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field-sm bg-white" subscriptSizing="dynamic" style="width: 100%;">
+                          <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                          <input matInput 
+                                 type="text" 
+                                 placeholder="Search owner..." 
+                                 [ngModel]="secondaryOwnerSearchQuery()" 
+                                 (ngModelChange)="secondaryOwnerSearchQuery.set($event)"
+                                 (keydown)="$event.stopPropagation()">
+                          <button matSuffix 
+                                  *ngIf="secondaryOwnerSearchQuery()" 
+                                  mat-icon-button 
+                                  type="button" 
+                                  (click)="secondaryOwnerSearchQuery.set(''); $event.stopPropagation();"
+                                  style="border: none; background: transparent; padding: 0; min-width: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                                  aria-label="Clear search">
+                            <i class="bi bi-x text-muted fs-6"></i>
+                          </button>
+                        </mat-form-field>
+                      </div>
+                      <mat-option *ngFor="let member of filteredSecondaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                      <mat-option *ngIf="!filteredSecondaryOwnerOptions().length" disabled class="text-muted text-xs">No owners found</mat-option>
                     </mat-select>
                   </mat-form-field>
-                  <button mat-flat-button type="button" class="oh-owner-add-btn oh-owner-add-btn--orange" (click)="addSecondaryOwner()">
-                    <i class="bi bi-plus-lg me-1"></i>Add
-                  </button>
                 </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-1 mb-3">
@@ -199,15 +238,36 @@
             <div class="col-md-6">
               <label class="oh-label" for="repoName">Repository Name / GitHub URL</label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <input id="repoName" matInput [ngModel]="formRepoName()" (ngModelChange)="formRepoName.set($event)" name="repoName" placeholder="e.g. onetoucan/payment-gateway-service" />
+                <input id="repoName" matInput [ngModel]="formRepoName()" (ngModelChange)="formRepoName.set($event)" name="repoName" placeholder="e.g. onetoucan/payment-gateway-service" [disabled]="isEditMode()" />
               </mat-form-field>
             </div>
 
             <div class="col-md-6">
               <label class="oh-label" for="pm">Project Manager (PM)</label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <mat-select id="pm" [ngModel]="formProjectManager()" (ngModelChange)="formProjectManager.set($event)" name="pm">
-                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                <mat-select id="pm" [ngModel]="formProjectManager()" (ngModelChange)="formProjectManager.set($event); pmSearchQuery.set('');" name="pm" placeholder="Select PM" panelClass="oh-owner-select-panel">
+                  <div class="oh-select-search-container border-bottom d-flex align-items-center gap-2">
+                    <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field-sm bg-white" subscriptSizing="dynamic" style="width: 100%;">
+                      <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                      <input matInput 
+                             type="text" 
+                             placeholder="Search PM..." 
+                             [ngModel]="pmSearchQuery()" 
+                             (ngModelChange)="pmSearchQuery.set($event)"
+                             (keydown)="$event.stopPropagation()">
+                      <button matSuffix 
+                              *ngIf="pmSearchQuery()" 
+                              mat-icon-button 
+                              type="button" 
+                              (click)="pmSearchQuery.set(''); $event.stopPropagation();"
+                              style="border: none; background: transparent; padding: 0; min-width: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                              aria-label="Clear search">
+                        <i class="bi bi-x text-muted fs-6"></i>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                  <mat-option *ngFor="let m of filteredPmOptions()" [value]="m">{{ m }}</mat-option>
+                  <mat-option *ngIf="!filteredPmOptions().length" disabled class="text-muted text-xs">No PMs found</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -215,8 +275,29 @@
             <div class="col-md-6">
               <label class="oh-label" for="techLead">Project Tech Lead</label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <mat-select id="techLead" [ngModel]="formProjectTechLead()" (ngModelChange)="formProjectTechLead.set($event)" name="techLead">
-                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                <mat-select id="techLead" [ngModel]="formProjectTechLead()" (ngModelChange)="formProjectTechLead.set($event); techLeadSearchQuery.set('');" name="techLead" placeholder="Select Tech Lead" panelClass="oh-owner-select-panel">
+                  <div class="oh-select-search-container border-bottom d-flex align-items-center gap-2">
+                    <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field-sm bg-white" subscriptSizing="dynamic" style="width: 100%;">
+                      <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                      <input matInput 
+                             type="text" 
+                             placeholder="Search Tech Lead..." 
+                             [ngModel]="techLeadSearchQuery()" 
+                             (ngModelChange)="techLeadSearchQuery.set($event)"
+                             (keydown)="$event.stopPropagation()">
+                      <button matSuffix 
+                              *ngIf="techLeadSearchQuery()" 
+                              mat-icon-button 
+                              type="button" 
+                              (click)="techLeadSearchQuery.set(''); $event.stopPropagation();"
+                              style="border: none; background: transparent; padding: 0; min-width: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                              aria-label="Clear search">
+                        <i class="bi bi-x text-muted fs-6"></i>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                  <mat-option *ngFor="let m of filteredTechLeadOptions()" [value]="m">{{ m }}</mat-option>
+                  <mat-option *ngIf="!filteredTechLeadOptions().length" disabled class="text-muted text-xs">No Tech Leads found</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -224,8 +305,29 @@
             <div class="col-md-6">
               <label class="oh-label" for="ba">Project Business Analyst (BA)</label>
               <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
-                <mat-select id="ba" [ngModel]="formProjectBa()" (ngModelChange)="formProjectBa.set($event)" name="ba">
-                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                <mat-select id="ba" [ngModel]="formProjectBa()" (ngModelChange)="formProjectBa.set($event); baSearchQuery.set('');" name="ba" placeholder="Select BA" panelClass="oh-owner-select-panel">
+                  <div class="oh-select-search-container border-bottom d-flex align-items-center gap-2">
+                    <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field-sm bg-white" subscriptSizing="dynamic" style="width: 100%;">
+                      <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                      <input matInput 
+                             type="text" 
+                             placeholder="Search BA..." 
+                             [ngModel]="baSearchQuery()" 
+                             (ngModelChange)="baSearchQuery.set($event)"
+                             (keydown)="$event.stopPropagation()">
+                      <button matSuffix 
+                              *ngIf="baSearchQuery()" 
+                              mat-icon-button 
+                              type="button" 
+                              (click)="baSearchQuery.set(''); $event.stopPropagation();"
+                              style="border: none; background: transparent; padding: 0; min-width: 0; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;"
+                              aria-label="Clear search">
+                        <i class="bi bi-x text-muted fs-6"></i>
+                      </button>
+                    </mat-form-field>
+                  </div>
+                  <mat-option *ngFor="let m of filteredBaOptions()" [value]="m">{{ m }}</mat-option>
+                  <mat-option *ngIf="!filteredBaOptions().length" disabled class="text-muted text-xs">No BAs found</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
@@ -238,17 +340,17 @@
           <p class="oh-caption text-muted mb-3">Tag the tech stack, and optionally attach reference documentation & KT recordings.</p>
           <hr class="oh-wizard-divider mb-4">
 
-          <label class="oh-label" for="techTag">Tech Stack Tags</label>
-          <div class="d-flex align-items-start gap-2 mb-2" style="max-width: 480px;">
+          <label class="oh-label" for="techTag">Tech Stack Tags<span *ngIf="isEditMode()" class="text-muted fw-normal"> (read-only)</span></label>
+          <div class="d-flex align-items-start gap-2 mb-2" style="max-width: 480px;" *ngIf="!isEditMode()">
             <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
               <input id="techTag" matInput [ngModel]="techInput()" (ngModelChange)="techInput.set($event)" name="techTag" placeholder="e.g. Kafka, Docker..." (keyup.enter)="addTechTag()" />
             </mat-form-field>
             <button mat-stroked-button type="button" class="oh-owner-add-btn" (click)="addTechTag()">Add</button>
           </div>
           <mat-chip-set class="mb-4" aria-label="Tech stack tags">
-            <mat-chip *ngFor="let tag of techStackTags()" [removable]="true" (removed)="removeTechTag(tag)">
+            <mat-chip *ngFor="let tag of techStackTags()" [removable]="!isEditMode()" (removed)="removeTechTag(tag)">
               {{ tag }}
-              <button matChipRemove aria-label="Remove tag"><mat-icon>cancel</mat-icon></button>
+              <button *ngIf="!isEditMode()" matChipRemove aria-label="Remove tag"><mat-icon>cancel</mat-icon></button>
             </mat-chip>
           </mat-chip-set>
 
@@ -412,7 +514,7 @@
             Continue <i class="bi bi-chevron-right ms-1"></i>
           </ng-container>
           <ng-template #lastStepLabel>
-            <i class="bi bi-check-lg me-1"></i>Create {{ formIsModule() ? 'Sub-Module' : 'Project' }}
+            <i class="bi bi-check-lg me-1"></i>{{ isEditMode() ? 'Save Changes' : 'Create ' + (formIsModule() ? 'Sub-Module' : 'Project') }}
           </ng-template>
         </button>
       </div>

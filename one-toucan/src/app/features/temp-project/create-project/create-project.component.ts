@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
@@ -9,10 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProjectStateService } from '../../../core/projects/project-state.service';
-import { ActiveProject } from '../../../core/projects/projects.data';
+import { DocumentItem } from '../../../core/projects/projects.data';
 
 type DocCategory = 'Tech Doc' | 'Functional Doc' | 'KT' | 'Other';
 type TechCategory = 'Backend' | 'Frontend' | 'DevOps' | 'QA' | 'Database' | 'Mobile';
@@ -43,14 +43,59 @@ interface DocEntry {
   templateUrl: './create-project.component.html',
   styleUrl: './create-project.component.scss'
 })
-export class CreateProjectComponent {
+export class CreateProjectComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly projectState = inject(ProjectStateService);
+
+  // Edit mode — reuses this same wizard, but only Ownership, PM/Tech
+  // Lead/BA, and Documents are actually editable; everything else is
+  // shown read-only for context. Triggered via ?edit=<projectId>.
+  readonly editingProjectId = signal<string | null>(null);
+  readonly isEditMode = computed(() => this.editingProjectId() !== null);
 
   // Available parent projects for sub-module selection
   readonly parentProjects = computed(() =>
     this.projectState.activeProjects().filter(p => !p.isModule)
   );
+
+  ngOnInit(): void {
+    const editId = this.route.snapshot.queryParamMap.get('edit');
+    if (!editId) return;
+
+    const project = this.projectState.getProject(editId);
+    if (!project) return;
+
+    this.editingProjectId.set(editId);
+    // All steps are reachable immediately, and land on Ownership (the first
+    // editable step) rather than the locked Entity Type step.
+    this.maxStepReached.set(this.steps.length);
+    this.currentStep.set(3);
+    this.formIsModule.set(project.isModule);
+    this.formParentProjectName.set(project.parentProjectName || '');
+    this.formName.set(project.name);
+    this.formKey.set(project.key);
+    this.formClient.set(project.client);
+    this.formDescription.set(project.description);
+    this.formRepoName.set(project.repoName || '');
+    this.formProjectManager.set(project.projectManager || '');
+    this.formProjectBa.set(project.projectBa || '');
+    this.formProjectTechLead.set(project.projectTechLead || '');
+    this.primaryOwners.set([...(project.primaryOwners || [])]);
+    this.secondaryOwners.set([...(project.secondaryOwners || [])]);
+    this.techStackTags.set([...(project.techStack || [])]);
+
+    this.documents.set([
+      ...project.documents.map(doc => ({ category: this.docCategoryFromItem(doc.category), name: doc.name })),
+      ...project.ktSessions.map(kt => ({ category: 'KT' as const, name: kt.topic, url: kt.recordingUrl }))
+    ]);
+  }
+
+  private docCategoryFromItem(category: DocumentItem['category']): DocCategory {
+    if (category === 'BRD') return 'Functional Doc';
+    if (category === 'Architecture') return 'Tech Doc';
+    return 'Other';
+  }
 
   // Form signals
   readonly formIsModule = signal(false);
@@ -65,10 +110,15 @@ export class CreateProjectComponent {
   readonly formProjectTechLead = signal('');
 
   // Multiple Primary and Secondary Owners
-  readonly primaryOwners = signal<string[]>(['Rahul Menon']);
-  readonly secondaryOwners = signal<string[]>(['Sneha Kulkarni']);
+  readonly primaryOwners = signal<string[]>([]);
+  readonly secondaryOwners = signal<string[]>([]);
   readonly primaryOwnerInput = signal('');
   readonly secondaryOwnerInput = signal('');
+  readonly primaryOwnerSearchQuery = signal('');
+  readonly secondaryOwnerSearchQuery = signal('');
+  readonly pmSearchQuery = signal('');
+  readonly techLeadSearchQuery = signal('');
+  readonly baSearchQuery = signal('');
 
   // Dropdown options exclude names already assigned, so the same person
   // can't be picked twice.
@@ -78,6 +128,41 @@ export class CreateProjectComponent {
   readonly availableSecondaryOwnerOptions = computed(() =>
     this.availableTeamMembers.filter(m => !this.secondaryOwners().includes(m))
   );
+
+  readonly filteredPrimaryOwnerOptions = computed(() => {
+    const query = this.primaryOwnerSearchQuery().toLowerCase().trim();
+    const available = this.availablePrimaryOwnerOptions();
+    if (!query) return available;
+    return available.filter(name => name.toLowerCase().includes(query));
+  });
+
+  readonly filteredSecondaryOwnerOptions = computed(() => {
+    const query = this.secondaryOwnerSearchQuery().toLowerCase().trim();
+    const available = this.availableSecondaryOwnerOptions();
+    if (!query) return available;
+    return available.filter(name => name.toLowerCase().includes(query));
+  });
+
+  readonly filteredPmOptions = computed(() => {
+    const query = this.pmSearchQuery().toLowerCase().trim();
+    const available = this.availableTeamMembers;
+    if (!query) return available;
+    return available.filter(name => name.toLowerCase().includes(query));
+  });
+
+  readonly filteredTechLeadOptions = computed(() => {
+    const query = this.techLeadSearchQuery().toLowerCase().trim();
+    const available = this.availableTeamMembers;
+    if (!query) return available;
+    return available.filter(name => name.toLowerCase().includes(query));
+  });
+
+  readonly filteredBaOptions = computed(() => {
+    const query = this.baSearchQuery().toLowerCase().trim();
+    const available = this.availableBas;
+    if (!query) return available;
+    return available.filter(name => name.toLowerCase().includes(query));
+  });
 
   // Tech stack tags
   readonly techStackTags = signal<string[]>(['Angular', 'Node.js']);
@@ -136,6 +221,7 @@ export class CreateProjectComponent {
       category: 'Tech Doc',
       subType: `${this.selectedTechCategory()} · ${this.techDocType()}`,
       name,
+      url: 'https://docs.google.com/document/d/1example-tech-spec',
       fileName: this.techDocFile()?.name
     }]);
     this.techDocType.set('');
@@ -146,7 +232,12 @@ export class CreateProjectComponent {
   addFunctionalDoc(): void {
     const name = this.functionalDocName().trim();
     if (!name) return;
-    this.documents.update(list => [...list, { category: 'Functional Doc', name, fileName: this.functionalDocFile()?.name }]);
+    this.documents.update(list => [...list, { 
+      category: 'Functional Doc', 
+      name, 
+      url: 'https://docs.google.com/document/d/1example-functional-brd',
+      fileName: this.functionalDocFile()?.name 
+    }]);
     this.functionalDocName.set('');
     this.functionalDocFile.set(null);
   }
@@ -157,7 +248,7 @@ export class CreateProjectComponent {
     this.documents.update(list => [...list, {
       category: 'KT',
       name,
-      url: this.ktVideoUrl().trim(),
+      url: this.ktVideoUrl().trim() || 'https://loom.com/share/example-kt-session-video',
       fileName: this.ktVideoFile()?.name
     }]);
     this.ktVideoName.set('');
@@ -169,7 +260,13 @@ export class CreateProjectComponent {
     const type = this.otherDocType().trim();
     const name = this.otherDocName().trim();
     if (!type || !name) return;
-    this.documents.update(list => [...list, { category: 'Other', subType: type, name, fileName: this.otherDocFile()?.name }]);
+    this.documents.update(list => [...list, { 
+      category: 'Other', 
+      subType: type, 
+      name, 
+      url: 'https://docs.google.com/document/d/1example-other-file',
+      fileName: this.otherDocFile()?.name 
+    }]);
     this.otherDocType.set('');
     this.otherDocName.set('');
     this.otherDocFile.set(null);
@@ -222,19 +319,27 @@ export class CreateProjectComponent {
 
   // Staff members list for quick selection
   readonly availableTeamMembers: string[] = [
-    'Rahul Menon',
-    'Sneha Kulkarni',
-    'Lokesh Kanuboina',
-    'Prerna Nair',
-    'Arman Khan',
-    'Vikram Kapoor',
-    'Ananya Rao',
-    'Sneha Iyer',
-    'Sameer Malik',
-    'Tara Reddy',
-    'Jay Desai',
-    'Karthik Iyer'
+    'Dayakar',
+    'Gowtham',
+    'Ifra',
+    'Laya',
+    'Lokesh',
+    'Manali',
+    'Meghadeep',
+    'Palkin',
+    'Pavam',
+    'Priyanka',
+    'Raju',
+    'Ramana',
+    'Ramsai',
+    'Sahithya',
+    'Soumya',
+    'Swathi',
+    'Vishvendra',
+    'Vivek'
   ];
+
+  readonly availableBas: string[] = ['Sarthak', 'Tanmayee'];
 
   goBack(): void {
     this.router.navigate(['/temp-project']);
@@ -291,6 +396,7 @@ export class CreateProjectComponent {
     if (ownerName && !this.primaryOwners().includes(ownerName)) {
       this.primaryOwners.update(list => [...list, ownerName]);
       this.primaryOwnerInput.set('');
+      this.primaryOwnerSearchQuery.set('');
     }
   }
 
@@ -304,6 +410,7 @@ export class CreateProjectComponent {
     if (ownerName && !this.secondaryOwners().includes(ownerName)) {
       this.secondaryOwners.update(list => [...list, ownerName]);
       this.secondaryOwnerInput.set('');
+      this.secondaryOwnerSearchQuery.set('');
     }
   }
 
@@ -324,6 +431,27 @@ export class CreateProjectComponent {
     this.techStackTags.update(list => list.filter(t => t !== tag));
   }
 
+  private get documentPayload() {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return this.documents()
+      .filter(d => d.category !== 'KT')
+      .map(d => ({
+        name: d.subType ? `${d.subType} — ${d.name}` : d.name,
+        category: d.category === 'Functional Doc' ? 'BRD' as const : d.category === 'Other' ? 'Other' as const : 'Architecture' as const,
+        url: d.url || 'https://docs.google.com/document/d/1example-doc',
+        addedBy: 'Lokesh Kanuboina',
+        addedDate: `${dateStr} | ${timeStr}`
+      }));
+  }
+
+  private get ktSessionPayload() {
+    return this.documents()
+      .filter(d => d.category === 'KT')
+      .map(d => ({ topic: d.name, recordingUrl: d.url || '' }));
+  }
+
   submitProject(): void {
     const name = this.formName().trim();
     if (!name) {
@@ -337,6 +465,25 @@ export class CreateProjectComponent {
     }
 
     this.errorMessage.set(null);
+
+    const editId = this.editingProjectId();
+    if (editId) {
+      this.projectState.editProject(editId, {
+        primaryOwners: this.primaryOwners(),
+        secondaryOwners: this.secondaryOwners(),
+        projectManager: this.formProjectManager().trim(),
+        projectBa: this.formProjectBa().trim(),
+        projectTechLead: this.formProjectTechLead().trim(),
+        documents: this.documentPayload,
+        ktSessions: this.ktSessionPayload
+      });
+
+      this.router.navigate(['/temp-project'], {
+        queryParams: { updated: name }
+      });
+      return;
+    }
+
     const key = this.formKey().trim() || name.substring(0, 3).toUpperCase();
 
     const created = this.projectState.createProject({
@@ -353,15 +500,8 @@ export class CreateProjectComponent {
       projectBa: this.formProjectBa().trim(),
       projectTechLead: this.formProjectTechLead().trim(),
       techStack: this.techStackTags(),
-      documents: this.documents()
-        .filter(d => d.category !== 'KT')
-        .map(d => ({
-          name: d.subType ? `${d.subType} — ${d.name}` : d.name,
-          category: d.category === 'Functional Doc' ? 'BRD' as const : d.category === 'Other' ? 'Other' as const : 'Architecture' as const
-        })),
-      ktSessions: this.documents()
-        .filter(d => d.category === 'KT')
-        .map(d => ({ topic: d.name, recordingUrl: d.url || '' }))
+      documents: this.documentPayload,
+      ktSessions: this.ktSessionPayload
     });
 
     this.router.navigate(['/temp-project'], {

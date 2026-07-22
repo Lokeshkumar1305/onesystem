@@ -264,6 +264,99 @@ export class ProjectStateService {
     return newProj;
   }
 
+  // Limited-scope edit — the create-project wizard reuses itself for editing,
+  // but only lets Ownership, PM/Tech Lead/BA, and Documents change; the rest
+  // of the project (name, key, repo, tech stack, ...) stays untouched here.
+  editProject(projectId: string, data: {
+    primaryOwners: string[];
+    secondaryOwners: string[];
+    projectManager: string;
+    projectTechLead: string;
+    projectBa: string;
+    documents: { name: string; category: DocumentItem['category'] }[];
+    ktSessions: { topic: string; recordingUrl: string }[];
+  }): void {
+    const avatarColors = ['blue', 'purple', 'teal', 'pink', 'orange'];
+    const teamMembers: TeamMember[] = [];
+
+    (data.primaryOwners || []).forEach((ownerName, idx) => {
+      if (!ownerName.trim()) return;
+      const parts = ownerName.trim().split(' ');
+      const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'PO';
+      teamMembers.push({
+        name: ownerName.trim(),
+        initials,
+        role: 'Primary Owner',
+        allocation: 100,
+        avatarColor: avatarColors[idx % avatarColors.length]
+      });
+    });
+
+    (data.secondaryOwners || []).forEach((ownerName, idx) => {
+      if (!ownerName.trim()) return;
+      if (!teamMembers.some(m => m.name.toLowerCase() === ownerName.trim().toLowerCase())) {
+        const parts = ownerName.trim().split(' ');
+        const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'SO';
+        teamMembers.push({
+          name: ownerName.trim(),
+          initials,
+          role: 'Secondary Owner',
+          allocation: 50,
+          avatarColor: avatarColors[(idx + 2) % avatarColors.length]
+        });
+      }
+    });
+
+    [
+      { name: data.projectManager, role: 'Project Manager' },
+      { name: data.projectTechLead, role: 'Tech Lead' },
+      { name: data.projectBa, role: 'Business Analyst' }
+    ].forEach(item => {
+      if (item.name && item.name.trim() && !teamMembers.some(m => m.name.toLowerCase() === item.name.trim().toLowerCase())) {
+        const parts = item.name.trim().split(' ');
+        const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+        teamMembers.push({
+          name: item.name.trim(),
+          initials,
+          role: item.role,
+          allocation: 50,
+          avatarColor: 'teal'
+        });
+      }
+    });
+
+    const finalTeam = teamMembers.length > 0 ? teamMembers : [
+      { initials: 'OH', name: 'OneToucan Admin', role: 'Owner', allocation: 100, avatarColor: 'blue' }
+    ];
+
+    this.updateProject(projectId, p => ({
+      ...p,
+      primaryOwners: data.primaryOwners,
+      secondaryOwners: data.secondaryOwners,
+      projectManager: data.projectManager,
+      projectTechLead: data.projectTechLead,
+      projectBa: data.projectBa,
+      team: finalTeam,
+      documents: data.documents.map((doc, idx): DocumentItem => ({
+        id: `DOC-${projectId}-${Date.now()}-${idx}`,
+        name: doc.name,
+        category: doc.category,
+        url: '',
+        addedBy: data.primaryOwners[0] || 'System',
+        addedDate: new Date().toISOString().split('T')[0]
+      })),
+      ktSessions: data.ktSessions.map((kt, idx): KtSession => ({
+        id: `KT-${projectId}-${Date.now()}-${idx}`,
+        topic: kt.topic,
+        host: data.projectManager || data.primaryOwners[0] || 'Unassigned',
+        date: new Date().toISOString().split('T')[0],
+        attendees: 'TBD',
+        recordingUrl: kt.recordingUrl,
+        status: 'Scheduled'
+      }))
+    }));
+  }
+
   markCompleted(projectId: string): void {
     this.updateProject(projectId, p => ({ ...p, status: 'completed' }));
   }

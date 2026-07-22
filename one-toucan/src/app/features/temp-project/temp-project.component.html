@@ -108,7 +108,7 @@
 
           <!-- Cards Grid -->
           <div class="oh-projects-grid">
-            <div class="oh-proj-card border rounded-3 overflow-hidden" *ngFor="let proj of filteredActiveProjects()" (click)="openProject(proj)">
+            <div class="oh-proj-card border rounded-3 overflow-hidden" *ngFor="let proj of filteredActiveProjects()" (click)="openProjectDetails(proj, $event)">
               <div class="oh-proj-card-accent" [ngClass]="proj.isModule ? 'bg-violet' : (proj.customType ? 'bg-orange' : 'bg-teal')"></div>
               <div class="oh-proj-card-content p-3">
                 
@@ -136,7 +136,7 @@
                 <!-- Leadership Info Tags (PM / Tech Lead / BA) -->
                 <div class="d-flex flex-wrap gap-1 mb-3 text-xxs text-muted" *ngIf="proj.projectManager || proj.projectTechLead || proj.projectBa">
                   <span class="oh-lead-chip" *ngIf="proj.projectManager" title="Project Manager">
-                    <i class="bi bi-briefcase-fill me-1 text-primary"></i>PM: <strong>{{ proj.projectManager }}</strong>
+                    <i class="bi bi-briefcase me-1 text-primary"></i>PM: <strong>{{ proj.projectManager }}</strong>
                   </span>
                   <span class="oh-lead-chip" *ngIf="proj.projectTechLead" title="Tech Lead">
                     <i class="bi bi-code-slash me-1 text-teal"></i>TL: <strong>{{ proj.projectTechLead }}</strong>
@@ -153,10 +153,13 @@
                   <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.ktSessions.length"><i class="bi bi-camera-video me-1"></i>{{ proj.ktSessions.length }} KTs</span>
                 </div>
 
-                <!-- Card Footer: View Details Action -->
+                <!-- Card Footer: Edit & View Details Actions -->
                 <hr class="oh-proj-card-divider">
                 <div class="d-flex align-items-center justify-content-end pt-2">
                   <div class="d-flex align-items-center gap-2">
+                    <button class="oh-proj-card-icon-btn" matTooltip="Edit" (click)="editProject(proj, $event)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
                     <button class="oh-proj-card-details-btn" (click)="openProjectDetails(proj, $event)">
                       <i class="bi bi-eye"></i>Details
                     </button>
@@ -175,8 +178,8 @@
 <!-- ========================================================================= -->
 <!-- PROJECT DETAILS DRAWER / MODAL                                            -->
 <!-- ========================================================================= -->
-<div class="oh-modal-backdrop d-flex align-items-center justify-content-center p-3" *ngIf="selectedProjectForView()" (click)="closeProjectDetails()">
-  <div class="oh-temp-project-modal-dialog bg-white border rounded-4 shadow-lg overflow-hidden" style="max-width: 600px;" (click)="$event.stopPropagation()">
+<div class="oh-modal-backdrop" *ngIf="selectedProjectForView()" (click)="closeProjectDetails()">
+  <div class="oh-temp-project-modal-dialog bg-white overflow-hidden" (click)="$event.stopPropagation()">
     
     <div class="oh-temp-modal-header p-4 border-bottom d-flex align-items-center justify-content-between bg-light">
       <div class="d-flex align-items-center gap-3">
@@ -189,14 +192,34 @@
             <h3 class="oh-heading-h4 mb-0 font-weight-bold text-dark">{{ selectedProjectForView()?.name }}</h3>
             <span class="badge bg-dark text-white font-mono text-xxs">{{ selectedProjectForView()?.key }}</span>
           </div>
-          <p class="text-muted text-xs mb-0">Client: {{ selectedProjectForView()?.client }} | {{ selectedProjectForView()?.isModule ? 'Sub-Module' : 'Project' }}</p>
+          <p class="text-muted text-xs mb-0">{{ selectedProjectForView()?.isModule ? 'Sub-Module' : 'Project' }}</p>
         </div>
       </div>
       <button type="button" class="btn-close" (click)="closeProjectDetails()" aria-label="Close"></button>
     </div>
 
-    <div class="oh-temp-modal-body p-4 d-flex flex-column gap-3">
-      
+    <div class="oh-temp-modal-tabs">
+      <button type="button" class="oh-temp-modal-tab" [class.oh-temp-modal-tab--active]="activeDetailTab() === 'overview'" (click)="activeDetailTab.set('overview')">
+        Overview
+      </button>
+      <button type="button" class="oh-temp-modal-tab" [class.oh-temp-modal-tab--active]="activeDetailTab() === 'documents'" (click)="activeDetailTab.set('documents')">
+        Documents
+        <span class="oh-tab-count-badge" *ngIf="selectedProjectForView()?.documents?.length || selectedProjectForView()?.ktSessions?.length">
+          {{ (selectedProjectForView()?.documents?.length || 0) + (selectedProjectForView()?.ktSessions?.length || 0) }}
+        </span>
+      </button>
+    </div>
+
+    <div class="oh-temp-modal-body p-4 d-flex flex-column gap-3" *ngIf="activeDetailTab() === 'overview'">
+
+      <!-- Project Name -->
+      <div>
+        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">
+          {{ selectedProjectForView()?.isModule ? 'Module Name' : 'Project Name' }}
+        </h6>
+        <p class="text-sm text-dark bg-light p-3 rounded border mb-0 font-weight-semibold">{{ selectedProjectForView()?.name }}</p>
+      </div>
+
       <div>
         <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Description</h6>
         <p class="text-sm text-dark bg-light p-3 rounded border mb-0">{{ selectedProjectForView()?.description }}</p>
@@ -213,23 +236,39 @@
         </div>
       </div>
 
-      <!-- Owners -->
-      <div class="row g-3">
-        <div class="col-md-6" *ngIf="selectedProjectForView()?.primaryOwners?.length">
-          <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Primary Owners</h6>
-          <div class="d-flex flex-wrap gap-1">
-            <span *ngFor="let owner of selectedProjectForView()?.primaryOwners" class="badge bg-teal p-2 text-white text-xs">
-              <i class="bi bi-person-fill me-1"></i>{{ owner }}
-            </span>
+      <!-- Owners Table Design -->
+      <div>
+        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-2">Project Ownership</h6>
+        <div class="border rounded-3 overflow-hidden bg-white">
+          <!-- Table Header -->
+          <div class="row g-0 bg-light border-bottom text-xxs font-weight-bold text-uppercase text-muted">
+            <div class="col-6 p-3 border-end">Primary Owners</div>
+            <div class="col-6 p-3">Secondary Owners</div>
           </div>
-        </div>
-
-        <div class="col-md-6" *ngIf="selectedProjectForView()?.secondaryOwners?.length">
-          <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Secondary Owners</h6>
-          <div class="d-flex flex-wrap gap-1">
-            <span *ngFor="let owner of selectedProjectForView()?.secondaryOwners" class="badge bg-purple p-2 text-white text-xs">
-              <i class="bi bi-person me-1"></i>{{ owner }}
-            </span>
+          <!-- Table Body Row -->
+          <div class="row g-0 text-sm">
+            <!-- Primary Owners -->
+            <div class="col-6 p-3 border-end">
+              <div class="d-flex flex-wrap gap-2" *ngIf="selectedProjectForView()?.primaryOwners?.length; else noPrimary">
+                <span *ngFor="let owner of selectedProjectForView()?.primaryOwners" class="badge bg-teal p-2 text-white text-xs d-inline-flex align-items-center gap-1 oh-owner-badge">
+                  <i class="bi bi-person"></i>{{ owner }}
+                </span>
+              </div>
+              <ng-template #noPrimary>
+                <span class="text-muted text-xs fst-italic">No primary owners assigned</span>
+              </ng-template>
+            </div>
+            <!-- Secondary Owners -->
+            <div class="col-6 p-3">
+              <div class="d-flex flex-wrap gap-2" *ngIf="selectedProjectForView()?.secondaryOwners?.length; else noSecondary">
+                <span *ngFor="let owner of selectedProjectForView()?.secondaryOwners" class="badge bg-orange p-2 text-white text-xs d-inline-flex align-items-center gap-1 oh-owner-badge">
+                  <i class="bi bi-person"></i>{{ owner }}
+                </span>
+              </div>
+              <ng-template #noSecondary>
+                <span class="text-muted text-xs fst-italic">No secondary owners assigned</span>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>
@@ -253,24 +292,127 @@
         </div>
       </div>
 
-      <!-- Tech Stack & Timeline -->
-      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 text-xs" *ngIf="selectedProjectForView()?.methodology || selectedProjectForView()?.targetDate">
-        <div>
-          <span class="text-muted me-2">Methodology:</span>
-          <span class="badge bg-secondary text-white">{{ selectedProjectForView()?.methodology || 'Scrum' }}</span>
+
+    </div>
+
+    <!-- Documents tab -->
+    <div class="oh-temp-modal-body p-4 d-flex flex-column gap-3" *ngIf="activeDetailTab() === 'documents'">
+
+      <!-- Sub-tabs for Documents -->
+      <div class="oh-document-sub-tabs">
+        <button type="button" class="oh-document-sub-tab" 
+                [class.oh-document-sub-tab--active]="activeDocSubTab() === 'tech'"
+                (click)="activeDocSubTab.set('tech')">
+          Tech Doc ({{ techDocs().length }})
+        </button>
+        <button type="button" class="oh-document-sub-tab"
+                [class.oh-document-sub-tab--active]="activeDocSubTab() === 'functional'"
+                (click)="activeDocSubTab.set('functional')">
+          Functional Doc ({{ functionalDocs().length }})
+        </button>
+        <button type="button" class="oh-document-sub-tab"
+                [class.oh-document-sub-tab--active]="activeDocSubTab() === 'kt'"
+                (click)="activeDocSubTab.set('kt')">
+          KT ({{ ktSessions().length }})
+        </button>
+      </div>
+
+      <!-- Tech Doc Content -->
+      <div *ngIf="activeDocSubTab() === 'tech'" class="d-flex flex-column gap-2">
+        <div class="p-3 bg-light border rounded d-flex flex-column gap-2" *ngFor="let doc of techDocs()">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-sm font-weight-semibold text-dark d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-text text-primary"></i>
+              {{ doc.name }}
+            </span>
+            <span class="badge bg-secondary-subtle text-dark text-xxs">{{ doc.category }}</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between oh-document-card-footer">
+            <span class="text-xxs text-muted">
+              Uploaded by <strong>{{ doc.addedBy || 'System' }}</strong> on {{ doc.addedDate || '2026-07-22 | 10:00 AM' }}
+            </span>
+            <div class="d-flex align-items-center gap-1">
+              <button type="button" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" (click)="copyLink(doc.url || 'https://docs.google.com/document/d/1example-doc', $event)" matTooltip="Copy Link">
+                <i class="bi bi-link-45deg fs-6"></i>
+              </button>
+              <a [href]="doc.url || 'https://docs.google.com/document/d/1example-doc'" target="_blank" download class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" matTooltip="Download">
+                <i class="bi bi-download fs-6"></i>
+              </a>
+              <a [href]="doc.url || 'https://docs.google.com/document/d/1example-doc'" target="_blank" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" matTooltip="View">
+                <i class="bi bi-eye fs-6"></i>
+              </a>
+            </div>
+          </div>
         </div>
-        <div *ngIf="selectedProjectForView()?.targetDate">
-          <span class="text-muted me-2">Target Date:</span>
-          <span class="font-weight-semibold text-dark">{{ selectedProjectForView()?.targetDate }}</span>
+        <p class="text-muted text-xs mb-0" *ngIf="!techDocs().length">No technical documents added yet.</p>
+      </div>
+
+      <!-- Functional Doc Content -->
+      <div *ngIf="activeDocSubTab() === 'functional'" class="d-flex flex-column gap-2">
+        <div class="p-3 bg-light border rounded d-flex flex-column gap-2" *ngFor="let doc of functionalDocs()">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-sm font-weight-semibold text-dark d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-text text-primary"></i>
+              {{ doc.name }}
+            </span>
+            <span class="badge bg-secondary-subtle text-dark text-xxs">{{ doc.category }}</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between oh-document-card-footer">
+            <span class="text-xxs text-muted">
+              Uploaded by <strong>{{ doc.addedBy || 'System' }}</strong> on {{ doc.addedDate || '2026-07-22 | 10:00 AM' }}
+            </span>
+            <div class="d-flex align-items-center gap-1">
+              <button type="button" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" (click)="copyLink(doc.url || 'https://docs.google.com/document/d/1example-doc', $event)" matTooltip="Copy Link">
+                <i class="bi bi-link-45deg fs-6"></i>
+              </button>
+              <a [href]="doc.url || 'https://docs.google.com/document/d/1example-doc'" target="_blank" download class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" matTooltip="Download">
+                <i class="bi bi-download fs-6"></i>
+              </a>
+              <a [href]="doc.url || 'https://docs.google.com/document/d/1example-doc'" target="_blank" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" matTooltip="View">
+                <i class="bi bi-eye fs-6"></i>
+              </a>
+            </div>
+          </div>
         </div>
+        <p class="text-muted text-xs mb-0" *ngIf="!functionalDocs().length">No functional documents added yet.</p>
+      </div>
+
+      <!-- KT Content -->
+      <div *ngIf="activeDocSubTab() === 'kt'" class="d-flex flex-column gap-2">
+        <div class="p-3 bg-light border rounded d-flex flex-column gap-2" *ngFor="let kt of ktSessions()">
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="text-sm font-weight-semibold text-dark d-flex align-items-center gap-2">
+              <i class="bi bi-camera-video text-primary"></i>
+              {{ kt.topic }}
+            </span>
+            <span class="oh-badge text-xxs" [ngClass]="kt.status === 'Completed' ? 'oh-badge--success' : 'oh-badge--warning'">{{ kt.status }}</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between oh-document-card-footer">
+            <span class="text-xxs text-muted">
+              Hosted by <strong>{{ kt.host }}</strong> on {{ kt.date }}
+            </span>
+            <div class="d-flex align-items-center gap-1">
+              <button type="button" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" (click)="copyLink(kt.recordingUrl || 'https://loom.com/share/example-kt', $event)" matTooltip="Copy Link">
+                <i class="bi bi-link-45deg fs-6"></i>
+              </button>
+              <a [href]="kt.recordingUrl || 'https://loom.com/share/example-kt'" target="_blank" class="btn btn-link p-1 text-muted text-xs d-flex align-items-center justify-content-center" style="text-decoration: none;" matTooltip="View Recording">
+                <i class="bi bi-eye fs-6"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <p class="text-muted text-xs mb-0" *ngIf="!ktSessions().length">No KT sessions recorded yet.</p>
       </div>
 
     </div>
 
     <div class="oh-temp-modal-footer p-3 border-top bg-light d-flex align-items-center justify-content-between">
-      <button mat-button type="button" (click)="closeProjectDetails()">Close</button>
-      <button mat-flat-button color="primary" (click)="openProject(selectedProjectForView()!); closeProjectDetails()">
-        <i class="bi bi-box-arrow-up-right me-1"></i> Open Project Workspace
+      <button mat-button type="button" (click)="closeProjectDetails()">Cancel</button>
+      <button mat-flat-button color="primary" (click)="activeDetailTab.set('documents')" *ngIf="activeDetailTab() === 'overview'">
+        <i class="bi bi-file-earmark-text me-1"></i> View Documents
+      </button>
+      <button mat-flat-button color="primary" (click)="activeDetailTab.set('overview')" *ngIf="activeDetailTab() === 'documents'">
+        <i class="bi bi-info-circle me-1"></i> View Overview
       </button>
     </div>
 
@@ -282,7 +424,7 @@
   <div class="toast show align-items-center text-white bg-dark border-0 shadow-lg p-2 rounded-3" role="alert">
     <div class="d-flex align-items-center justify-content-between gap-3">
       <div class="toast-body d-flex align-items-center gap-2 text-xs font-weight-semibold">
-        <i class="bi bi-check-circle-fill text-teal fs-6"></i>
+        <i class="bi bi-check-circle text-teal fs-6"></i>
         <span>{{ toastMessage() }}</span>
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastMessage.set(null)"></button>

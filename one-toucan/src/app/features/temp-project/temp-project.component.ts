@@ -42,6 +42,33 @@ export class TempProjectComponent implements OnInit {
 
   // Detailed view modal state
   readonly selectedProjectForView = signal<ActiveProject | null>(null);
+  readonly activeDetailTab = signal<'overview' | 'documents'>('overview');
+  readonly activeDocSubTab = signal<'tech' | 'functional' | 'kt'>('tech');
+
+  readonly techDocs = computed(() => {
+    const proj = this.selectedProjectForView();
+    if (!proj) return [];
+    return proj.documents.filter(doc => 
+      doc.category === 'Architecture' || 
+      doc.category === 'CTO Review' || 
+      doc.category === 'Other'
+    );
+  });
+
+  readonly functionalDocs = computed(() => {
+    const proj = this.selectedProjectForView();
+    if (!proj) return [];
+    return proj.documents.filter(doc => 
+      doc.category === 'BRD' || 
+      doc.category === 'User Guide'
+    );
+  });
+
+  readonly ktSessions = computed(() => {
+    const proj = this.selectedProjectForView();
+    if (!proj) return [];
+    return proj.ktSessions || [];
+  });
 
   // Toast notification feedback
   readonly toastMessage = signal<string | null>(null);
@@ -51,6 +78,8 @@ export class TempProjectComponent implements OnInit {
       if (params['created']) {
         const type = params['type'] || 'Project';
         this.showToast(`Successfully created ${type} "${params['created']}"`);
+      } else if (params['updated']) {
+        this.showToast(`Successfully updated "${params['updated']}"`);
       }
     });
   }
@@ -92,12 +121,27 @@ export class TempProjectComponent implements OnInit {
   openProjectDetails(project: ActiveProject, event?: Event): void {
     if (event) event.stopPropagation();
     this.selectedProjectForView.set(project);
+    this.activeDetailTab.set('overview');
     document.body.classList.add('oh-modal-open');
   }
 
   closeProjectDetails(): void {
     this.selectedProjectForView.set(null);
     document.body.classList.remove('oh-modal-open');
+  }
+
+  copyLink(url: string, event: Event): void {
+    event.stopPropagation();
+    navigator.clipboard.writeText(url).then(() => {
+      this.showToast('Link copied to clipboard!');
+    });
+  }
+
+  // Opens the create-project wizard pre-filled with this project's data —
+  // only Ownership, PM/Tech Lead/BA, and Documents are actually editable there.
+  editProject(project: ActiveProject, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.router.navigate(['/temp-project/create'], { queryParams: { edit: project.id } });
   }
 
   // Navigates to separate creation screen route

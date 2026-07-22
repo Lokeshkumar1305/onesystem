@@ -196,7 +196,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     secondaryOwners: ['Arman Khan'],
     repoName: 'onetoucan/atlas-migration-core',
     projectManager: 'Lokesh Kanuboina',
-    projectBa: 'Vikram Kapoor',
+    projectBa: 'Tanmayee',
     projectTechLead: 'Rahul Menon',
     methodology: 'Scrum',
     targetDate: '2026-12-31',
@@ -298,15 +298,15 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
       { initials: 'RM', name: 'Rahul Menon', role: 'Project Lead', allocation: 100, avatarColor: 'blue' },
       { initials: 'SK', name: 'Sneha Kulkarni', role: 'Developer', allocation: 100, avatarColor: 'purple' },
       { initials: 'AK', name: 'Arman Khan', role: 'QA Tester', allocation: 50, avatarColor: 'pink' },
-      { initials: 'VK', name: 'Vikram Kapoor', role: 'Business Analyst', allocation: 50, avatarColor: 'teal' }
+      { initials: 'TN', name: 'Tanmayee', role: 'Business Analyst', allocation: 50, avatarColor: 'teal' }
     ],
     documents: [
-      { id: 'DOC-001', name: 'Atlas Core Architecture Spec', category: 'Architecture', url: 'https://docs.google.com/spec/1', addedBy: 'Rahul Menon', addedDate: '2026-07-01' },
-      { id: 'DOC-002', name: 'Business Requirements (BRD v2.4)', category: 'BRD', url: 'https://docs.google.com/brd/1', addedBy: 'CTO Office', addedDate: '2026-06-25' }
+      { id: 'DOC-001', name: 'Atlas Core Architecture Spec', category: 'Architecture', url: 'https://docs.google.com/spec/1', addedBy: 'Rahul Menon', addedDate: '2026-07-01 | 10:30 AM' },
+      { id: 'DOC-002', name: 'Business Requirements (BRD v2.4)', category: 'BRD', url: 'https://docs.google.com/brd/1', addedBy: 'CTO Office', addedDate: '2026-06-25 | 02:15 PM' }
     ],
     ktSessions: [
-      { id: 'KT-001', topic: 'Event Stream Setup & Kafka Brokers', host: 'Rahul Menon', date: '2026-07-10', attendees: 'Sneha K., Arman K.', recordingUrl: 'https://loom.com/kt/kafka-stream', status: 'Completed' },
-      { id: 'KT-002', topic: 'SSO Integration & Auth Handshakes', host: 'CTO (Lokesh K.)', date: '2026-07-22', attendees: 'All Engineers', recordingUrl: 'https://loom.com/kt/sso-handshake', status: 'Scheduled' }
+      { id: 'KT-001', topic: 'Event Stream Setup & Kafka Brokers', host: 'Rahul Menon', date: '2026-07-10 | 11:00 AM', attendees: 'Sneha K., Arman K.', recordingUrl: 'https://loom.com/kt/kafka-stream', status: 'Completed' },
+      { id: 'KT-002', topic: 'SSO Integration & Auth Handshakes', host: 'CTO (Lokesh K.)', date: '2026-07-22 | 04:30 PM', attendees: 'All Engineers', recordingUrl: 'https://loom.com/kt/sso-handshake', status: 'Scheduled' }
     ],
     demos: [
       { id: 'DEM-001', title: 'Sprint 12 Core APIs & Admin Console', date: '2026-07-08', audience: 'CTO & Stakeholders', recordingUrl: 'https://loom.com/demo/s12', ctoFeedback: 'Approved. Looks very fast. Keep working on SCIM integration.', status: 'Approved' },
@@ -352,7 +352,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     secondaryOwners: ['Sneha Iyer'],
     repoName: 'onetoucan/billing-engine-api',
     projectManager: 'Lokesh Kanuboina',
-    projectBa: 'Vikram Kapoor',
+    projectBa: 'Sarthak',
     projectTechLead: 'Prerna Nair',
     methodology: 'Kanban',
     targetDate: '2026-10-15',
@@ -408,7 +408,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
       { initials: 'SI', name: 'Sneha Iyer', role: 'Developer', allocation: 100, avatarColor: 'blue' }
     ],
     documents: [
-      { id: 'DOC-003', name: 'Billing Pipeline Design Schema', category: 'Architecture', url: 'https://docs.google.com/spec/billing', addedBy: 'Prerna Nair', addedDate: '2026-07-05' }
+      { id: 'DOC-003', name: 'Billing Pipeline Design Schema', category: 'Architecture', url: 'https://docs.google.com/spec/billing', addedBy: 'Prerna Nair', addedDate: '2026-07-05 | 11:45 AM' }
     ],
     ktSessions: [],
     demos: [],
@@ -443,7 +443,7 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     secondaryOwners: ['Ananya Rao'],
     repoName: 'onetoucan/onehr-portal-ui',
     projectManager: 'Lokesh Kanuboina',
-    projectBa: 'Vikram Kapoor',
+    projectBa: 'Tanmayee',
     projectTechLead: 'Lokesh Kanuboina',
     methodology: 'Scrum',
     targetDate: '2026-11-30',
@@ -617,8 +617,8 @@ export const RESOURCE_POOL: ResourcePoolMember[] = [
   },
   {
     id: 'EMP-111',
-    name: 'Vikram Kapoor',
-    initials: 'VK',
+    name: 'Tanmayee',
+    initials: 'TN',
     avatarColor: 'teal',
     role: 'Business Analyst',
     skills: ['Requirements Gathering', 'Stakeholder Interviews', 'JIRA'],
@@ -626,6 +626,18 @@ export const RESOURCE_POOL: ResourcePoolMember[] = [
     previousProjects: ['Atlas Migration', 'Vendor Onboarding Portal'],
     status: 'allocated',
     currentAllocation: 'Atlas Migration'
+  },
+  {
+    id: 'EMP-112',
+    name: 'Sarthak',
+    initials: 'SR',
+    avatarColor: 'indigo',
+    role: 'Business Analyst',
+    skills: ['Requirements Gathering', 'Agile Product Management', 'Confluence'],
+    experienceYears: 4,
+    previousProjects: ['Billing Engine'],
+    status: 'allocated',
+    currentAllocation: 'Billing Engine'
   },
   {
     id: 'EMP-106',

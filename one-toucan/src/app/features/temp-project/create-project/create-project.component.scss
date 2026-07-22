@@ -7,7 +7,8 @@
 // comes from its wrapping .oh-field's flex `gap`, which this screen doesn't
 // use, so add the spacing here instead.
 .oh-label {
-  margin-bottom: 6px;
+  display: block;
+  margin-bottom: 10px;
 }
 
 .oh-wizard-shell {
@@ -309,4 +310,33 @@
 
 :host {
   display: block;
+}
+
+::ng-deep .oh-owner-select-panel {
+  padding-top: 0 !important;
+  max-height: 280px !important;
+
+  .oh-select-search-container {
+    position: sticky !important;
+    top: 0 !important;
+    background-color: #ffffff !important;
+    z-index: 1000 !important;
+    padding: 8px 12px 10px !important;
+  }
+
+  .mat-mdc-form-field-icon-prefix {
+    padding-left: 12px !important;
+    padding-right: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    padding-right: 8px !important;
+    padding-left: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
