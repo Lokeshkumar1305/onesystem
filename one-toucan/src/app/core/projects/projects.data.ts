@@ -160,6 +160,15 @@ export interface ActiveProject {
   // Lifecycle status — drives the Developer's Tech Doc upload gate (Atlas):
   // uploads are only allowed once a project has been marked 'completed'.
   status: 'active' | 'completed';
+  primaryOwners?: string[];
+  secondaryOwners?: string[];
+  repoName?: string;
+  projectManager?: string;
+  projectBa?: string;
+  projectTechLead?: string;
+  methodology?: string;
+  targetDate?: string;
+  techStack?: string[];
   board: ProjectColumn[];
   team: TeamMember[];
   documents: DocumentItem[];
@@ -183,6 +192,15 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     description: 'Migration of legacy settlement systems to the event-driven Atlas pipeline.',
     isModule: false,
     status: 'active',
+    primaryOwners: ['Rahul Menon', 'Sneha Kulkarni'],
+    secondaryOwners: ['Arman Khan'],
+    repoName: 'onetoucan/atlas-migration-core',
+    projectManager: 'Lokesh Kanuboina',
+    projectBa: 'Vikram Kapoor',
+    projectTechLead: 'Rahul Menon',
+    methodology: 'Scrum',
+    targetDate: '2026-12-31',
+    techStack: ['Kafka', 'Node.js', 'PostgreSQL', 'Angular'],
     board: [
       {
         id: 'backlog',
@@ -330,6 +348,15 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     isModule: true,
     status: 'active',
     parentProjectName: 'Atlas Migration',
+    primaryOwners: ['Prerna Nair'],
+    secondaryOwners: ['Sneha Iyer'],
+    repoName: 'onetoucan/billing-engine-api',
+    projectManager: 'Lokesh Kanuboina',
+    projectBa: 'Vikram Kapoor',
+    projectTechLead: 'Prerna Nair',
+    methodology: 'Kanban',
+    targetDate: '2026-10-15',
+    techStack: ['Stripe', 'Node.js', 'Express', 'PDFKit'],
     board: [
       {
         id: 'backlog',
@@ -412,6 +439,15 @@ export const INITIAL_ACTIVE_PROJECTS: ActiveProject[] = [
     description: 'Core organizational management dashboard for tracking employee details, leave, and resources.',
     isModule: false,
     status: 'active',
+    primaryOwners: ['Lokesh Kanuboina'],
+    secondaryOwners: ['Ananya Rao'],
+    repoName: 'onetoucan/onehr-portal-ui',
+    projectManager: 'Lokesh Kanuboina',
+    projectBa: 'Vikram Kapoor',
+    projectTechLead: 'Lokesh Kanuboina',
+    methodology: 'Scrum',
+    targetDate: '2026-11-30',
+    techStack: ['Angular', 'TypeScript', 'RxJS', 'Sass'],
     board: [
       {
         id: 'backlog',

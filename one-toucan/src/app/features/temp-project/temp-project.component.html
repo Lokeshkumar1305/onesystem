@@ -1,25 +1,25 @@
-<!-- TEMP: mirrors ProjectsComponent's dashboard view, minus the Initialization Pipeline panel. -->
+<!-- Main Project Management Workspace Container -->
 <div class="oh-projects-container">
   <div class="oh-dashboard-view">
 
     <!-- Header Card -->
     <mat-card appearance="outlined" class="oh-panel oh-projects-list__head mb-4">
-      <mat-card-content class="d-flex align-items-center justify-content-between">
+      <mat-card-content class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
           <span class="oh-projects-list__head-icon">
-            <i class="bi bi-briefcase" aria-hidden="true"></i>
+            <i class="bi bi-folder-check" aria-hidden="true"></i>
           </span>
           <div>
             <h2 class="oh-heading-h3 mb-1">Project Management Workspace</h2>
-            <p class="oh-caption mb-0 text-muted">Initialize new ideas, allocate teams, and track execution across Atlas and Project levels.</p>
+            <p class="oh-caption mb-0 text-muted">Initialize new projects, assign primary & secondary owners, configure leadership, and track modules.</p>
           </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <button mat-flat-button color="primary" [disabled]="!roleService.canManageProjects()"
-                  [matTooltip]="roleService.canManageProjects() ? '' : 'Manager access required to start a new proposal'"
-                  (click)="startNewProposal()">
+          <button mat-flat-button color="primary" class="oh-btn-create-project shadow-sm" [disabled]="!roleService.canManageProjects()"
+                  [matTooltip]="roleService.canManageProjects() ? '' : 'Manager access required to create a project'"
+                  (click)="openCreatePage()">
             <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
-            Start Project Proposal
+            Create Project
           </button>
         </div>
       </mat-card-content>
@@ -30,7 +30,7 @@
       <div class="col-md-3">
         <div class="oh-stat-card">
           <div class="oh-stat-card-icon oh-stat-icon--teal">
-            <i class="bi bi-folder-fill"></i>
+            <i class="bi bi-folder"></i>
           </div>
           <div>
             <span class="oh-stat-label">Active Projects</span>
@@ -73,72 +73,219 @@
       </div>
     </div>
 
-    <!-- Main Dashboard Row -->
+    <!-- Main Active Projects & Modules Grid -->
     <div class="row g-4">
-
-      <!-- Active Projects List — full width (Initialization Pipeline panel removed) -->
       <div class="col-lg-12">
         <div class="oh-content-section border rounded-3 p-4 bg-white shadow-sm">
-          <h3 class="oh-dashboard-section-title d-flex align-items-center justify-content-between mb-2">
-            <span><i class="bi bi-folder me-2 text-teal"></i>Active Projects & Modules</span>
-            <span class="oh-badge oh-badge--neutral text-xs">{{ filteredActiveProjects().length }} Total</span>
-          </h3>
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-2">
+            <h3 class="oh-dashboard-section-title d-flex align-items-center mb-0">
+              <i class="bi bi-folder me-2 text-teal"></i>Active Projects & Modules
+            </h3>
+            <div class="d-flex align-items-center gap-2">
+              <mat-form-field appearance="outline" class="oh-temp-project-search oh-compact-field-sm bg-white" subscriptSizing="dynamic">
+                <i matPrefix class="bi bi-search text-muted oh-search-icon"></i>
+                <input matInput [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Search projects, repo, owners, PM..." />
+              </mat-form-field>
+              <button mat-flat-button color="primary" class="oh-temp-project-search-btn" *ngIf="searchQuery().trim().length > 0" (click)="searchQuery.set('')">
+                Clear
+              </button>
+            </div>
+          </div>
           <hr class="oh-section-divider mb-3">
 
           <!-- Filter Pills Row -->
           <div class="d-flex align-items-center gap-2 mb-3">
             <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'all'" (click)="selectedTypeFilter.set('all')">
-              All
+              All ({{ activeProjects().length }})
             </button>
             <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'project'" (click)="selectedTypeFilter.set('project')">
-              Projects
+              Projects ({{ parentProjects.length }})
             </button>
             <button class="oh-filter-pill" [class.oh-filter-pill--active]="selectedTypeFilter() === 'module'" (click)="selectedTypeFilter.set('module')">
-              Modules
+              Modules ({{ activeProjects().length - parentProjects.length }})
             </button>
           </div>
 
+          <!-- Cards Grid -->
           <div class="oh-projects-grid">
-            <div class="oh-proj-card border rounded-3 overflow-hidden cursor-pointer" *ngFor="let proj of filteredActiveProjects()" (click)="openProject(proj)">
+            <div class="oh-proj-card border rounded-3 overflow-hidden" *ngFor="let proj of filteredActiveProjects()" (click)="openProject(proj)">
               <div class="oh-proj-card-accent" [ngClass]="proj.isModule ? 'bg-violet' : (proj.customType ? 'bg-orange' : 'bg-teal')"></div>
               <div class="oh-proj-card-content p-3">
+                
+                <!-- Card Top Header Badge & Key -->
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                  <span class="oh-badge oh-badge--xs" [ngClass]="proj.isModule ? 'oh-badge--violet' : (proj.customType ? 'oh-badge--warning' : 'oh-badge--info')">
-                    {{ proj.isModule ? 'Module' : (proj.customType || 'Project') }}
-                  </span>
-                  <span class="oh-proj-key text-xxs font-mono text-muted">{{ proj.key }}</span>
+                  <div class="d-flex align-items-center gap-1 flex-wrap">
+                    <span class="oh-badge oh-badge--xs" [ngClass]="proj.isModule ? 'oh-badge--violet' : (proj.customType ? 'oh-badge--warning' : 'oh-badge--info')">
+                      {{ proj.isModule ? 'Module' : (proj.customType || 'Project') }}
+                    </span>
+                  </div>
+                  <span class="oh-proj-key text-xxs font-mono text-muted bg-light px-2 py-1 rounded border">{{ proj.key }}</span>
                 </div>
+
+                <!-- Project Title & Description -->
                 <h4 class="font-weight-bold text-gray-900 mb-1 text-sm">{{ proj.name }}</h4>
                 <p class="text-xs text-gray-500 mb-3 text-truncate-2" style="min-height: 32px; line-height: 1.4;">{{ proj.description }}</p>
 
-                <!-- Quick stats list -->
+                <!-- Repository Pill (if defined) -->
+                <div class="mb-2" *ngIf="proj.repoName">
+                  <span class="oh-repo-tag text-xxs px-2 py-1 bg-light text-primary border rounded d-inline-flex align-items-center gap-1 font-mono">
+                    <i class="bi bi-git"></i> {{ proj.repoName }}
+                  </span>
+                </div>
+
+                <!-- Leadership Info Tags (PM / Tech Lead / BA) -->
+                <div class="d-flex flex-wrap gap-1 mb-3 text-xxs text-muted" *ngIf="proj.projectManager || proj.projectTechLead || proj.projectBa">
+                  <span class="oh-lead-chip" *ngIf="proj.projectManager" title="Project Manager">
+                    <i class="bi bi-briefcase-fill me-1 text-primary"></i>PM: <strong>{{ proj.projectManager }}</strong>
+                  </span>
+                  <span class="oh-lead-chip" *ngIf="proj.projectTechLead" title="Tech Lead">
+                    <i class="bi bi-code-slash me-1 text-teal"></i>TL: <strong>{{ proj.projectTechLead }}</strong>
+                  </span>
+                  <span class="oh-lead-chip" *ngIf="proj.projectBa" title="Business Analyst">
+                    <i class="bi bi-journal-text me-1 text-orange"></i>BA: <strong>{{ proj.projectBa }}</strong>
+                  </span>
+                </div>
+
+                <!-- Quick stats count -->
                 <div class="d-flex flex-wrap gap-2 mb-3">
                   <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.documents.length"><i class="bi bi-file-earmark-code me-1"></i>{{ proj.documents.length }} Tech Docs</span>
                   <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.requirements.length"><i class="bi bi-file-earmark-ruled me-1"></i>{{ proj.requirements.length }} Func Docs</span>
                   <span class="oh-tag text-xxs px-2 py-1 bg-light border rounded" *ngIf="proj.ktSessions.length"><i class="bi bi-camera-video me-1"></i>{{ proj.ktSessions.length }} KTs</span>
                 </div>
 
-                <div class="d-flex align-items-center justify-content-between pt-2 border-top">
-                  <div class="d-flex align-items-center gap-1">
-                    <div class="oh-avatars-stack mb-0">
-                      <span *ngFor="let m of proj.team.slice(0, 3)" class="oh-avatar-circle oh-avatar-circle--xs" [ngClass]="getAvatarClass(m.avatarColor)">
-                        {{ m.initials }}
-                      </span>
-                      <span *ngIf="proj.team.length > 3" class="oh-avatar-circle oh-avatar-circle--xs oh-avatar-circle--more">
-                        +{{ proj.team.length - 3 }}
-                      </span>
-                    </div>
+                <!-- Card Footer: View Details Action -->
+                <hr class="oh-proj-card-divider">
+                <div class="d-flex align-items-center justify-content-end pt-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <button class="oh-proj-card-details-btn" (click)="openProjectDetails(proj, $event)">
+                      <i class="bi bi-eye"></i>Details
+                    </button>
                   </div>
-                  <span class="text-xxs font-weight-bold text-teal" *ngIf="proj.isModule && proj.parentProjectName">
-                    Parent: {{ proj.parentProjectName }}
-                  </span>
                 </div>
+
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
+<!-- ========================================================================= -->
+<!-- PROJECT DETAILS DRAWER / MODAL                                            -->
+<!-- ========================================================================= -->
+<div class="oh-modal-backdrop d-flex align-items-center justify-content-center p-3" *ngIf="selectedProjectForView()" (click)="closeProjectDetails()">
+  <div class="oh-temp-project-modal-dialog bg-white border rounded-4 shadow-lg overflow-hidden" style="max-width: 600px;" (click)="$event.stopPropagation()">
+    
+    <div class="oh-temp-modal-header p-4 border-bottom d-flex align-items-center justify-content-between bg-light">
+      <div class="d-flex align-items-center gap-3">
+        <span class="oh-modal-icon-badge p-2 rounded-3 fs-4 d-inline-flex align-items-center justify-content-center"
+              [ngClass]="selectedProjectForView()?.isModule ? 'bg-purple-subtle text-purple' : 'bg-teal-subtle text-teal'">
+          <i class="bi" [ngClass]="selectedProjectForView()?.isModule ? 'bi-layers-half' : 'bi-folder-check'"></i>
+        </span>
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <h3 class="oh-heading-h4 mb-0 font-weight-bold text-dark">{{ selectedProjectForView()?.name }}</h3>
+            <span class="badge bg-dark text-white font-mono text-xxs">{{ selectedProjectForView()?.key }}</span>
+          </div>
+          <p class="text-muted text-xs mb-0">Client: {{ selectedProjectForView()?.client }} | {{ selectedProjectForView()?.isModule ? 'Sub-Module' : 'Project' }}</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close" (click)="closeProjectDetails()" aria-label="Close"></button>
+    </div>
+
+    <div class="oh-temp-modal-body p-4 d-flex flex-column gap-3">
+      
+      <div>
+        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Description</h6>
+        <p class="text-sm text-dark bg-light p-3 rounded border mb-0">{{ selectedProjectForView()?.description }}</p>
+      </div>
+
+      <!-- Repo Name -->
+      <div *ngIf="selectedProjectForView()?.repoName">
+        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Repository Name</h6>
+        <div class="p-2 bg-light border rounded d-flex align-items-center justify-content-between">
+          <span class="font-mono text-sm text-primary font-weight-semibold">
+            <i class="bi bi-git me-2"></i>{{ selectedProjectForView()?.repoName }}
+          </span>
+          <span class="badge bg-secondary-subtle text-dark">Git</span>
+        </div>
+      </div>
+
+      <!-- Owners -->
+      <div class="row g-3">
+        <div class="col-md-6" *ngIf="selectedProjectForView()?.primaryOwners?.length">
+          <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Primary Owners</h6>
+          <div class="d-flex flex-wrap gap-1">
+            <span *ngFor="let owner of selectedProjectForView()?.primaryOwners" class="badge bg-teal p-2 text-white text-xs">
+              <i class="bi bi-person-fill me-1"></i>{{ owner }}
+            </span>
+          </div>
+        </div>
+
+        <div class="col-md-6" *ngIf="selectedProjectForView()?.secondaryOwners?.length">
+          <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-1">Secondary Owners</h6>
+          <div class="d-flex flex-wrap gap-1">
+            <span *ngFor="let owner of selectedProjectForView()?.secondaryOwners" class="badge bg-purple p-2 text-white text-xs">
+              <i class="bi bi-person me-1"></i>{{ owner }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Leadership -->
+      <div class="p-3 bg-light rounded border">
+        <h6 class="text-xs font-weight-bold text-uppercase text-muted mb-2">Project Leadership</h6>
+        <div class="row g-2 text-xs">
+          <div class="col-md-4">
+            <span class="text-muted d-block">Project Manager</span>
+            <strong class="text-dark">{{ selectedProjectForView()?.projectManager || 'Unassigned' }}</strong>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted d-block">Tech Lead</span>
+            <strong class="text-teal">{{ selectedProjectForView()?.projectTechLead || 'Unassigned' }}</strong>
+          </div>
+          <div class="col-md-4">
+            <span class="text-muted d-block">Business Analyst</span>
+            <strong class="text-dark">{{ selectedProjectForView()?.projectBa || 'Unassigned' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack & Timeline -->
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 text-xs" *ngIf="selectedProjectForView()?.methodology || selectedProjectForView()?.targetDate">
+        <div>
+          <span class="text-muted me-2">Methodology:</span>
+          <span class="badge bg-secondary text-white">{{ selectedProjectForView()?.methodology || 'Scrum' }}</span>
+        </div>
+        <div *ngIf="selectedProjectForView()?.targetDate">
+          <span class="text-muted me-2">Target Date:</span>
+          <span class="font-weight-semibold text-dark">{{ selectedProjectForView()?.targetDate }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="oh-temp-modal-footer p-3 border-top bg-light d-flex align-items-center justify-content-between">
+      <button mat-button type="button" (click)="closeProjectDetails()">Close</button>
+      <button mat-flat-button color="primary" (click)="openProject(selectedProjectForView()!); closeProjectDetails()">
+        <i class="bi bi-box-arrow-up-right me-1"></i> Open Project Workspace
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Floating Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1200;" *ngIf="toastMessage()">
+  <div class="toast show align-items-center text-white bg-dark border-0 shadow-lg p-2 rounded-3" role="alert">
+    <div class="d-flex align-items-center justify-content-between gap-3">
+      <div class="toast-body d-flex align-items-center gap-2 text-xs font-weight-semibold">
+        <i class="bi bi-check-circle-fill text-teal fs-6"></i>
+        <span>{{ toastMessage() }}</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="toastMessage.set(null)"></button>
     </div>
   </div>
 </div>

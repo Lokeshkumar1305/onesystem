@@ -123,6 +123,147 @@ export class ProjectStateService {
     return newProj;
   }
 
+  createProject(data: {
+    name: string;
+    key: string;
+    client: string;
+    description: string;
+    isModule: boolean;
+    customType?: string;
+    parentProjectName?: string;
+    primaryOwners: string[];
+    secondaryOwners: string[];
+    repoName: string;
+    projectManager: string;
+    projectBa: string;
+    projectTechLead: string;
+    methodology?: string;
+    targetDate?: string;
+    techStack?: string[];
+    documents?: { name: string; category: DocumentItem['category'] }[];
+    ktSessions?: { topic: string; recordingUrl: string }[];
+  }): ActiveProject {
+    const avatarColors = ['blue', 'purple', 'teal', 'pink', 'orange'];
+    const teamMembers: TeamMember[] = [];
+
+    // Add primary owners to team
+    (data.primaryOwners || []).forEach((ownerName, idx) => {
+      if (!ownerName.trim()) return;
+      const parts = ownerName.trim().split(' ');
+      const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'PO';
+      teamMembers.push({
+        name: ownerName.trim(),
+        initials,
+        role: 'Primary Owner',
+        allocation: 100,
+        avatarColor: avatarColors[idx % avatarColors.length]
+      });
+    });
+
+    // Add secondary owners to team
+    (data.secondaryOwners || []).forEach((ownerName, idx) => {
+      if (!ownerName.trim()) return;
+      if (!teamMembers.some(m => m.name.toLowerCase() === ownerName.trim().toLowerCase())) {
+        const parts = ownerName.trim().split(' ');
+        const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase() || 'SO';
+        teamMembers.push({
+          name: ownerName.trim(),
+          initials,
+          role: 'Secondary Owner',
+          allocation: 50,
+          avatarColor: avatarColors[(idx + 2) % avatarColors.length]
+        });
+      }
+    });
+
+    // Add PM / Tech Lead / BA
+    [
+      { name: data.projectManager, role: 'Project Manager' },
+      { name: data.projectTechLead, role: 'Tech Lead' },
+      { name: data.projectBa, role: 'Business Analyst' }
+    ].forEach(item => {
+      if (item.name && item.name.trim() && !teamMembers.some(m => m.name.toLowerCase() === item.name.trim().toLowerCase())) {
+        const parts = item.name.trim().split(' ');
+        const initials = parts.map(p => p[0]).join('').substring(0, 2).toUpperCase();
+        teamMembers.push({
+          name: item.name.trim(),
+          initials,
+          role: item.role,
+          allocation: 50,
+          avatarColor: 'teal'
+        });
+      }
+    });
+
+    const formattedKey = data.key ? data.key.trim().toUpperCase() : data.name.substring(0, 3).toUpperCase();
+    const newProj: ActiveProject = {
+      id: 'PRJ-' + (this.activeProjectsSignal().length + 101),
+      name: data.name,
+      key: formattedKey,
+      client: data.client || 'Internal',
+      description: data.description || 'No description provided.',
+      isModule: data.isModule,
+      customType: data.customType,
+      parentProjectName: data.parentProjectName || undefined,
+      status: 'active',
+      primaryOwners: data.primaryOwners,
+      secondaryOwners: data.secondaryOwners,
+      repoName: data.repoName,
+      projectManager: data.projectManager,
+      projectBa: data.projectBa,
+      projectTechLead: data.projectTechLead,
+      methodology: data.methodology || 'Scrum',
+      targetDate: data.targetDate,
+      techStack: data.techStack || [],
+      board: [
+        { id: 'backlog', name: 'Backlog', bulletColor: '#6b7280', cards: [] },
+        { id: 'in-progress', name: 'In Progress', bulletColor: '#2563eb', cards: [] },
+        { id: 'in-review', name: 'In Review', bulletColor: '#d97706', cards: [] },
+        { id: 'done', name: 'Done', bulletColor: '#16a34a', cards: [] }
+      ],
+      team: teamMembers.length > 0 ? teamMembers : [
+        { initials: 'OH', name: 'OneToucan Admin', role: 'Owner', allocation: 100, avatarColor: 'blue' }
+      ],
+      documents: [
+        ...(data.repoName ? [{
+          id: 'DOC-101',
+          name: 'Repository Overview & Specs',
+          category: 'Architecture' as const,
+          url: data.repoName.startsWith('http') ? data.repoName : `https://${data.repoName}`,
+          addedBy: data.primaryOwners?.[0] || 'System',
+          addedDate: new Date().toISOString().split('T')[0]
+        }] : []),
+        ...(data.documents || []).map((doc, idx): DocumentItem => ({
+          id: `DOC-${Date.now()}-${idx}`,
+          name: doc.name,
+          category: doc.category,
+          url: '',
+          addedBy: data.primaryOwners?.[0] || 'System',
+          addedDate: new Date().toISOString().split('T')[0]
+        }))
+      ],
+      ktSessions: (data.ktSessions || []).map((kt, idx): KtSession => ({
+        id: `KT-${Date.now()}-${idx}`,
+        topic: kt.topic,
+        host: data.projectManager || data.primaryOwners?.[0] || 'Unassigned',
+        date: new Date().toISOString().split('T')[0],
+        attendees: 'TBD',
+        recordingUrl: kt.recordingUrl,
+        status: 'Scheduled'
+      })),
+      demos: [],
+      requirements: [],
+      userStories: [],
+      tasks: [],
+      testCaseFolders: [],
+      testCases: [],
+      bugs: []
+    };
+
+    this.activeProjectsSignal.update(list => [newProj, ...list]);
+    return newProj;
+  }
+
   markCompleted(projectId: string): void {
     this.updateProject(projectId, p => ({ ...p, status: 'completed' }));
   }

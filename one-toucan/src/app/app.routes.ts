@@ -25,6 +25,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/temp-project/temp-project.component').then(m => m.TempProjectComponent),
         data: { title: 'Projects', subtitle: 'Analytics & Reporting · CTO View' }
       },
+      {
+        path: 'temp-project/create',
+        loadComponent: () => import('./features/temp-project/create-project/create-project.component').then(m => m.CreateProjectComponent),
+        data: { title: 'Create Project', subtitle: 'Define metadata, repository, leadership, and team ownership' }
+      },
       // TEMP: header's profile menu opens this instead of the real /profile route.
       {
         path: 'temp-profile',

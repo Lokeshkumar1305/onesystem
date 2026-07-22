@@ -1,0 +1,312 @@
+/* Create Project — stepper wizard layout */
+// .oh-compact-field (50px, matches login .oh-input height) and .oh-search-icon
+// come from the shared partial — see core/projects/_project-visuals.scss.
+@use '../../../core/projects/project-visuals';
+
+// .oh-label (global) has no margin of its own — login's version of this gap
+// comes from its wrapping .oh-field's flex `gap`, which this screen doesn't
+// use, so add the spacing here instead.
+.oh-label {
+  margin-bottom: 6px;
+}
+
+.oh-wizard-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.oh-wizard-topbar {
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--oh-radius-md);
+    background: var(--oh-primary-soft);
+    color: var(--oh-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.oh-wizard-body {
+  align-items: flex-start;
+}
+
+/* Left: step list */
+.oh-wizard-nav {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.oh-wizard-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  background: var(--oh-surface);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &--active {
+    border-color: var(--oh-primary);
+    background: var(--oh-primary-soft);
+  }
+
+  &__badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1.5px solid var(--oh-gray-300);
+    color: var(--oh-gray-500);
+  }
+
+  &--active &__badge {
+    border-color: var(--oh-primary);
+    color: var(--oh-primary);
+  }
+
+  &--done &__badge {
+    background: var(--oh-primary);
+    border-color: var(--oh-primary);
+    color: #fff;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    font-family: var(--oh-font-ui);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--oh-gray-900);
+  }
+
+  &--active &__title {
+    color: var(--oh-primary);
+  }
+
+  &__subtitle {
+    font-family: var(--oh-font-ui);
+    font-size: 11.5px;
+    color: var(--oh-gray-500);
+    margin-top: 2px;
+  }
+}
+
+/* Right: current step content */
+.oh-wizard-content {
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-xl);
+  background: var(--oh-surface);
+  box-shadow: var(--oh-shadow-sm);
+  padding: 28px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+// Bleeds a divider out to the card's outer edge, cancelling the
+// .oh-wizard-content 28px padding instead of stopping short of it — used
+// both after each step's heading and above the footer.
+.oh-wizard-divider {
+  width: calc(100% + 56px);
+  margin-inline: -28px;
+  border: none;
+  border-top: 1px solid var(--oh-border);
+  opacity: 1;
+
+  // Pins itself (and the footer that follows) to the card's bottom edge
+  // regardless of how short the current step's content is. !important is
+  // needed to beat Bootstrap's own "mt-4"/"mb-4" utility classes.
+  &--push {
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+  }
+}
+
+/* Custom Color Utilities */
+.text-teal {
+  color: #0f766e !important;
+}
+.text-purple {
+  color: #6b21a8 !important;
+}
+.text-orange {
+  color: var(--oh-accent-600) !important;
+}
+
+.oh-doc-section-title {
+  font-family: var(--oh-font-ui);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--oh-gray-900);
+}
+
+// Multi-line Description & Scope field — auto height instead of the fixed
+// 50px single-line .oh-compact-field.
+::ng-deep .oh-compact-field-textarea {
+  .mat-mdc-form-field-infix {
+    min-height: 72px !important;
+  }
+}
+
+// Owner assignment panels (Primary/Secondary) — no top accent border; color
+// is reserved for the Add button and "Multiple Allowed" badge only.
+.oh-owner-panel {
+  padding: 16px;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+  background: var(--oh-surface-sunken);
+}
+
+.oh-owner-add-btn {
+  height: 50px !important;
+  padding: 0 20px !important;
+  white-space: nowrap;
+
+  &--orange {
+    background-color: var(--oh-accent-600) !important;
+    color: #ffffff !important;
+  }
+}
+
+.oh-owner-chip-set {
+  min-height: 40px;
+}
+
+// Upload trigger button next to a doc/video name field — a proper 50px
+// square button (matching field height) with the icon dead-centered,
+// instead of relying on mat-icon-button's default 40px touch target.
+.oh-doc-upload-btn {
+  flex-shrink: 0;
+  width: 50px !important;
+  height: 50px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--oh-gray-600);
+  background: var(--oh-surface);
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-md);
+
+  i {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: var(--oh-surface-sunken);
+    border-color: var(--oh-primary);
+    color: var(--oh-primary);
+  }
+
+  // mat-icon-button's ripple/touch-target overlay is centered on its own
+  // 40px box by default; force it to fill this 50px button instead.
+  ::ng-deep .mat-mdc-button-touch-target {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+// Category label prefix inside each "Added Documents" chip.
+.oh-doc-chip-tag {
+  font-weight: 700;
+  color: var(--oh-primary);
+}
+
+// Attached-file pill shown once a file is picked — replaces the upload
+// button with the file name + re-upload/remove actions.
+.oh-doc-file-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+  max-width: 220px;
+  padding: 0 10px;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-md);
+  background: var(--oh-primary-soft);
+  color: var(--oh-primary);
+  font-family: var(--oh-font-ui);
+  font-size: 12px;
+  font-weight: 600;
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    border-radius: 50%;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    i {
+      font-size: 13px;
+    }
+  }
+}
+
+// Quick-add suggestion chips — small, clickable, not removable.
+::ng-deep .oh-quick-chip {
+  cursor: pointer;
+  --mdc-chip-label-text-size: 11px;
+  --mdc-chip-container-height: 26px;
+
+  &:hover {
+    background-color: #0f766e !important;
+
+    .mdc-evolution-chip__text-label {
+      color: #ffffff !important;
+    }
+  }
+}
+
+// Assigned-owner chips — neutral fill; teal/purple is reserved for the Add
+// button and "Multiple Allowed" badge, not repeated here.
+::ng-deep .oh-owner-chip {
+  mat-icon {
+    color: var(--oh-gray-500) !important;
+  }
+}
+
+:host {
+  display: block;
+}

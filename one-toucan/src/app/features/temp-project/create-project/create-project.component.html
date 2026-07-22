@@ -1,0 +1,421 @@
+<!-- Separate Screen: Create Project & Module Wizard -->
+<div class="oh-wizard-shell">
+
+  <!-- Top bar -->
+  <div class="oh-wizard-topbar d-flex align-items-center justify-content-between px-4 py-3 border-bottom bg-white">
+    <div class="d-flex align-items-center gap-3">
+      <span class="oh-wizard-topbar__icon"><i class="bi bi-folder-plus"></i></span>
+      <div>
+        <h2 class="oh-heading-h3 mb-0">Create Project or Sub-Module</h2>
+        <p class="oh-caption text-muted mb-0">Step {{ currentStep() }} of {{ steps.length }} · {{ activeStepDef.title }}</p>
+      </div>
+    </div>
+    <button mat-stroked-button type="button" (click)="goBack()">Cancel</button>
+  </div>
+
+  <div class="oh-wizard-body d-flex align-items-start gap-4 p-4">
+
+    <!-- Left: step list -->
+    <nav class="oh-wizard-nav flex-shrink-0">
+      <button
+        type="button"
+        *ngFor="let step of steps"
+        class="oh-wizard-step"
+        [class.oh-wizard-step--active]="currentStep() === step.id"
+        [class.oh-wizard-step--done]="step.id < currentStep()"
+        [disabled]="step.id > maxStepReached()"
+        (click)="goToStep(step.id)"
+      >
+        <span class="oh-wizard-step__badge">
+          <i class="bi bi-check-lg" *ngIf="step.id < currentStep()"></i>
+          <ng-container *ngIf="step.id >= currentStep()">{{ step.id }}</ng-container>
+        </span>
+        <span class="oh-wizard-step__text">
+          <span class="oh-wizard-step__title">{{ step.title }}</span>
+          <span class="oh-wizard-step__subtitle">{{ step.subtitle }}</span>
+        </span>
+      </button>
+    </nav>
+
+    <!-- Right: current step content -->
+    <div class="oh-wizard-content flex-grow-1">
+
+      <div class="alert alert-danger text-sm p-3 mb-3 d-flex align-items-center gap-2 rounded-3 shadow-sm" *ngIf="errorMessage()">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+
+      <ng-container [ngSwitch]="currentStep()">
+
+        <!-- Step 1: Entity Type Selection -->
+        <div *ngSwitchCase="1">
+          <h3 class="oh-heading-h3 mb-1">Entity Type Selection</h3>
+          <p class="oh-caption text-muted mb-3">Choose whether this is a top-level project or a sub-module under an existing active project.</p>
+          <hr class="oh-wizard-divider mb-4">
+
+          <mat-radio-group [ngModel]="formIsModule()" (ngModelChange)="formIsModule.set($event)" name="entityType" class="d-flex align-items-center gap-4 mb-3">
+            <mat-radio-button [value]="false" color="primary">
+              <span class="font-weight-semibold text-dark"><i class="bi bi-folder me-1 text-teal"></i> Standalone Project</span>
+            </mat-radio-button>
+            <mat-radio-button [value]="true" color="primary">
+              <span class="font-weight-semibold text-dark"><i class="bi bi-layers-half me-1 text-purple"></i> Sub-Module</span>
+            </mat-radio-button>
+          </mat-radio-group>
+
+          <div class="mt-1 p-3 bg-light rounded-3 border" *ngIf="formIsModule()">
+            <label class="oh-label" for="parentProject">Select Parent Project</label>
+            <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+              <mat-select id="parentProject" [ngModel]="formParentProjectName()" (ngModelChange)="formParentProjectName.set($event)" name="parentProject">
+                <mat-option *ngFor="let p of parentProjects()" [value]="p.name">
+                  <i class="bi bi-folder me-2 text-teal"></i>{{ p.name }} ({{ p.key }})
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Step 2: Basic Information -->
+        <div *ngSwitchCase="2">
+          <h3 class="oh-heading-h3 mb-1">Basic Information</h3>
+          <p class="oh-caption text-muted mb-3">General project identifier, key, and executive overview.</p>
+          <hr class="oh-wizard-divider mb-4">
+
+          <div class="row g-3">
+            <div class="col-md-9">
+              <label class="oh-label" for="projectName"><span>{{ formIsModule() ? 'Module Name' : 'Project Name' }}<span class="oh-label__required">*</span></span></label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input id="projectName" matInput [ngModel]="formName()" (ngModelChange)="onNameChange($event)" name="projectName" placeholder="e.g. Payment Gateway Service" required />
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-3">
+              <label class="oh-label" for="projectKey"><span>Key<span class="oh-label__required">*</span></span></label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input id="projectKey" matInput [ngModel]="formKey()" (ngModelChange)="formKey.set($event)" name="projectKey" placeholder="PGS" maxlength="6" style="text-transform: uppercase;" required />
+              </mat-form-field>
+            </div>
+
+            <div class="col-12">
+              <label class="oh-label" for="description">Description & Scope</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field-textarea" subscriptSizing="dynamic">
+                <textarea id="description" matInput rows="3" [ngModel]="formDescription()" (ngModelChange)="formDescription.set($event)" name="description" placeholder="Describe scope, requirements, and target outcomes..."></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Ownership Structure -->
+        <div *ngSwitchCase="3">
+          <h3 class="oh-heading-h3 mb-1">Ownership Structure (Multiple Owners)</h3>
+          <p class="oh-caption text-muted mb-3">Assign multiple primary owners responsible for delivery and secondary owners providing support.</p>
+          <hr class="oh-wizard-divider mb-4">
+
+          <div class="row g-4">
+            <!-- Primary Owners Column -->
+            <div class="col-md-6">
+              <div class="oh-owner-panel oh-owner-panel--teal">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <label class="oh-label mb-0"><i class="bi bi-person-fill text-teal me-1"></i> Primary Owners</label>
+                  <span class="oh-badge oh-badge--success text-xxs">Multiple Allowed</span>
+                </div>
+
+                <div class="d-flex align-items-start gap-2 mb-2">
+                  <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                    <mat-select [ngModel]="primaryOwnerInput()" (ngModelChange)="primaryOwnerInput.set($event)" name="pInput" placeholder="Select owner...">
+                      <mat-option *ngFor="let member of availablePrimaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addPrimaryOwner()">
+                    <i class="bi bi-plus-lg me-1"></i>Add
+                  </button>
+                </div>
+
+                <div class="d-flex align-items-center flex-wrap gap-1 mb-3">
+                  <span class="text-xxs text-muted me-1">Quick Add:</span>
+                  <mat-chip-set aria-label="Quick add primary owners">
+                    <mat-chip *ngFor="let member of availableTeamMembers.slice(0, 5)" class="oh-quick-chip" (click)="addPrimaryOwner(member)">
+                      + {{ member }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+
+                <mat-chip-set class="oh-owner-chip-set" aria-label="Primary owners">
+                  <mat-chip *ngFor="let pOwner of primaryOwners()" [removable]="true" (removed)="removePrimaryOwner(pOwner)" class="oh-owner-chip">
+                    <i class="bi bi-person-fill me-1"></i>{{ pOwner }}
+                    <button matChipRemove aria-label="Remove owner"><mat-icon>cancel</mat-icon></button>
+                  </mat-chip>
+                </mat-chip-set>
+                <span *ngIf="primaryOwners().length === 0" class="text-muted text-xs fst-italic d-block">No primary owners assigned yet.</span>
+              </div>
+            </div>
+
+            <!-- Secondary Owners Column -->
+            <div class="col-md-6">
+              <div class="oh-owner-panel oh-owner-panel--purple">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <label class="oh-label mb-0"><i class="bi bi-person text-orange me-1"></i> Secondary Owners</label>
+                  <span class="oh-badge oh-badge--warning text-xxs">Multiple Allowed</span>
+                </div>
+
+                <div class="d-flex align-items-start gap-2 mb-2">
+                  <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                    <mat-select [ngModel]="secondaryOwnerInput()" (ngModelChange)="secondaryOwnerInput.set($event)" name="sInput" placeholder="Select owner...">
+                      <mat-option *ngFor="let member of availableSecondaryOwnerOptions()" [value]="member">{{ member }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button mat-flat-button type="button" class="oh-owner-add-btn oh-owner-add-btn--orange" (click)="addSecondaryOwner()">
+                    <i class="bi bi-plus-lg me-1"></i>Add
+                  </button>
+                </div>
+
+                <div class="d-flex align-items-center flex-wrap gap-1 mb-3">
+                  <span class="text-xxs text-muted me-1">Quick Add:</span>
+                  <mat-chip-set aria-label="Quick add secondary owners">
+                    <mat-chip *ngFor="let member of availableTeamMembers.slice(4, 9)" class="oh-quick-chip" (click)="addSecondaryOwner(member)">
+                      + {{ member }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+
+                <mat-chip-set class="oh-owner-chip-set" aria-label="Secondary owners">
+                  <mat-chip *ngFor="let sOwner of secondaryOwners()" [removable]="true" (removed)="removeSecondaryOwner(sOwner)" class="oh-owner-chip">
+                    <i class="bi bi-person me-1"></i>{{ sOwner }}
+                    <button matChipRemove aria-label="Remove owner"><mat-icon>cancel</mat-icon></button>
+                  </mat-chip>
+                </mat-chip-set>
+                <span *ngIf="secondaryOwners().length === 0" class="text-muted text-xs fst-italic d-block">No secondary owners assigned yet.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Leadership & Repository -->
+        <div *ngSwitchCase="4">
+          <h3 class="oh-heading-h3 mb-1">Leadership & Repository Config</h3>
+          <p class="oh-caption text-muted mb-3">Specify repository name/URL, Project Manager (PM), Tech Lead, and Business Analyst (BA).</p>
+          <hr class="oh-wizard-divider mb-4">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="oh-label" for="repoName">Repository Name / GitHub URL</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <input id="repoName" matInput [ngModel]="formRepoName()" (ngModelChange)="formRepoName.set($event)" name="repoName" placeholder="e.g. onetoucan/payment-gateway-service" />
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+              <label class="oh-label" for="pm">Project Manager (PM)</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <mat-select id="pm" [ngModel]="formProjectManager()" (ngModelChange)="formProjectManager.set($event)" name="pm">
+                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+              <label class="oh-label" for="techLead">Project Tech Lead</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <mat-select id="techLead" [ngModel]="formProjectTechLead()" (ngModelChange)="formProjectTechLead.set($event)" name="techLead">
+                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-6">
+              <label class="oh-label" for="ba">Project Business Analyst (BA)</label>
+              <mat-form-field appearance="outline" class="w-100 oh-compact-field" subscriptSizing="dynamic">
+                <mat-select id="ba" [ngModel]="formProjectBa()" (ngModelChange)="formProjectBa.set($event)" name="ba">
+                  <mat-option *ngFor="let m of availableTeamMembers" [value]="m">{{ m }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5: Technical Stack & Documents -->
+        <div *ngSwitchCase="5">
+          <h3 class="oh-heading-h3 mb-1">Technical Stack & Documents</h3>
+          <p class="oh-caption text-muted mb-3">Tag the tech stack, and optionally attach reference documentation & KT recordings.</p>
+          <hr class="oh-wizard-divider mb-4">
+
+          <label class="oh-label" for="techTag">Tech Stack Tags</label>
+          <div class="d-flex align-items-start gap-2 mb-2" style="max-width: 480px;">
+            <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+              <input id="techTag" matInput [ngModel]="techInput()" (ngModelChange)="techInput.set($event)" name="techTag" placeholder="e.g. Kafka, Docker..." (keyup.enter)="addTechTag()" />
+            </mat-form-field>
+            <button mat-stroked-button type="button" class="oh-owner-add-btn" (click)="addTechTag()">Add</button>
+          </div>
+          <mat-chip-set class="mb-4" aria-label="Tech stack tags">
+            <mat-chip *ngFor="let tag of techStackTags()" [removable]="true" (removed)="removeTechTag(tag)">
+              {{ tag }}
+              <button matChipRemove aria-label="Remove tag"><mat-icon>cancel</mat-icon></button>
+            </mat-chip>
+          </mat-chip-set>
+
+          <hr class="oh-wizard-divider mb-5">
+
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <h4 class="oh-doc-section-title mb-0">Documents</h4>
+            <span class="oh-badge oh-badge--neutral text-xxs">Optional</span>
+          </div>
+          <p class="oh-caption text-muted mb-3">Pick a document type below — the matching form appears, and everything you add lands in one list at the bottom.</p>
+
+          <!-- Document type selector -->
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <button
+              type="button"
+              *ngFor="let type of documentTypeOptions"
+              class="oh-filter-pill"
+              [class.oh-filter-pill--active]="selectedDocType() === type"
+              (click)="selectedDocType.set(type)"
+            >
+              {{ type }}
+            </button>
+          </div>
+
+          <div class="oh-owner-panel mb-3">
+
+            <!-- Tech Doc: category (Backend/Frontend/DevOps/QA/Database/Mobile) -> technology -->
+            <ng-container *ngIf="selectedDocType() === 'Tech Doc'">
+              <span class="oh-caption text-muted d-block mb-2">Engineering Area</span>
+              <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                <button
+                  type="button"
+                  *ngFor="let cat of techCategories"
+                  class="oh-filter-pill"
+                  [class.oh-filter-pill--active]="selectedTechCategory() === cat"
+                  (click)="selectTechCategory(cat)"
+                >
+                  {{ cat }}
+                </button>
+              </div>
+
+              <span class="oh-caption text-muted d-block mb-2">{{ selectedTechCategory() }} Doc</span>
+              <div class="d-flex align-items-center gap-2">
+                <mat-form-field appearance="outline" class="oh-compact-field" subscriptSizing="dynamic" style="width: 160px;">
+                  <mat-select [ngModel]="techDocType()" (ngModelChange)="techDocType.set($event)" name="techDocType" placeholder="Select">
+                    <mat-option *ngFor="let t of currentTechTypes" [value]="t">{{ t }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [ngModel]="techDocName()" (ngModelChange)="techDocName.set($event)" name="techDocName" placeholder="Doc name or link..." (keyup.enter)="addTechDoc()" />
+                </mat-form-field>
+                <button *ngIf="!techDocFile()" mat-icon-button type="button" class="oh-doc-upload-btn" matTooltip="Upload document" (click)="techDocFileInput.click()">
+                  <i class="bi bi-paperclip"></i>
+                </button>
+                <span *ngIf="techDocFile()" class="oh-doc-file-chip" [matTooltip]="techDocFile()?.name ?? ''">
+                  <i class="bi bi-file-earmark-check"></i>
+                  <span class="oh-doc-file-chip__name">{{ techDocFile()?.name }}</span>
+                  <button type="button" matTooltip="Re-upload" (click)="techDocFileInput.click()"><i class="bi bi-arrow-repeat"></i></button>
+                  <button type="button" matTooltip="Remove file" (click)="techDocFile.set(null)"><i class="bi bi-x-lg"></i></button>
+                </span>
+                <input #techDocFileInput type="file" class="d-none" accept=".pdf,.doc,.docx,.md,.txt" (change)="onTechDocFileSelected($event)" />
+                <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addTechDoc()">Add</button>
+              </div>
+            </ng-container>
+
+            <!-- Functional Doc -->
+            <ng-container *ngIf="selectedDocType() === 'Functional Doc'">
+              <span class="oh-caption text-muted d-block mb-2">Functional Doc</span>
+              <div class="d-flex align-items-center gap-2">
+                <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [ngModel]="functionalDocName()" (ngModelChange)="functionalDocName.set($event)" name="functionalDocName" placeholder="e.g. Payments BRD v2" (keyup.enter)="addFunctionalDoc()" />
+                </mat-form-field>
+                <button *ngIf="!functionalDocFile()" mat-icon-button type="button" class="oh-doc-upload-btn" matTooltip="Upload document" (click)="functionalDocFileInput.click()">
+                  <i class="bi bi-paperclip"></i>
+                </button>
+                <span *ngIf="functionalDocFile()" class="oh-doc-file-chip" [matTooltip]="functionalDocFile()?.name ?? ''">
+                  <i class="bi bi-file-earmark-check"></i>
+                  <span class="oh-doc-file-chip__name">{{ functionalDocFile()?.name }}</span>
+                  <button type="button" matTooltip="Re-upload" (click)="functionalDocFileInput.click()"><i class="bi bi-arrow-repeat"></i></button>
+                  <button type="button" matTooltip="Remove file" (click)="functionalDocFile.set(null)"><i class="bi bi-x-lg"></i></button>
+                </span>
+                <input #functionalDocFileInput type="file" class="d-none" accept=".pdf,.doc,.docx,.md,.txt" (change)="onFunctionalDocFileSelected($event)" />
+                <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addFunctionalDoc()">Add</button>
+              </div>
+            </ng-container>
+
+            <!-- KT -->
+            <ng-container *ngIf="selectedDocType() === 'KT'">
+              <span class="oh-caption text-muted d-block mb-2">KT Video</span>
+              <div class="d-flex align-items-center gap-2">
+                <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [ngModel]="ktVideoName()" (ngModelChange)="ktVideoName.set($event)" name="ktVideoName" placeholder="Session title..." />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [ngModel]="ktVideoUrl()" (ngModelChange)="ktVideoUrl.set($event)" name="ktVideoUrl" placeholder="Recording link (optional)" (keyup.enter)="addKtVideo()" />
+                </mat-form-field>
+                <button *ngIf="!ktVideoFile()" mat-icon-button type="button" class="oh-doc-upload-btn" matTooltip="Upload video" (click)="ktVideoFileInput.click()">
+                  <i class="bi bi-camera-video"></i>
+                </button>
+                <span *ngIf="ktVideoFile()" class="oh-doc-file-chip" [matTooltip]="ktVideoFile()?.name ?? ''">
+                  <i class="bi bi-file-earmark-check"></i>
+                  <span class="oh-doc-file-chip__name">{{ ktVideoFile()?.name }}</span>
+                  <button type="button" matTooltip="Re-upload" (click)="ktVideoFileInput.click()"><i class="bi bi-arrow-repeat"></i></button>
+                  <button type="button" matTooltip="Remove video" (click)="ktVideoFile.set(null)"><i class="bi bi-x-lg"></i></button>
+                </span>
+                <input #ktVideoFileInput type="file" class="d-none" accept="video/*" (change)="onKtVideoFileSelected($event)" />
+                <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addKtVideo()">Add</button>
+              </div>
+            </ng-container>
+
+            <!-- Other: manual type name -->
+            <ng-container *ngIf="selectedDocType() === 'Other'">
+              <span class="oh-caption text-muted d-block mb-2">Custom Document Type</span>
+              <div class="d-flex align-items-center gap-2">
+                <mat-form-field appearance="outline" class="oh-compact-field" subscriptSizing="dynamic" style="width: 160px;">
+                  <input matInput [ngModel]="otherDocType()" (ngModelChange)="otherDocType.set($event)" name="otherDocType" placeholder="Type name..." />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="flex-grow-1 oh-compact-field" subscriptSizing="dynamic">
+                  <input matInput [ngModel]="otherDocName()" (ngModelChange)="otherDocName.set($event)" name="otherDocName" placeholder="Doc name or link..." (keyup.enter)="addOtherDoc()" />
+                </mat-form-field>
+                <button *ngIf="!otherDocFile()" mat-icon-button type="button" class="oh-doc-upload-btn" matTooltip="Upload document" (click)="otherDocFileInput.click()">
+                  <i class="bi bi-paperclip"></i>
+                </button>
+                <span *ngIf="otherDocFile()" class="oh-doc-file-chip" [matTooltip]="otherDocFile()?.name ?? ''">
+                  <i class="bi bi-file-earmark-check"></i>
+                  <span class="oh-doc-file-chip__name">{{ otherDocFile()?.name }}</span>
+                  <button type="button" matTooltip="Re-upload" (click)="otherDocFileInput.click()"><i class="bi bi-arrow-repeat"></i></button>
+                  <button type="button" matTooltip="Remove file" (click)="otherDocFile.set(null)"><i class="bi bi-x-lg"></i></button>
+                </span>
+                <input #otherDocFileInput type="file" class="d-none" (change)="onOtherDocFileSelected($event)" />
+                <button mat-flat-button color="primary" type="button" class="oh-owner-add-btn" (click)="addOtherDoc()">Add</button>
+              </div>
+            </ng-container>
+
+          </div>
+
+          <!-- Combined list of everything added, regardless of type -->
+          <label class="oh-label mb-2">Added Documents ({{ documents().length }})</label>
+          <mat-chip-set aria-label="Added documents" class="mb-4">
+            <mat-chip *ngFor="let doc of documents()" [removable]="true" (removed)="removeDocument(doc)" class="oh-owner-chip">
+              <span class="oh-doc-chip-tag">{{ doc.category }}</span>
+              <ng-container *ngIf="doc.subType">&nbsp;· {{ doc.subType }}</ng-container>
+              &nbsp;— {{ doc.name }}
+              <i *ngIf="doc.fileName" class="bi bi-paperclip ms-1" [matTooltip]="doc.fileName"></i>
+              <button matChipRemove aria-label="Remove document"><mat-icon>cancel</mat-icon></button>
+            </mat-chip>
+          </mat-chip-set>
+          <span *ngIf="documents().length === 0" class="text-muted text-xs fst-italic d-block mb-4">No documents added yet.</span>
+        </div>
+
+      </ng-container>
+
+      <!-- Footer nav -->
+      <hr class="oh-wizard-divider oh-wizard-divider--push">
+      <div class="oh-wizard-footer d-flex align-items-center justify-content-between pt-4">
+        <button mat-stroked-button type="button" (click)="back()">
+          <i class="bi bi-chevron-left me-1"></i>Back
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="next()">
+          <ng-container *ngIf="currentStep() < steps.length; else lastStepLabel">
+            Continue <i class="bi bi-chevron-right ms-1"></i>
+          </ng-container>
+          <ng-template #lastStepLabel>
+            <i class="bi bi-check-lg me-1"></i>Create {{ formIsModule() ? 'Sub-Module' : 'Project' }}
+          </ng-template>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
