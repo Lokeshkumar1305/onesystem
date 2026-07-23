@@ -171,29 +171,64 @@
   }
 }
 
-.oh-login__submit {
+.oh-strength-bars {
   width: 100%;
-  height: 50px;
 }
 
-.oh-login__mfa {
-  display: flex;
-  gap: var(--oh-2);
-  padding: var(--oh-3);
-  border-radius: var(--oh-radius-lg);
-  background: var(--oh-warning-bg);
-  margin-top: var(--oh-6);
+.oh-strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--oh-gray-200);
+
+  &--filled {
+    background-color: #0d9488 !important;
+  }
 }
 
-.oh-login__mfa-icon {
-  color: var(--oh-accent-600);
-  flex-shrink: 0;
-}
-
-.oh-login__mfa-text {
-  color: var(--oh-gray-700);
+.oh-strength-text {
+  color: var(--oh-gray-500);
+  font-size: 12px;
 
   strong {
-    color: var(--oh-accent-700);
+    color: var(--oh-gray-700);
+    font-weight: 700;
   }
+}
+
+.oh-checklist-card {
+  background-color: #f8fafc;
+  border: 1px solid var(--oh-border);
+  border-radius: var(--oh-radius-lg);
+}
+
+.oh-checklist-title {
+  font-weight: 700;
+  color: var(--oh-gray-700);
+  font-size: 13px;
+}
+
+.oh-checklist-item {
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+
+  &--valid {
+    color: #10b981;
+  }
+
+  &--invalid {
+    color: var(--oh-gray-400);
+  }
+}
+
+.oh-change-pass__submit {
+  width: 100%;
+  height: 48px;
+  background-color: #0d9488 !important;
+  color: white !important;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--oh-radius-lg);
 }

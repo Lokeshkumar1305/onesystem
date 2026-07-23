@@ -25,10 +25,10 @@ export class LoginComponent {
     { value: 'SSO', label: 'SAML · OAuth' }
   ];
 
-  readonly form = this.fb.group({
-    email: ['lokesh.kanuboina@toucanus.com', [Validators.required, Validators.email]],
-    password: ['Password@123', Validators.required],
-    remember: [true]
+  readonly changePasswordForm = this.fb.group({
+    currentPassword: ['CurrentPass123', Validators.required],
+    newPassword: ['NewPassword123', [Validators.required, Validators.minLength(10)]],
+    confirmPassword: ['NewPassword123', Validators.required]
   });
 
   constructor(
@@ -37,19 +37,13 @@ export class LoginComponent {
     private readonly currentUser: CurrentUserService
   ) {}
 
-  submit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  updatePassword(): void {
+    if (this.changePasswordForm.invalid) {
+      this.changePasswordForm.markAllAsTouched();
       return;
     }
-    const email = this.form.value.email;
-    if (email) {
-      this.currentUser.setEmail(email);
-    }
-    // TEMP: skip the OneHR/Atlas/Project-Management picker at /home and land
-    // directly on the project-only dashboard. Original line kept below for
-    // easy revert.
-    // this.router.navigateByUrl('/home');
+    // Set mock user email and navigate to project dashboard
+    this.currentUser.setEmail('lokesh.kanuboina@toucanus.com');
     this.router.navigateByUrl('/temp-project');
   }
 }

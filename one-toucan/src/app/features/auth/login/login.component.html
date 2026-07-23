@@ -20,49 +20,77 @@
 
   <section class="oh-login__panel">
     <div class="oh-login__form-wrap">
-      <h2 class="oh-display-h2">Welcome back</h2>
-      <p class="oh-body oh-login__subtitle">Sign in to your workspace to continue.</p>
+      <h2 class="oh-display-h2">Change password</h2>
+      <p class="oh-body oh-login__subtitle">Pick a strong password you don't use elsewhere</p>
 
-      <!-- Small spacer below subtitle -->
-      <div style="height: 24px;"></div>
-
-      <form [formGroup]="form" (ngSubmit)="submit()" class="oh-login__form">
+      <form [formGroup]="changePasswordForm" (ngSubmit)="updatePassword()" class="oh-login__form">
         <div class="oh-field">
-          <label class="oh-label" for="email">Work email</label>
-          <input id="email" type="email" class="oh-input" formControlName="email" autocomplete="username" />
+          <label class="oh-label" for="currentPassword">Current password</label>
+          <input
+            id="currentPassword"
+            type="password"
+            class="oh-input"
+            formControlName="currentPassword"
+            placeholder="••••••••"
+          />
         </div>
 
         <div class="oh-field">
-          <label class="oh-label" for="password">
-            <span>Password</span>
-            <button mat-button type="button" color="primary" class="oh-login__forgot">Forgot?</button>
-          </label>
-          <div class="oh-login__password">
-            <input
-              id="password"
-              [type]="showPassword ? 'text' : 'password'"
-              class="oh-input"
-              formControlName="password"
-              autocomplete="current-password"
-            />
-            <button
-              mat-icon-button
-              type="button"
-              class="oh-login__password-toggle"
-              (click)="showPassword = !showPassword"
-              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
-            >
-              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-            </button>
-          </div>
+          <label class="oh-label" for="newPassword">New password</label>
+          <input
+            id="newPassword"
+            type="password"
+            class="oh-input"
+            formControlName="newPassword"
+            placeholder="••••••••••••"
+          />
         </div>
 
-        <mat-checkbox formControlName="remember">Remember this device</mat-checkbox>
+        <!-- Strength Indicator Bars -->
+        <div class="oh-strength-bars d-flex gap-2 mt-1">
+          <span class="oh-strength-bar oh-strength-bar--filled"></span>
+          <span class="oh-strength-bar oh-strength-bar--filled"></span>
+          <span class="oh-strength-bar oh-strength-bar--filled"></span>
+          <span class="oh-strength-bar"></span>
+        </div>
+        <p class="oh-caption oh-strength-text mt-2 mb-3">
+          Strength: <strong>Strong</strong>
+        </p>
 
-        <button mat-flat-button color="primary" type="submit" class="oh-login__submit">Sign in</button>
+        <div class="oh-field">
+          <label class="oh-label" for="confirmPassword">Confirm new password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            class="oh-input"
+            formControlName="confirmPassword"
+            placeholder="••••••••••••"
+          />
+        </div>
+
+        <!-- Password Checklist Card -->
+        <div class="oh-checklist-card p-3 my-3">
+          <p class="oh-caption oh-checklist-title mb-2">Password must include</p>
+          <ul class="oh-checklist-list list-unstyled mb-0 d-flex flex-column gap-2">
+            <li class="oh-checklist-item oh-checklist-item--valid">
+              <i class="bi bi-check-lg me-2 text-success"></i>At least 10 characters
+            </li>
+            <li class="oh-checklist-item oh-checklist-item--valid">
+              <i class="bi bi-check-lg me-2 text-success"></i>A number
+            </li>
+            <li class="oh-checklist-item oh-checklist-item--valid">
+              <i class="bi bi-check-lg me-2 text-success"></i>An uppercase letter
+            </li>
+            <li class="oh-checklist-item oh-checklist-item--invalid">
+              <i class="bi bi-x me-2 text-secondary"></i>A symbol (!&#64;#$)
+            </li>
+          </ul>
+        </div>
+
+        <button mat-flat-button class="oh-change-pass__submit" type="submit">
+          Update password
+        </button>
       </form>
-
-
     </div>
   </section>
 </div>
